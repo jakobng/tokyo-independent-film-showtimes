@@ -1,10 +1,10 @@
-import requests # Keep for now, though Selenium is primary for fetching
-from bs4 import BeautifulSoup
+import requests 
+from bs4 import BeautifulSoup, NavigableString
 import re
 import sys
-from datetime import datetime
-import os # For os.getlogin() if needed for user-specific paths
-import time # For potential small delays if needed
+from datetime import datetime, date, timedelta 
+import os 
+import time 
 
 # Selenium imports
 from selenium import webdriver
@@ -40,7 +40,6 @@ def clean_text_st(element_or_string):
 
 def parse_date_st(date_str_raw, year):
     if not date_str_raw or date_str_raw == "Unknown Date":
-        # print(f"Debug ({CINEMA_NAME_ST}): parse_date_st received '{date_str_raw}'. Returning as is.", file=sys.stderr)
         return date_str_raw
     
     processed_date_str = re.sub(r'^[一-龠々]+曜?\s*(<br\s*/?>)?\s*|\s*[月火水木金土日]\s*(<br\s*/?>)?\s*', '', date_str_raw.strip(), flags=re.IGNORECASE)
@@ -48,7 +47,6 @@ def parse_date_st(date_str_raw, year):
     processed_date_str = ' '.join(processed_date_str.split()) 
 
     if not processed_date_str:
-        # print(f"Debug ({CINEMA_NAME_ST}): Date string became empty: '{date_str_raw}' -> '{processed_date_str}'", file=sys.stderr)
         return date_str_raw 
 
     try:
@@ -57,35 +55,30 @@ def parse_date_st(date_str_raw, year):
             month = int(month_day_match.group(1))
             day = int(month_day_match.group(2))
             if not (1 <= month <= 12 and 1 <= day <= 31):
-                # print(f"Warning ({CINEMA_NAME_ST}): Invalid M/D: {month}/{day} from '{date_str_raw}'", file=sys.stderr)
                 return processed_date_str 
             return f"{year}-{month:02d}-{day:02d}"
         else:
-            # print(f"Warning ({CINEMA_NAME_ST}): No M/D parse: '{processed_date_str}' from '{date_str_raw}'", file=sys.stderr)
             return processed_date_str 
     except ValueError:
-        # print(f"Warning ({CINEMA_NAME_ST}): ValueError parsing M/D: '{processed_date_str}'", file=sys.stderr)
         return processed_date_str
     except Exception as e:
-        # print(f"Error ({CINEMA_NAME_ST}): Date parse error '{date_str_raw}': {e}", file=sys.stderr)
         return processed_date_str if processed_date_str else date_str_raw
 
 def extract_showings_from_soup(soup, date_for_showings, year_for_parsing):
-    """Helper function to extract showings from a BeautifulSoup object for a given date."""
     daily_showings = []
     schedule_section_root = soup.find('div', id='block--screen', class_='p-top__screen')
     if not schedule_section_root:
-        print(f"Error ({CINEMA_NAME_ST}): BS4: Could not find schedule section for date {date_for_showings}.", file=sys.stderr)
+        # print(f"Error ({CINEMA_NAME_ST}): BS4: Could not find schedule section for date {date_for_showings}.", file=sys.stderr)
         return daily_showings
     
     showings_list_container = schedule_section_root.find('div', class_='c-screen__list')
     if not showings_list_container:
-        print(f"Error ({CINEMA_NAME_ST}): BS4: Could not find showings list container for date {date_for_showings}.", file=sys.stderr)
+        # print(f"Error ({CINEMA_NAME_ST}): BS4: Could not find showings list container for date {date_for_showings}.", file=sys.stderr)
         return daily_showings
     
     showings_ul = showings_list_container.find('ul')
     if not showings_ul:
-        print(f"Error ({CINEMA_NAME_ST}): BS4: Could not find <ul> in showings list for date {date_for_showings}.", file=sys.stderr)
+        # print(f"Error ({CINEMA_NAME_ST}): BS4: Could not find <ul> in showings list for date {date_for_showings}.", file=sys.stderr)
         return daily_showings
     
     movie_items_li = showings_ul.find_all('li', recursive=False)
@@ -117,38 +110,59 @@ def extract_showings_from_soup(soup, date_for_showings, year_for_parsing):
 
 def scrape_stranger():
     all_showings_collected = []
-    print(f"Debug ({CINEMA_NAME_ST}): Starting scrape_stranger function using Selenium for multiple days (headless).", file=sys.stderr) # Updated message
-    assumed_year = 2025 
+    print(f"Debug ({CINEMA_NAME_ST}): Starting scrape_stranger function using Selenium for multiple days.", file=sys.stderr)
+    assumed_year = date.today().year # Use current year dynamically
     print(f"Debug ({CINEMA_NAME_ST}): Assuming year for dates as {assumed_year}.", file=sys.stderr)
-
-    webdriver_path = './chromedriver.exe' 
-    brave_exe_path = r'C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe'
     
     options = ChromeOptions()
-    options.binary_location = brave_exe_path 
-    
-    # --- Enable Headless Mode ---
     options.add_argument("--headless") 
-    options.add_argument("--disable-gpu") # Often recommended with headless
-    # --- End Headless Mode Options ---
-
+    options.add_argument("--disable-gpu") 
     options.add_argument("--no-sandbox") 
     options.add_argument("--disable-dev-shm-usage") 
     options.add_argument("--disable-extensions") 
-    options.add_argument("--start-maximized") # Can still be useful in headless to define a large viewport
-    options.add_argument("--window-size=1920,1080") # Define a common window size
+    # options.add_argument("--start-maximized") # Less relevant for headless
+    options.add_argument("--window-size=1920,1080") # Define a viewport
 
-    service = ChromeService(executable_path=webdriver_path)
     driver = None 
+    is_github_actions = os.getenv('GITHUB_ACTIONS') == 'true' # GITHUB_ACTIONS is true in GitHub Actions
 
     try:
-        print(f"Debug ({CINEMA_NAME_ST}): Initializing WebDriver (headless)...", file=sys.stderr) # Updated message
-        driver = webdriver.Chrome(service=service, options=options)
-        print(f"Debug ({CINEMA_NAME_ST}): Navigating to {URL_ST} (headless).", file=sys.stderr) # Updated message
+        if is_github_actions:
+            print(f"Debug ({CINEMA_NAME_ST}): Running in GitHub Actions. ChromeDriver should be in PATH.", file=sys.stderr)
+            # In GitHub Actions, Chrome (google-chrome-stable) and chromedriver are installed by the workflow.
+            # Selenium should find them if they are in the PATH.
+            driver = webdriver.Chrome(options=options)
+        else:
+            # Local setup (e.g., Windows with Brave)
+            webdriver_path_local = './chromedriver.exe' 
+            brave_exe_path_local = r'C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe'
+            
+            # Check if local Brave path exists, try user-specific as fallback
+            if not os.path.exists(brave_exe_path_local):
+                user_profile = os.getenv('USERPROFILE', '') # Get user profile path
+                brave_exe_path_local_user = fr'{user_profile}\AppData\Local\BraveSoftware\Brave-Browser\Application\brave.exe'
+                if os.path.exists(brave_exe_path_local_user):
+                    brave_exe_path_local = brave_exe_path_local_user
+                else:
+                    print(f"Warning ({CINEMA_NAME_ST}): Brave executable not found at default paths for local run. Ensure Brave is installed or path is correct.", file=sys.stderr)
+                    # Attempt to run without binary_location if Brave is default and in PATH
+            
+            if os.path.exists(brave_exe_path_local): # Only set if found
+                 options.binary_location = brave_exe_path_local
+
+            if not os.path.exists(webdriver_path_local):
+                print(f"Error ({CINEMA_NAME_ST}): ChromeDriver not found at '{webdriver_path_local}' for local run. Please ensure it's there and accessible.", file=sys.stderr)
+                return [] # Cannot proceed without chromedriver locally if not in PATH
+
+            service = ChromeService(executable_path=webdriver_path_local)
+            print(f"Debug ({CINEMA_NAME_ST}): Initializing WebDriver locally (Brave: '{options.binary_location}', ChromeDriver: '{webdriver_path_local}').", file=sys.stderr)
+            driver = webdriver.Chrome(service=service, options=options)
+
+        print(f"Debug ({CINEMA_NAME_ST}): WebDriver initialized. Navigating to {URL_ST}.", file=sys.stderr)
         driver.get(URL_ST)
 
         timeout = 25
-        print(f"Debug ({CINEMA_NAME_ST}): Waiting up to {timeout}s for initial page elements (date scroller) (headless).", file=sys.stderr) # Updated message
+        print(f"Debug ({CINEMA_NAME_ST}): Waiting up to {timeout}s for initial page elements (date scroller).", file=sys.stderr)
         
         date_scroller_container_selector = "div#block--screen div.c-screen__date ul"
         WebDriverWait(driver, timeout).until(
@@ -163,17 +177,17 @@ def scrape_stranger():
         initial_date_tabs = driver.find_elements(*date_tabs_li_elements_locator)
         num_total_date_tabs = len(initial_date_tabs)
         num_tabs_to_process = min(num_total_date_tabs, 7) 
-        print(f"Debug ({CINEMA_NAME_ST}): Found {num_total_date_tabs} total date tabs. Will process up to {num_tabs_to_process} (headless).", file=sys.stderr) # Updated message
+        print(f"Debug ({CINEMA_NAME_ST}): Found {num_total_date_tabs} total date tabs. Will process up to {num_tabs_to_process}.", file=sys.stderr)
 
 
         if num_tabs_to_process == 0:
-            print(f"Error ({CINEMA_NAME_ST}): No date tabs found or to process. Cannot proceed.", file=sys.stderr)
+            print(f"Error ({CINEMA_NAME_ST}): No date tabs found or to process.", file=sys.stderr)
             return []
         
         parsed_date_initial = "NotYetScraped" 
 
         for i in range(num_tabs_to_process):
-            print(f"\nDebug ({CINEMA_NAME_ST}): Processing date tab {i+1}/{num_tabs_to_process} (headless).", file=sys.stderr) # Updated message
+            print(f"\nDebug ({CINEMA_NAME_ST}): Processing date tab {i+1}/{num_tabs_to_process}.", file=sys.stderr)
             
             current_date_tabs = WebDriverWait(driver, timeout).until(
                 EC.presence_of_all_elements_located(date_tabs_li_elements_locator)
@@ -184,21 +198,23 @@ def scrape_stranger():
             
             date_tab_to_click_selenium_element = current_date_tabs[i]
             
-            date_span_in_tab = date_tab_to_click_selenium_element.find_element(By.CSS_SELECTOR, "span")
+            date_span_in_tab = WebDriverWait(date_tab_to_click_selenium_element, timeout).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "span")) # Ensure span is present
+            )
             raw_date_text_current_tab = clean_text_st(date_span_in_tab.get_attribute("innerHTML"))
             parsed_date_current_tab = parse_date_st(raw_date_text_current_tab, assumed_year)
             print(f"Debug ({CINEMA_NAME_ST}): Current tab date: '{parsed_date_current_tab}' (raw: '{raw_date_text_current_tab}')", file=sys.stderr)
-
+            
             if i == 0: 
                 parsed_date_initial = parsed_date_current_tab 
-                print(f"Debug ({CINEMA_NAME_ST}): This is the first tab (index 0), processing its schedule (headless).", file=sys.stderr) # Updated message
+                print(f"Debug ({CINEMA_NAME_ST}): This is the first tab (index 0), processing its schedule.", file=sys.stderr)
                 WebDriverWait(driver, timeout).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, "div#block--screen div.c-screen__list ul li div.c-screenBox"))
                 )
                 time.sleep(0.5) 
             
             if i > 0 : 
-                print(f"Debug ({CINEMA_NAME_ST}): Attempting to click date tab {i+1} for date '{parsed_date_current_tab}' (headless).", file=sys.stderr) # Updated message
+                print(f"Debug ({CINEMA_NAME_ST}): Attempting to click date tab {i+1} for date '{parsed_date_current_tab}'.", file=sys.stderr)
                 try:
                     driver.execute_script("arguments[0].scrollIntoView(true);", date_tab_to_click_selenium_element)
                     time.sleep(0.2) 
@@ -213,29 +229,28 @@ def scrape_stranger():
                     print(f"Debug ({CINEMA_NAME_ST}): Movie list presumed updated for '{parsed_date_current_tab}'.", file=sys.stderr)
 
                 except ElementClickInterceptedException:
-                    print(f"Warning ({CINEMA_NAME_ST}): ElementClickInterceptedException for tab {i+1}. Skipping this date.", file=sys.stderr)
+                    print(f"Warning ({CINEMA_NAME_ST}): ElementClickInterceptedException for tab {i+1}. Skipping date.", file=sys.stderr)
                     continue
                 except StaleElementReferenceException:
                     print(f"Warning ({CINEMA_NAME_ST}): StaleElementReferenceException for date tab {i+1}. Skipping.", file=sys.stderr)
                     continue 
                 except TimeoutException:
-                    print(f"Warning ({CINEMA_NAME_ST}): Timeout waiting for movie list to update after clicking tab {i+1} ('{parsed_date_current_tab}'). Skipping.", file=sys.stderr)
+                    print(f"Warning ({CINEMA_NAME_ST}): Timeout waiting for movie list update after clicking tab {i+1} ('{parsed_date_current_tab}'). Skipping.", file=sys.stderr)
                     try:
                         html_on_click_timeout = driver.page_source
                         with open(f"stranger_click_timeout_debug_date_{i+1}.html", "w", encoding="utf-8") as f_timeout:
                             f_timeout.write(BeautifulSoup(html_on_click_timeout, 'html.parser').prettify())
-                        print(f"Debug ({CINEMA_NAME_ST}): Saved HTML on click timeout to stranger_click_timeout_debug_date_{i+1}.html", file=sys.stderr)
-                    except Exception as e_save_timeout:
-                        print(f"Warning ({CINEMA_NAME_ST}): Could not save HTML on click timeout: {e_save_timeout}", file=sys.stderr)
+                        # print(f"Debug ({CINEMA_NAME_ST}): Saved HTML on click timeout to stranger_click_timeout_debug_date_{i+1}.html", file=sys.stderr)
+                    except Exception: pass # Ignore save error
                     continue
             
             current_html_content = driver.page_source
             current_soup = BeautifulSoup(current_html_content, 'html.parser')
             
-            print(f"Debug ({CINEMA_NAME_ST}): Extracting showings for '{parsed_date_current_tab}'.", file=sys.stderr)
+            # print(f"Debug ({CINEMA_NAME_ST}): Extracting showings for '{parsed_date_current_tab}'.", file=sys.stderr)
             daily_showings = extract_showings_from_soup(current_soup, parsed_date_current_tab, assumed_year)
             all_showings_collected.extend(daily_showings)
-            print(f"Debug ({CINEMA_NAME_ST}): Collected {len(daily_showings)} showings for '{parsed_date_current_tab}'. Total collected: {len(all_showings_collected)}", file=sys.stderr)
+            # print(f"Debug ({CINEMA_NAME_ST}): Collected {len(daily_showings)} showings for '{parsed_date_current_tab}'. Total: {len(all_showings_collected)}", file=sys.stderr)
         
         unique_showings = []
         seen_showings = set()
@@ -256,15 +271,16 @@ def scrape_stranger():
                 html_on_timeout = driver.page_source
                 with open("stranger_initial_timeout_debug.html", "w", encoding="utf-8") as f_timeout:
                     f_timeout.write(BeautifulSoup(html_on_timeout, 'html.parser').prettify())
-                print(f"Debug ({CINEMA_NAME_ST}): Saved HTML on initial timeout to stranger_initial_timeout_debug.html", file=sys.stderr)
+                # print(f"Debug ({CINEMA_NAME_ST}): Saved HTML on initial timeout to stranger_initial_timeout_debug.html", file=sys.stderr)
             except: pass
         return []
     except WebDriverException as e_wd:
         print(f"Error ({CINEMA_NAME_ST}): Selenium WebDriverException: {e_wd}", file=sys.stderr)
         browser_version_info = "N/A"
-        if driver and hasattr(driver, 'capabilities'):
+        # Check if driver was initialized and has capabilities
+        if driver and hasattr(driver, 'capabilities') and driver.capabilities:
             browser_version_info = driver.capabilities.get('browserVersion', 'N/A')
-        print(f"  Make sure ChromeDriver (for Brave's Chromium {browser_version_info}) is compatible and accessible, and Brave path is correct.", file=sys.stderr)
+        print(f"  Make sure ChromeDriver (for browser version {browser_version_info}) is compatible and accessible, and browser path (if set) is correct.", file=sys.stderr)
         return []
     except Exception as e:
         print(f"An unexpected error occurred in scrape_stranger: {e}", file=sys.stderr)
@@ -275,19 +291,18 @@ def scrape_stranger():
         if driver:
             print(f"Debug ({CINEMA_NAME_ST}): Quitting WebDriver.", file=sys.stderr)
             driver.quit()
-            print(f"Debug ({CINEMA_NAME_ST}): WebDriver quit successfully.", file=sys.stderr)
+            # print(f"Debug ({CINEMA_NAME_ST}): WebDriver quit successfully.", file=sys.stderr)
 
 if __name__ == '__main__':
-    print(f"Testing {CINEMA_NAME_ST} scraper module (with Selenium for multiple days, headless)...") # Updated message
+    print(f"Testing {CINEMA_NAME_ST} scraper module (with Selenium for multiple days, headless)...")
     showings = scrape_stranger()
     if showings:
         print(f"\nFound {len(showings)} showings for {CINEMA_NAME_ST}:")
-        showings.sort(key=lambda x: (x.get('date_text', ''), x.get('showtime', '')))
+        showings.sort(key=lambda x: (x.get('date_text', ''), x.get('title', ''), x.get('showtime', '')))
         for i, showing in enumerate(showings):
             print(f"  Cinema: {showing.get('cinema', 'N/A')}, Date: {showing.get('date_text', 'N/A')}, Title: {showing.get('title', 'N/A')}, Showtime: {showing.get('showtime', 'N/A')}")
     else:
         print(f"\nNo showings found by {CINEMA_NAME_ST} scraper (with Selenium).")
         print("  Check debug messages above and any 'stranger_*_debug.html' files if created.")
 
-    print(f"\nNote ({CINEMA_NAME_ST}): This version uses Selenium to iterate through available dates on the page (up to 7 days, headless).") # Updated message
-
+    print(f"\nNote ({CINEMA_NAME_ST}): This version uses Selenium to iterate through available dates on the page (up to 7 days, headless).")
