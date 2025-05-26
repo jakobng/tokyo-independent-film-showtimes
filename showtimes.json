@@ -1,0 +1,932 @@
+[
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-26",
+    "title": "ミッシング・チャイルド・ビデオテープ",
+    "showtime": "00:30"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-26",
+    "title": "ANORA アノーラ",
+    "showtime": "02:35"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-26",
+    "title": "トワイライト・ウォリアーズ 決戦！九龍城砦",
+    "showtime": "05:15"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-26",
+    "title": "十八才",
+    "showtime": "07:45"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-26",
+    "title": "眠れぬ夜",
+    "showtime": "09:40"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-26",
+    "title": "ヒプノシス レコードジャケットの美学",
+    "showtime": "11:05"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-27",
+    "title": "ミッシング・チャイルド・ビデオテープ",
+    "showtime": "00:30"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-27",
+    "title": "ANORA アノーラ",
+    "showtime": "02:35"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-27",
+    "title": "トワイライト・ウォリアーズ 決戦！九龍城砦",
+    "showtime": "05:15"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-27",
+    "title": "十八才",
+    "showtime": "07:45"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-27",
+    "title": "眠れぬ夜",
+    "showtime": "09:40"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-27",
+    "title": "ヒプノシス レコードジャケットの美学",
+    "showtime": "11:05"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-28",
+    "title": "ミッシング・チャイルド・ビデオテープ",
+    "showtime": "00:45"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-28",
+    "title": "ヒプノシス レコードジャケットの美学",
+    "showtime": "02:50"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-28",
+    "title": "ANORA アノーラ",
+    "showtime": "04:50"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-28",
+    "title": "トワイライト・ウォリアーズ 決戦！九龍城砦",
+    "showtime": "07:30"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-28",
+    "title": "眠れぬ夜",
+    "showtime": "10:00"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-28",
+    "title": "十八才",
+    "showtime": "11:25"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-29",
+    "title": "ミッシング・チャイルド・ビデオテープ",
+    "showtime": "00:45"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-29",
+    "title": "ヒプノシス レコードジャケットの美学",
+    "showtime": "02:50"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-29",
+    "title": "ANORA アノーラ",
+    "showtime": "04:50"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-29",
+    "title": "トワイライト・ウォリアーズ 決戦！九龍城砦",
+    "showtime": "07:30"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-29",
+    "title": "眠れぬ夜",
+    "showtime": "10:00"
+  },
+  {
+    "cinema": "Stranger (ストレンジャー)",
+    "date_text": "2025-05-29",
+    "title": "十八才",
+    "showtime": "11:25"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/27のスケジュール",
+    "title": "ジョン・バージャーと4つの季節 The Seasons In Quincy: Four Portraits of John Berger",
+    "showtime": "10:45"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/27のスケジュール",
+    "title": "〈特集上映〉アラン・ギロディ監督特集",
+    "showtime": "11:15"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/27のスケジュール",
+    "title": "ジョン・バージャーと4つの季節 The Seasons In Quincy: Four Portraits of John Berger",
+    "showtime": "12:40"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/27のスケジュール",
+    "title": "メイデン The MAIDEN",
+    "showtime": "13:30"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/27のスケジュール",
+    "title": "デビルズ・バス THE DEVIL'S BATH",
+    "showtime": "14:35"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/27のスケジュール",
+    "title": "メイデン The MAIDEN",
+    "showtime": "16:00"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/27のスケジュール",
+    "title": "ジョン・バージャーと4つの季節 The Seasons In Quincy: Four Portraits of John Berger",
+    "showtime": "17:00"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/27のスケジュール",
+    "title": "メイデン The MAIDEN",
+    "showtime": "18:30"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/27のスケジュール",
+    "title": "デビルズ・バス THE DEVIL'S BATH",
+    "showtime": "19:00"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/28のスケジュール",
+    "title": "ジョン・バージャーと4つの季節 The Seasons In Quincy: Four Portraits of John Berger",
+    "showtime": "10:45"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/28のスケジュール",
+    "title": "〈特集上映〉アラン・ギロディ監督特集",
+    "showtime": "11:15"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/28のスケジュール",
+    "title": "ジョン・バージャーと4つの季節 The Seasons In Quincy: Four Portraits of John Berger",
+    "showtime": "12:40"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/28のスケジュール",
+    "title": "メイデン The MAIDEN",
+    "showtime": "13:30"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/28のスケジュール",
+    "title": "デビルズ・バス THE DEVIL'S BATH",
+    "showtime": "14:35"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/28のスケジュール",
+    "title": "メイデン The MAIDEN",
+    "showtime": "16:00"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/28のスケジュール",
+    "title": "ジョン・バージャーと4つの季節 The Seasons In Quincy: Four Portraits of John Berger",
+    "showtime": "17:00"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/28のスケジュール",
+    "title": "ジェイ・ローゼンブラット特集：私はかつて映画作家だった Jay Rosenblatt: I Used To Be a Filmmaker",
+    "showtime": "19:00"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/28のスケジュール",
+    "title": "デビルズ・バス THE DEVIL'S BATH",
+    "showtime": "19:00"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/29のスケジュール",
+    "title": "ジョン・バージャーと4つの季節 The Seasons In Quincy: Four Portraits of John Berger",
+    "showtime": "10:45"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/29のスケジュール",
+    "title": "〈特集上映〉アラン・ギロディ監督特集",
+    "showtime": "11:15"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/29のスケジュール",
+    "title": "ジョン・バージャーと4つの季節 The Seasons In Quincy: Four Portraits of John Berger",
+    "showtime": "12:40"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/29のスケジュール",
+    "title": "メイデン The MAIDEN",
+    "showtime": "13:30"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/29のスケジュール",
+    "title": "デビルズ・バス THE DEVIL'S BATH",
+    "showtime": "14:35"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/29のスケジュール",
+    "title": "メイデン The MAIDEN",
+    "showtime": "16:00"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/29のスケジュール",
+    "title": "ジョン・バージャーと4つの季節 The Seasons In Quincy: Four Portraits of John Berger",
+    "showtime": "17:00"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/29のスケジュール",
+    "title": "メイデン The MAIDEN",
+    "showtime": "18:30"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/29のスケジュール",
+    "title": "デビルズ・バス THE DEVIL'S BATH",
+    "showtime": "19:00"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/30のスケジュール",
+    "title": "ジョン・バージャーと4つの季節 The Seasons In Quincy: Four Portraits of John Berger",
+    "showtime": "10:45"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/30のスケジュール",
+    "title": "〈特集上映〉アラン・ギロディ監督特集",
+    "showtime": "11:15"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/30のスケジュール",
+    "title": "ジョン・バージャーと4つの季節 The Seasons In Quincy: Four Portraits of John Berger",
+    "showtime": "12:40"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/30のスケジュール",
+    "title": "メイデン The MAIDEN",
+    "showtime": "13:30"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/30のスケジュール",
+    "title": "デビルズ・バス THE DEVIL'S BATH",
+    "showtime": "14:35"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/30のスケジュール",
+    "title": "メイデン The MAIDEN",
+    "showtime": "16:00"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/30のスケジュール",
+    "title": "ジョン・バージャーと4つの季節 The Seasons In Quincy: Four Portraits of John Berger",
+    "showtime": "17:00"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/30のスケジュール",
+    "title": "メイデン The MAIDEN",
+    "showtime": "18:30"
+  },
+  {
+    "cinema": "シアター・イメージフォーラム",
+    "date_text": "5/30のスケジュール",
+    "title": "デビルズ・バス THE DEVIL'S BATH",
+    "showtime": "19:00"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月27日（火）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "ら・かんぱねら",
+    "showtime": "10:20"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月27日（火）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "劇場が終わるとき",
+    "showtime": "10:30"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月27日（火）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "骨",
+    "showtime": "12:25"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月27日（火）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "IT'S NOT ME イッツ・ノット・ミー",
+    "showtime": "12:45"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月27日（火）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "IT'S NOT ME イッツ・ノット・ミー",
+    "showtime": "13:55"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月27日（火）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "溶岩の家",
+    "showtime": "14:35"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月27日（火）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "ラウラ・シタレラ監督特集 響きあう秘密: ドッグ・レディ",
+    "showtime": "15:05"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月27日（火）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "IT'S NOT ME イッツ・ノット・ミー",
+    "showtime": "16:45"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月27日（火）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "トレンケ・ラウケン",
+    "showtime": "17:05"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月27日（火）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "太陽（ティダ）の運命",
+    "showtime": "17:55"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月27日（火）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "トレンケ・ラウケン",
+    "showtime": "19:35"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月27日（火）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "IT'S NOT ME イッツ・ノット・ミー",
+    "showtime": "20:30"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月28日（水）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "ら・かんぱねら",
+    "showtime": "10:20"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月28日（水）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "劇場が終わるとき",
+    "showtime": "10:30"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月28日（水）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "溶岩の家",
+    "showtime": "12:25"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月28日（水）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "IT'S NOT ME イッツ・ノット・ミー",
+    "showtime": "12:45"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月28日（水）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "IT'S NOT ME イッツ・ノット・ミー",
+    "showtime": "13:55"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月28日（水）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "血",
+    "showtime": "14:35"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月28日（水）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "ラウラ・シタレラ監督特集 響きあう秘密: ドッグ・レディ",
+    "showtime": "15:05"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月28日（水）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "IT'S NOT ME イッツ・ノット・ミー",
+    "showtime": "16:45"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月28日（水）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "トレンケ・ラウケン",
+    "showtime": "17:05"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月28日（水）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "太陽（ティダ）の運命",
+    "showtime": "17:55"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月28日（水）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "トレンケ・ラウケン",
+    "showtime": "19:35"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月28日（水）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "IT'S NOT ME イッツ・ノット・ミー",
+    "showtime": "20:30"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月29日（木）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "ら・かんぱねら",
+    "showtime": "10:20"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月29日（木）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "劇場が終わるとき",
+    "showtime": "10:30"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月29日（木）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "血",
+    "showtime": "12:25"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月29日（木）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "IT'S NOT ME イッツ・ノット・ミー",
+    "showtime": "12:45"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月29日（木）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "IT'S NOT ME イッツ・ノット・ミー",
+    "showtime": "13:55"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月29日（木）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "骨",
+    "showtime": "14:35"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月29日（木）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "ラウラ・シタレラ監督特集 響きあう秘密: 詩人たちは〜",
+    "showtime": "15:05"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月29日（木）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "IT'S NOT ME イッツ・ノット・ミー",
+    "showtime": "16:45"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月29日（木）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "トレンケ・ラウケン",
+    "showtime": "17:05"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月29日（木）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "太陽（ティダ）の運命",
+    "showtime": "17:55"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月29日（木）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "トレンケ・ラウケン",
+    "showtime": "19:35"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月29日（木）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "IT'S NOT ME イッツ・ノット・ミー",
+    "showtime": "20:30"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月30日（金）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "ら・かんぱねら",
+    "showtime": "10:20"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月30日（金）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "劇場が終わるとき",
+    "showtime": "10:30"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月30日（金）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "骨",
+    "showtime": "12:25"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月30日（金）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "IT'S NOT ME イッツ・ノット・ミー",
+    "showtime": "12:45"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月30日（金）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "IT'S NOT ME イッツ・ノット・ミー",
+    "showtime": "13:55"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月30日（金）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "溶岩の家",
+    "showtime": "14:35"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月30日（金）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "ラウラ・シタレラ監督特集 響きあう秘密: オステンデ",
+    "showtime": "15:05"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月30日（金）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "IT'S NOT ME イッツ・ノット・ミー",
+    "showtime": "16:45"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月30日（金）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "トレンケ・ラウケン",
+    "showtime": "17:05"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月30日（金）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "太陽（ティダ）の運命",
+    "showtime": "17:55"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月30日（金）",
+    "screen": "スクリーン1 (Screen 1)",
+    "title": "トレンケ・ラウケン",
+    "showtime": "19:35"
+  },
+  {
+    "cinema": "ユーロスペース",
+    "date_text": "2025年05月30日（金）",
+    "screen": "スクリーン2 (Screen 2)",
+    "title": "IT'S NOT ME イッツ・ノット・ミー",
+    "showtime": "20:30"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-27",
+    "title": "桜の森の満開の下",
+    "showtime": "10:30"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-27",
+    "title": "暗殺",
+    "showtime": "12:35"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-27",
+    "title": "グレース",
+    "showtime": "14:50"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-27",
+    "title": "リアル・ペイン～心の旅～",
+    "showtime": "17:25"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-27",
+    "title": "ブラックバード、ブラックベリー、私は私。",
+    "showtime": "19:25"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-28",
+    "title": "リアル・ペイン～心の旅～",
+    "showtime": "10:00"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-28",
+    "title": "ブラックバード、ブラックベリー、私は私。",
+    "showtime": "12:00"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-28",
+    "title": "ボーン・トゥ・フライ",
+    "showtime": "14:15"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-28",
+    "title": "熱烈",
+    "showtime": "16:50"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-28",
+    "title": "新幹線大爆破 フランス公開版",
+    "showtime": "19:20"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-29",
+    "title": "ブラックバード、ブラックベリー、私は私。",
+    "showtime": "10:30"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-29",
+    "title": "リアル・ペイン～心の旅～",
+    "showtime": "12:50"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-29",
+    "title": "ボーン・トゥ・フライ",
+    "showtime": "14:50"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-29",
+    "title": "熱烈",
+    "showtime": "17:30"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-29",
+    "title": "ボーン・トゥ・フライ",
+    "showtime": "20:00"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-30",
+    "title": "新幹線大爆破 フランス公開版",
+    "showtime": "10:00"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-30",
+    "title": "ボーン・トゥ・フライ",
+    "showtime": "12:05"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-30",
+    "title": "熱烈",
+    "showtime": "14:35"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-30",
+    "title": "グレース",
+    "showtime": "17:05"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-30",
+    "title": "『普通の生活』ほか短編7作品",
+    "showtime": "19:40"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-31",
+    "title": "新幹線大爆破 フランス公開版",
+    "showtime": "10:30"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-31",
+    "title": "無名",
+    "showtime": "12:40"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-31",
+    "title": "熱烈",
+    "showtime": "15:20"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-05-31",
+    "title": "「伝説巨神イデオン」一挙上映",
+    "showtime": "18:00"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-06-01",
+    "title": "現代人",
+    "showtime": "10:30"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-06-01",
+    "title": "悪女の季節",
+    "showtime": "12:55"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-06-01",
+    "title": "インファナル・アフェア 4K",
+    "showtime": "15:15"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-06-01",
+    "title": "ゴールドフィンガー 巨大金融詐欺事件",
+    "showtime": "17:25"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-06-01",
+    "title": "グランド・マスター",
+    "showtime": "20:00"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-06-02",
+    "title": "現代人",
+    "showtime": "10:00"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-06-02",
+    "title": "悪女の季節",
+    "showtime": "12:25"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-06-02",
+    "title": "青銅の基督",
+    "showtime": "14:45"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-06-02",
+    "title": "インファナル・アフェア 4K",
+    "showtime": "17:00"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-06-02",
+    "title": "グランド・マスター",
+    "showtime": "19:10"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-06-03",
+    "title": "好人好日",
+    "showtime": "10:40"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-06-03",
+    "title": "酔っぱらい天国",
+    "showtime": "12:40"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-06-03",
+    "title": "もず",
+    "showtime": "14:45"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-06-03",
+    "title": "グランド・マスター",
+    "showtime": "16:55"
+  },
+  {
+    "cinema": "新文芸坐",
+    "date_text": "2025-06-03",
+    "title": "ゴールドフィンガー 巨大金融詐欺事件",
+    "showtime": "19:30"
+  }
+]
