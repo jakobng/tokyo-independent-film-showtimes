@@ -1,0 +1,78 @@
+name: Scrape Movie Showtimes
+
+on:
+  workflow_dispatch: # Allows manual triggering
+  schedule:
+    # Runs every day at a specific UTC time (e.g., 15:00 UTC which is midnight JST)
+    # Adjust the cron schedule as needed. Use https://crontab.guru/ to help.
+    # This example runs at 15:00 UTC daily (00:00 JST next day)
+    - cron: '0 15 * * *'
+
+jobs:
+  scrape_and_commit:
+    runs-on: ubuntu-latest # Use a Linux runner
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4 # Checks out your code
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' # Or your preferred Python version
+
+      - name: Install Google Chrome # For Selenium
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+
+      - name: Install ChromeDriver # For Selenium
+        run: |
+          CHROME_VERSION=$(google-chrome --version | cut -f 3 -d ' ' | cut -f 1 -d '.')
+          echo "Detected Chrome major version: $CHROME_VERSION"
+          # Find the closest ChromeDriver version from Chrome for Testing JSON API
+          # This is a more robust way to get recent ChromeDriver versions
+          LATEST_DRIVER_VERSION=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" | jq -r ".channels.Stable.downloads.chromedriver[] | select(.platform==\"linux64\") | .url" | grep -oP "$CHROME_VERSION\.\d+\.\d+\.\d+" | head -n 1)
+          if [ -z "$LATEST_DRIVER_VERSION" ]; then
+            echo "Could not automatically determine ChromeDriver version for Chrome $CHROME_VERSION. Falling back to a known good source."
+            # Fallback if the above fails or for older versions. You might need to adjust this.
+            # For Chrome versions 115+, use the new JSON endpoints.
+            # This example attempts to find a compatible version.
+            LATEST_DRIVER_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" | jq -r ".channels.Stable.downloads.chromedriver[] | select(.platform==\"linux64\") | .url")
+          else
+            LATEST_DRIVER_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" | jq -r ".channels.Stable.downloads.chromedriver[] | select(.platform==\"linux64\") | .url")
+          fi
+          
+          echo "Using ChromeDriver URL: $LATEST_DRIVER_URL"
+          wget -N $LATEST_DRIVER_URL -O chromedriver_linux64.zip
+          unzip chromedriver_linux64.zip
+          sudo mv chromedriver-linux64/chromedriver /usr/local/bin/chromedriver # Make sure the path inside zip is correct
+          sudo chmod +x /usr/local/bin/chromedriver
+          chromedriver --version
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run scraper script
+        run: python main_scraper.py
+
+      - name: Commit and push showtimes.json
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add showtimes.json
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to showtimes.json to commit."
+          else
+            git commit -m "Automated update of showtimes.json"
+            git push
+            echo "showtimes.json committed and pushed."
+          fi
+        env:
+          # If your repository is private and you need to push,
+          # you might need to use a GITHUB_TOKEN or a deploy key.
+          # For public repos, the default GITHUB_TOKEN usually has write permissions.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
