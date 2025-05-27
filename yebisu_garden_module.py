@@ -15,7 +15,8 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service           # NEW
+from selenium.webdriver.chrome.service import Service as ChromeService # Renamed to avoid conflict
+from webdriver_manager.chrome import ChromeDriverManager # Added
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -26,24 +27,26 @@ BASE_URL = "https://www.unitedcinemas.jp/ygc"
 DAILY_URL = BASE_URL + "/daily.php?date={}"        # date → YYYY-MM-DD
 DAYS_AHEAD = 7                                     # default window
 
-# -- local paths ------------------------------------------------
-BRAVE_BIN    = r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"
-CHROMEDRIVER = r"./chromedriver.exe"
+# -- local paths (NO LONGER USED FOR DRIVER/BROWSER PATH in CI) ---
+# BRAVE_BIN    = r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"
+# CHROMEDRIVER = r"./chromedriver.exe"
 # --------------------------------------------------------------
 
 
 # ───── Selenium helpers ───────────────────────────────────────
 def _init_driver() -> webdriver.Chrome:
-    """Return a headless Brave/Chrome driver."""
+    """Return a headless Chrome driver, using webdriver-manager."""
     opts = Options()
-    opts.binary_location = BRAVE_BIN            # comment if using Chrome
+    # opts.binary_location = BRAVE_BIN # REMOVED - Let Selenium find system Chrome or use ChromeDriverManager's browser
     opts.add_argument("--headless=new")
     opts.add_argument("--no-sandbox")
     opts.add_argument("--disable-gpu")
     opts.add_argument("--window-size=1400,900")
+    opts.add_argument("--disable-dev-shm-usage") # Often recommended for CI environments
     opts.add_argument("--disable-webgl")
 
-    service = Service(CHROMEDRIVER)             # ← FIXED
+    # webdriver-manager will download and manage the correct ChromeDriver
+    service = ChromeService(ChromeDriverManager().install())
     return webdriver.Chrome(service=service, options=opts)
 
 
@@ -96,27 +99,29 @@ def scrape_ygc(days_ahead: int = DAYS_AHEAD) -> List[Dict]:
     """Scrape today + *days_ahead*-1 and return list of showtime dicts."""
     rows: List[Dict] = []
     today = _dt.date.today()
+    driver = None  # Initialize driver to None for finally block
 
-    drv = _init_driver()
     try:
+        driver = _init_driver() # Initialize driver here
         for offset in range(days_ahead):
             date_obj = today + _dt.timedelta(days=offset)
             url = DAILY_URL.format(date_obj.isoformat())
-            print(f"INFO   : GET {url}")
+            print(f"INFO   : GET {url} for {CINEMA_NAME}")
 
-            drv.get(url)
+            driver.get(url)
             try:
-                _wait_for_schedule(drv)
+                _wait_for_schedule(driver)
             except TimeoutException:
-                print("WARNING:   ❌ schedule not found – skipping day")
+                print(f"WARNING: Schedule not found for {date_obj} at {CINEMA_NAME} – skipping day")
                 continue
 
-            rows.extend(_parse_daily(drv.page_source, date_obj))
+            rows.extend(_parse_daily(driver.page_source, date_obj))
             time.sleep(0.7)             # polite pause
     finally:
-        drv.quit()
+        if driver: # Check if driver was initialized
+            driver.quit()
 
-    print(f"INFO   : Collected {len(rows)} showings total.")
+    print(f"INFO   : Collected {len(rows)} showings total from {CINEMA_NAME}.")
     return rows
 
 
@@ -124,6 +129,7 @@ def scrape_ygc(days_ahead: int = DAYS_AHEAD) -> List[Dict]:
 if __name__ == "__main__":
     data = scrape_ygc()
     if not data:
+        print(f"No data collected for {CINEMA_NAME}.")
         sys.exit(1)
     from pprint import pprint
     pprint(data[:10])
