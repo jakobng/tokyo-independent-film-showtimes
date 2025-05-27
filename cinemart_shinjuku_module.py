@@ -1,145 +1,148 @@
-"""cinemart_shinjuku_module.py – scraper for Cinemart Shinjuku
-Author: ChatGPT assistant (2025‑05‑27)
-
-This module scrapes the schedule page of **シネマート新宿 (Cinemart Shinjuku)** on the COASYSTEMS ticketing site.  
-It returns a list of dictionaries with the following keys:
-
-```
-{
-    "cinema": str,       # always "シネマート新宿"
-    "date_text": str,    # ISO date (YYYY‑MM‑DD)
-    "screen": str,       # e.g. "スクリーン１"
-    "title": str,        # Japanese title (title‑jp)
-    "showtime": str      # HH:MM (24‑hour)
-}
-```
-
-The HTML is **fully rendered server‑side** – no JavaScript execution is required.  
-The page structure is almost identical to 新宿武蔵野館, so the parser largely mirrors that scraper.
-"""
-
-from __future__ import annotations
-
-import re
-import sys
-from datetime import datetime
+import datetime as _dt
 from typing import List, Dict
 
-import requests
-from bs4 import BeautifulSoup, SoupStrainer
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
-# ---------------------------------------------------------------------------
-#  Config / constants
-# ---------------------------------------------------------------------------
-CINEMA_NAME_CM = "シネマート新宿"
+# ────────────────────────────────────────────────────────────────────────────────
+# Cinemart Shinjuku (シネマート新宿) – Selenium scraper
+# URL *must* be the one below.  The timetable is rendered client‑side, so we use
+# Selenium to click through each date tab and extract the showings.
+# ────────────────────────────────────────────────────────────────────────────────
+__all__ = ["scrape_cinemart_shinjuku"]
 
-# NB: the root URL *lacks* the brand prefix ("cm/") used in the PR sub‑domain.
-CANDIDATE_URLS = [
-    "https://cinemart.cineticket.jp/theater/shinjuku/schedule",          # primary
-    "https://cinemart.cineticket.jp/cm/theater/shinjuku/schedule",       # historical pattern
-    "https://cinemart.cineticket.jp/theater/shinjuku/early_schedule",    # early‑booking – sometimes the only page available
-]
-
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/124.0 Safari/537.36"
-    )
-}
-
-TIMEOUT = 15
-
-# ---------------------------------------------------------------------------
-#  Core scraping helpers
-# ---------------------------------------------------------------------------
-
-def _iso_date_from_id(id_text: str) -> str:
-    """Convert id like 'dateJouei20250527' to '2025-05-27'."""
-    m = re.match(r"dateJouei(\d{4})(\d{2})(\d{2})", id_text)
-    if not m:
-        raise ValueError(f"Unrecognised date id: {id_text}")
-    return f"{m.group(1)}-{m.group(2)}-{m.group(3)}"
+URL = "https://cinemart.cineticket.jp/theater/shinjuku/schedule"
+CINEMA_NAME = "シネマート新宿"
+DAY_TAB_CSS = "div[id^='dateSlider']"              # clickable date boxes at top
+SCHEDULE_CONTAINER_ID_TPL = "dateJouei{date}"      # hidden/visible schedule divs
+PANEL_CSS = "div.panel.movie-panel"               # each movie block
+SCHEDULE_ITEM_CSS = "div.movie-schedule"          # within panel – individual showings
 
 
-def _collect_showings(soup: BeautifulSoup) -> List[Dict[str, str]]:
-    """Extract showings from a parsed soup tree."""
-    showings: List[Dict[str, str]] = []
+# ╭──────────────────────────────────────────────────────────────────────────────╮
+# │ Helpers                                                                     │
+# ╰──────────────────────────────────────────────────────────────────────────────╯
 
-    # Each date's schedules live inside div#dateJoueiYYYYMMDD (often with class 'hidden').
-    for date_div in soup.find_all("div", id=re.compile(r"^dateJouei\d{8}")):
-        date_text = _iso_date_from_id(date_div["id"])
+def _init_driver(headless: bool = True) -> webdriver.Chrome:
+    """Spin up a Chrome/Chromium WebDriver (headless by default)."""
+    chrome_opts = Options()
+    if headless:
+        chrome_opts.add_argument("--headless=new")
+    chrome_opts.add_argument("--no-sandbox")
+    chrome_opts.add_argument("--disable-dev-shm-usage")
+    chrome_opts.add_argument("--window-size=1920,1080")
 
-        # Each movie panel contains title & one or more .movie-schedule blocks
-        for panel in date_div.select("div.movie-panel"):
-            title_tag = panel.select_one(".title-jp")
-            if not title_tag:
-                continue  # skip malformed panels
-            title = title_tag.get_text(strip=True)
+    # Allow calling script to inject custom binary / driver via env if needed.
+    return webdriver.Chrome(options=chrome_opts)
 
-            # Gather all schedules within this movie panel
-            for sched in panel.select("div.movie-schedule"):
-                # Screen name (e.g. 'スクリーン１')
-                screen_tag = sched.select_one(".screen-name")
-                screen = screen_tag.get_text(strip=True) if screen_tag else ""
 
-                # Showtime as displayed (\d{2}:\d{2})
-                time_tag = sched.select_one(".movie-schedule-begin")
-                if not time_tag:
-                    continue
-                showtime = time_tag.get_text(strip=True)
+def _iso_date_from_tab(el) -> str:
+    """Parse the YYYY‑MM‑DD date encoded in the dateSlider element id."""
+    # id looks like dateSlider20250528 ⇒ take last 8 chars and format.
+    id_text = el.get_attribute("id")
+    ymd = id_text[-8:]
+    return f"{ymd[:4]}-{ymd[4:6]}-{ymd[6:]}"
 
-                showings.append({
-                    "cinema": CINEMA_NAME_CM,
-                    "date_text": date_text,
-                    "screen": screen,
-                    "title": title,
-                    "showtime": showtime,
-                })
 
-    return showings
+def _click_via_js(driver, element):
+    driver.execute_script("arguments[0].click();", element)
 
-# ---------------------------------------------------------------------------
-#  Public API
-# ---------------------------------------------------------------------------
 
-def fetch_showings() -> List[Dict[str, str]]:
-    """Fetch the schedule page (trying fallbacks) and return parsed showings."""
-    last_exc: Exception | None = None
-
-    # Only parse nodes we need for speed.
-    strainer = SoupStrainer(["div"], {"id": re.compile(r"^(dateJouei|schedule)")})
-
-    for url in CANDIDATE_URLS:
-        try:
-            r = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
-            r.raise_for_status()
-            soup = BeautifulSoup(r.text, "html.parser", parse_only=strainer)
-            return _collect_showings(soup)
-        except Exception as exc:  # noqa: BLE001
-            last_exc = exc
-            print(f"WARNING: Failed to fetch {url} → {exc}", file=sys.stderr)
-            continue
-
-    raise RuntimeError("All candidate URLs failed to fetch/parse") from last_exc
-
-# ---------------------------------------------------------------------------
-#  CLI test harness
-# ---------------------------------------------------------------------------
-
-def _main() -> None:
-    print(f"Testing {CINEMA_NAME_CM} scraper …")
+def _extract_showings_for_date(driver, date_iso: str) -> List[Dict]:
+    """Given driver on page where the schedule for *date_iso* is visible, parse it."""
+    container_id = SCHEDULE_CONTAINER_ID_TPL.format(date=date_iso.replace("-", ""))
     try:
-        data = fetch_showings()
-        if not data:
-            print("No showings found — check parser.")
-        else:
-            print(f"Found {len(data)} showtimes. Sample:")
-            for row in data[:10]:
-                print(row)
-    except Exception as exc:  # noqa: BLE001
-        print(f"Error ({CINEMA_NAME_CM}): {exc}")
+        container = driver.find_element(By.ID, container_id)
+    except Exception:
+        # container may be hidden until we click the date tab; caller ensures it.
+        return []
+
+    rows: List[Dict] = []
+    panels = container.find_elements(By.CSS_SELECTOR, PANEL_CSS)
+    for panel in panels:
+        try:
+            title = panel.find_element(By.CSS_SELECTOR, ".title-jp").text.strip()
+        except Exception:
+            # fallback to any header text
+            title = panel.text.split("\n", 1)[0].strip()
+
+        # each showing inside
+        for sched in panel.find_elements(By.CSS_SELECTOR, SCHEDULE_ITEM_CSS):
+            try:
+                showtime = sched.find_element(By.CSS_SELECTOR, ".movie-schedule-begin").text.strip()
+                screen = sched.find_element(By.CSS_SELECTOR, ".screen-name").text.strip()
+            except Exception:
+                continue  # malformed row – skip
+
+            rows.append({
+                "cinema": CINEMA_NAME,
+                "date_text": date_iso,
+                "screen": screen,
+                "title": title,
+                "showtime": showtime,
+            })
+    return rows
+
+
+# ╭──────────────────────────────────────────────────────────────────────────────╮
+# │ Public API                                                                  │
+# ╰──────────────────────────────────────────────────────────────────────────────╯
+
+def scrape_cinemart_shinjuku(max_days: int = 7, headless: bool = True) -> List[Dict]:
+    """Return a list of showings for up to *max_days* starting today.
+
+    Args:
+        max_days: how many date tabs to process (starting with the first one in
+                   the slider, which is usually today).
+        headless: run Chrome in headless mode.
+    """
+    rows: List[Dict] = []
+    driver = _init_driver(headless=headless)
+    driver.set_page_load_timeout(30)
+    try:
+        driver.get(URL)
+        # Wait for date tabs to appear
+        WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, DAY_TAB_CSS))
+        )
+
+        date_tabs = driver.find_elements(By.CSS_SELECTOR, DAY_TAB_CSS)
+        for idx, tab in enumerate(date_tabs[:max_days]):
+            date_iso = _iso_date_from_tab(tab)
+
+            if idx == 0:
+                # First tab is already selected on page load – no click needed.
+                pass
+            else:
+                _click_via_js(driver, tab)
+                # Wait until the corresponding schedule container becomes
+                # visible (display != 'none').
+                container_id = SCHEDULE_CONTAINER_ID_TPL.format(date=date_iso.replace("-", ""))
+                try:
+                    WebDriverWait(driver, 8).until(
+                        EC.visibility_of_element_located((By.ID, container_id))
+                    )
+                except TimeoutException:
+                    # Sometimes the container never shows (maintenance days).
+                    continue
+
+            rows.extend(_extract_showings_for_date(driver, date_iso))
+
+    finally:
+        driver.quit()
+
+    # Deduplicate rows (same title/time/screen) just in case
+    unique = { (r["cinema"], r["date_text"], r["screen"], r["title"], r["showtime"]): r for r in rows }
+    return list(unique.values())
 
 
 if __name__ == "__main__":
-    _main()
+    print("INFO: Running Cinemart Shinjuku scraper standalone …")
+    showings = scrape_cinemart_shinjuku()
+    print(f"Collected {len(showings)} showings from {CINEMA_NAME}.")
+    for row in showings[:10]:
+        print(row)
