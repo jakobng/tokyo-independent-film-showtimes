@@ -3,8 +3,8 @@ name: Scrape Movie Showtimes (TMDB/Letterboxd Focused)
 on:
   workflow_dispatch: # Allows manual triggering
   schedule:
-    # Runs every day at 15:00 UTC (00:00 JST next day)
-    - cron: '0 15 * * *'
+    # Runs every day at 22:00 UTC (07:00 JST next day)
+    - cron: '0 22 * * *'
 
 jobs:
   scrape_and_commit:
