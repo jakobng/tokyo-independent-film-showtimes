@@ -3,7 +3,8 @@ name: Scrape Movie Showtimes
 on:
   workflow_dispatch: # Allows manual triggering
   schedule:
-    # Runs every day at 15:00 UTC (midnight JST next day)
+    # Runs every day at 15:00 UTC (which is 00:00 JST the next day)
+    # Adjust as needed. https://crontab.guru/ can help.
     - cron: '0 15 * * *'
 
 jobs:
@@ -12,31 +13,30 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4 # Checks out your code
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10' # Or your preferred Python version
 
-      - name: Install Google Chrome # For Selenium
+      - name: Install Google Chrome
         run: |
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
-          google-chrome --version # Output version for logs
+          echo "Google Chrome version:"
+          google-chrome --version
 
-      # REMOVED the complex "Install ChromeDriver" step
-      # webdriver-manager in Python will handle this.
+      # Note: ChromeDriver installation is handled by webdriver-manager in Python
 
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt # Ensure requirements.txt is up-to-date
+          pip install -r requirements.txt # Ensure this file includes google-generativeai
 
       - name: Run scraper script
-        # This should be the name of your main Python script that calls
-        # scrape_ygc(), scrape_cinequinto_shibuya(), etc.,
-        # and then writes showtimes.json
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }} # Make API key available
         run: python main_scraper.py
 
       - name: Commit and push showtimes.json
@@ -48,7 +48,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to showtimes.json to commit."
           else
-            git commit -m "Automated update of showtimes.json"
+            git commit -m "Automated update of showtimes.json (with English titles)"
             git push
             echo "showtimes.json committed and pushed."
           fi
