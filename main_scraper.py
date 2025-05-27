@@ -1,34 +1,57 @@
+#!/usr/bin/env python3
+# main_scraper2.py (amended with Google Gemini integration)
+
 import json
+import sys
 import os
-import importlib  # To dynamically import scraper modules if you have many
 import time
+import importlib # Though not used in this direct import style, good to have if refactoring later
 import google.generativeai as genai
-import traceback # For more detailed error logging
+import traceback
 
-# --- Configuration ---
-# List your scraper module names here (without .py)
-# Ensure these .py files exist in the same directory and are updated
-# to use webdriver-manager and the correct _init_driver function.
-SCRAPER_MODULE_NAMES = [
-    "yebisu_garden_module",
-    "cine_quinto_module",
-    # "stranger_module", # Add other modules as needed
-    # "another_cinema_module",
-]
+# --- All cinema scraper modules ---
+import cinemart_shinjuku_module
+import eurospace_module
+import image_forum_module
+import ks_cinema_module
+import musashino_kan_module
+import shin_bungeiza_module
+import stranger_module
+import cinema_qualite_module
+import theatre_shinjuku_module
+import human_shibuya_module
+import cine_quinto_module
+import yebisu_garden_module
+import theatreguild_daikanyama_module
+import meguro_cinema_module
 
+# -----------------------------------------------------------------------------
+# Configuration
+# -----------------------------------------------------------------------------
 OUTPUT_FILE = 'showtimes.json'
+GEMINI_API_CALL_DELAY = 1.5  # Delay between Gemini API calls (in seconds)
+
+# -----------------------------------------------------------------------------
+# Ensure UTF-8 output on Windows consoles
+# -----------------------------------------------------------------------------
+if sys.platform == "win32":
+    try:
+        if sys.stdout.encoding.lower() != "utf-8":
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        if sys.stderr.encoding.lower() != "utf-8":
+            sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 
 # --- Gemini Configuration ---
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-gemini_model = None # Initialize
+gemini_model = None
 
 if GEMINI_API_KEY:
     try:
         genai.configure(api_key=GEMINI_API_KEY)
-        # Consider using 'gemini-1.5-flash-latest' for speed and cost-effectiveness
-        # or 'gemini-1.0-pro-latest' / 'gemini-1.5-pro-latest' for potentially better quality
         gemini_model = genai.GenerativeModel(model_name='gemini-1.5-flash-latest')
-        print("INFO: Google Gemini model configured successfully.")
+        print("INFO: Google Gemini model configured successfully ('gemini-1.5-flash-latest').")
     except Exception as e:
         print(f"ERROR: Could not configure Google Gemini: {e}")
         print("INFO: Gemini calls will be skipped.")
@@ -40,10 +63,11 @@ def get_english_title_from_gemini(japanese_title: str) -> str | None:
     Queries the configured Gemini model for the localized English title.
     Returns the English title or None if not found/error.
     """
-    if not gemini_model or not japanese_title:
+    if not gemini_model or not japanese_title or not japanese_title.strip():
+        if gemini_model and (not japanese_title or not japanese_title.strip()):
+            print("  Skipping Gemini: Japanese title is empty or whitespace.")
         return None
 
-    # Prompt designed to get localized titles and handle unknowns
     prompt_parts = [
         "You are an expert movie database assistant.",
         "What is the official, commonly recognized, localized English release title for the following Japanese movie?",
@@ -55,20 +79,9 @@ def get_english_title_from_gemini(japanese_title: str) -> str | None:
     prompt = "\n".join(prompt_parts)
 
     try:
-        print(f"  Querying Gemini for: \"{japanese_title}\"")
-        # Adding a timeout and retry could be beneficial for production
-        response = gemini_model.generate_content(
-            prompt,
-            # Optional: Add safety_settings if needed
-            # safety_settings=[
-            #     {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
-            #     {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
-            #     {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
-            #     {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
-            # ]
-            )
+        print(f"  Querying Gemini for Japanese title: \"{japanese_title}\"")
+        response = gemini_model.generate_content(prompt)
 
-        # Check for valid response parts
         if not response.parts:
             print(f"  Gemini API returned no parts for '{japanese_title}'.")
             return None
@@ -76,116 +89,149 @@ def get_english_title_from_gemini(japanese_title: str) -> str | None:
         english_title = response.text.strip()
 
         if not english_title or english_title.upper() == "UNKNOWN" or len(english_title) < 2:
-            print(f"  Gemini responded UNKNOWN or empty for '{japanese_title}'.")
+            print(f"  Gemini responded UNKNOWN or empty/too short for '{japanese_title}'.")
             return None
         
-        # Heuristic: Check if the response is too similar to Japanese title or contains Japanese chars
-        # This helps filter out cases where LLM doesn't find a proper English title
-        # and just repeats the input or gives a non-English response.
-        is_likely_not_english = False
-        if japanese_title in english_title and abs(len(english_title) - len(japanese_title)) < 5:
-            is_likely_not_english = True
-        # Check for common Japanese character ranges (Hiragana, Katakana, CJK Unified Ideographs)
-        if any('\u3040' <= char <= '\u309F' for char in english_title) or \
-           any('\u30A0' <= char <= '\u30FF' for char in english_title) or \
-           any('\u4E00' <= char <= '\u9FFF' for char in english_title):
-            is_likely_not_english = True
+        is_problematic_response = False
+        if japanese_title == english_title or \
+           (len(japanese_title) > 3 and japanese_title.lower() in english_title.lower() and abs(len(english_title) - len(japanese_title)) < 5):
+            print(f"  Gemini response for \"{japanese_title}\" (\"{english_title}\") is too similar to original; considering UNKNOWN.")
+            is_problematic_response = True
         
-        if is_likely_not_english:
-            print(f"  Gemini response for \"{japanese_title}\" (\"{english_title}\") seems to be original or non-English; considering UNKNOWN.")
+        if not is_problematic_response:
+            if any('\u3040' <= char <= '\u309F' for char in english_title) or \
+               any('\u30A0' <= char <= '\u30FF' for char in english_title) or \
+               any('\u4E00' <= char <= '\u9FFF' for char in english_title):
+                print(f"  Gemini response for \"{japanese_title}\" (\"{english_title}\") contains Japanese characters; considering UNKNOWN.")
+                is_problematic_response = True
+        
+        if is_problematic_response:
             return None
 
-        print(f"  Gemini suggested: \"{english_title}\" for \"{japanese_title}\"")
+        print(f"  Gemini suggested English title: \"{english_title}\" for \"{japanese_title}\"")
         return english_title
     except Exception as e:
         print(f"  Error calling Gemini API for \"{japanese_title}\": {type(e).__name__} - {e}")
-        # print(traceback.format_exc()) # Uncomment for detailed traceback during debugging
         return None
 
-def run_scraper_module(module_name: str, all_data_list: list):
-    """
-    Imports and runs a scraper module, then processes its results.
-    """
+# -----------------------------------------------------------------------------
+# Wrapper for each scraper: logs start/end, catches exceptions, adds English titles
+# -----------------------------------------------------------------------------
+def _run_scraper_and_enrich(label: str, func):
+    print(f"\n--- Scraping and Enriching: {label} ---")
+    enriched_rows = []
     try:
-        print(f"\n--- Attempting to scrape data from: {module_name} ---")
-        module = importlib.import_module(module_name)
-        
-        # Assuming each module has a primary scraping function, e.g., "scrape()" or "scrape_module_name()"
-        # Adjust the function name as per your module's API
-        scraper_function_name = None
-        if hasattr(module, f"scrape_{module_name.split('_module')[0]}"): # e.g. scrape_yebisu_garden
-            scraper_function_name = f"scrape_{module_name.split('_module')[0]}"
-        elif hasattr(module, "scrape"): # Generic fallback
-             scraper_function_name = "scrape"
-        
-        if not scraper_function_name or not hasattr(module, scraper_function_name):
-            print(f"ERROR: Could not find a suitable scrape function in {module_name}.")
-            return
+        raw_rows = func() or []
+        print(f"  Scraped {len(raw_rows)} raw showings from {label}.")
 
-        scrape_function = getattr(module, scraper_function_name)
-        raw_data = scrape_function() # Call the module's main scraping function
+        for item in raw_rows:
+            processed_item = item.copy()
+            # Your modules use "title" or "movie_title" for the Japanese title.
+            # Some modules like yebisu_garden and cine_quinto use "title".
+            # Human Trust Cinema Shibuya used "movie_title" in the original JSON.
+            # We need to standardize or check for multiple possible keys.
+            japanese_title = item.get("title") or item.get("movie_title") # Check common keys
+            english_title = None
 
-        if raw_data:
-            print(f"  Successfully scraped {len(raw_data)} raw entries from {module_name}.")
-            for item in raw_data:
-                # Ensure consistent key for Japanese title.
-                # Your modules seem to use "title" as the key for the Japanese title.
-                japanese_title = item.get("title")
-                english_title = None
+            if isinstance(japanese_title, str) and japanese_title.strip():
+                # TODO: Here you could add other lookup methods first if desired:
+                # 1. Your manual mapping file (check first for overrides)
+                #    english_title = get_from_manual_map(japanese_title)
+                # 2. TMDb API call (good primary source)
+                #    if not english_title:
+                #        english_title = get_from_tmdb(japanese_title)
 
-                if japanese_title:
-                    # Here you could add other lookup methods first if desired:
-                    # 1. Manual mapping file
-                    # 2. TMDb API call
-
-                    # Try Gemini
+                # 3. Try Gemini if not found by other means (or as primary if preferred)
+                if not english_title: # Only call Gemini if not found by other means
                     english_title = get_english_title_from_gemini(japanese_title)
-                    time.sleep(1) # Add a small delay to respect potential API rate limits (adjust as needed)
+                    if gemini_model: # Add delay only if Gemini was actually called
+                         time.sleep(GEMINI_API_CALL_DELAY)
+            elif japanese_title: # If it's not a string or is empty
+                 print(f"  Warning: Japanese title is not a string or is empty for an item in {label}: {japanese_title}")
 
-                # Prepare the final item structure
-                processed_item = item.copy() # Start with original data
-                processed_item['movie_title_japanese'] = japanese_title
-                processed_item['movie_title_english'] = english_title if english_title else None # Store None if not found
+            processed_item['movie_title_japanese'] = japanese_title if isinstance(japanese_title, str) else None
+            processed_item['movie_title_english'] = english_title if isinstance(english_title, str) else None
+            
+            # Optional: Standardize by removing original title key if now using the new ones
+            # if 'title' in processed_item and 'movie_title_japanese' in processed_item:
+            #     del processed_item['title']
+            # if 'movie_title' in processed_item and 'movie_title_japanese' in processed_item:
+            #     del processed_item['movie_title']
 
-                # Remove original "title" if you only want the new keys, or keep it.
-                # If keeping, ensure your HTML knows which one to prioritize.
-                # if 'title' in processed_item and japanese_title:
-                #     del processed_item['title']
-                
-                all_data_list.append(processed_item)
-        else:
-            print(f"  No data returned from {module_name}.")
-
-    except ModuleNotFoundError:
-        print(f"ERROR: Scraper module {module_name}.py not found.")
+            enriched_rows.append(processed_item)
+        
+        print(f"  → Finished enriching. Returning {len(enriched_rows)} showings for {label}.")
+        return enriched_rows
     except Exception as e:
-        print(f"ERROR processing module {module_name}: {type(e).__name__} - {e}")
-        print(traceback.format_exc()) # Detailed error for debugging this module's failure
-        # Optionally add a placeholder error object for this cinema to all_data_list
-        all_data_list.append({
-            "cinema_name": module_name.replace("_module", "").replace("_", " ").title(), # Best guess for cinema name
-            "error": f"Failed to scrape: {type(e).__name__} - {e}",
-            "showtimes": [] # Or whatever structure your HTML expects for an error
-        })
+        print(f"⚠️ Error in {label} during scraping or enrichment: {e}", file=sys.stderr)
+        traceback.print_exc(file=sys.stderr)
+        return [] # Return empty list on error for this module
 
-def main():
-    """
-    Main function to orchestrate scraping from all modules and write to JSON.
-    """
-    print("Starting main scraping process...")
-    all_showtimes_data = []
+# -----------------------------------------------------------------------------
+# Main: invoke every scraper in turn
+# -----------------------------------------------------------------------------
+def run_all_scrapers_and_enrich():
+    print("=============================================")
+    print("   Starting All Scrapers & Enriching Titles  ")
+    print("=============================================")
+    start_time = time.time()
+    all_listings = []
 
-    for module_name in SCRAPER_MODULE_NAMES:
-        run_scraper_module(module_name, all_showtimes_data)
+    # Calling each scraper using the new wrapper
+    # Make sure the function names from your modules are correct here
+    all_listings.extend(_run_scraper_and_enrich("Cinemart Shinjuku", cinemart_shinjuku_module.scrape_cinemart_shinjuku))
+    all_listings.extend(_run_scraper_and_enrich("Theatre Image Forum", image_forum_module.scrape_image_forum))
+    all_listings.extend(_run_scraper_and_enrich("Eurospace", eurospace_module.scrape_eurospace))
+    all_listings.extend(_run_scraper_and_enrich("K's Cinema", ks_cinema_module.scrape_ks_cinema))
+    all_listings.extend(_run_scraper_and_enrich("Shinjuku Musashino-kan", musashino_kan_module.scrape_musashino_kan))
+    all_listings.extend(_run_scraper_and_enrich("Shin-Bungeiza", shin_bungeiza_module.scrape_shin_bungeiza))
+    all_listings.extend(_run_scraper_and_enrich("Stranger", stranger_module.scrape_stranger))
+    all_listings.extend(_run_scraper_and_enrich("Cinema Qualite", cinema_qualite_module.scrape_cinema_qualite))
+    all_listings.extend(_run_scraper_and_enrich("Theatre Shinjuku", theatre_shinjuku_module.scrape_theatre_shinjuku))
+    all_listings.extend(_run_scraper_and_enrich("Human Trust Cinema Shibuya", human_shibuya_module.scrape_human_shibuya))
+    all_listings.extend(_run_scraper_and_enrich("Cine Quinto Shibuya", cine_quinto_module.scrape_cinequinto_shibuya))
+    all_listings.extend(_run_scraper_and_enrich("YEBISU GARDEN CINEMA", yebisu_garden_module.scrape_ygc))
+    all_listings.extend(_run_scraper_and_enrich("Theatre Guild Daikanyama", theatreguild_daikanyama_module.scrape_theatreguild_daikanyama))
+    all_listings.extend(_run_scraper_and_enrich("Meguro Cinema", meguro_cinema_module.scrape_meguro_cinema))
 
-    print(f"\nTotal combined processed entries: {len(all_showtimes_data)}")
+    end_time = time.time()
+    total_time = end_time - start_time
+    print(f"\n--- All Scraping and Enrichment Complete ---")
+    print(f"Collected a total of {len(all_listings)} enriched showings.")
+    print(f"Total execution time: {total_time:.2f} seconds")
+    return all_listings
 
+# -----------------------------------------------------------------------------
+# Dump to JSON file
+# -----------------------------------------------------------------------------
+def save_to_json(data, filename=OUTPUT_FILE):
     try:
-        with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
-            json.dump(all_showtimes_data, f, ensure_ascii=False, indent=2)
-        print(f"Successfully wrote all data to {OUTPUT_FILE}")
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        print(f"✅ Saved to {filename}")
     except Exception as e:
-        print(f"ERROR writing final data to {OUTPUT_FILE}: {e}")
+        print(f"⚠️ Failed to save {filename}: {e}", file=sys.stderr)
+        traceback.print_exc(file=sys.stderr)
 
-if __name__ == '__main__':
-    main()
+# -----------------------------------------------------------------------------
+# Entry-point
+# -----------------------------------------------------------------------------
+if __name__ == "__main__":
+    final_listings = run_all_scrapers_and_enrich()
+    
+    # Optional: sort by cinema, date, time before saving
+    # Ensure your items consistently have these keys for sorting to work reliably
+    try:
+        final_listings.sort(key=lambda x: (
+            x.get("cinema", x.get("cinema_name", "")), # Check for 'cinema' or 'cinema_name'
+            x.get("date_text", ""),
+            x.get("showtime", "")
+        ))
+        print("INFO: Listings sorted by cinema, date, and showtime.")
+    except Exception as e:
+        print(f"WARNING: Could not sort listings due to missing keys or other error: {e}")
+    
+    save_to_json(final_listings)
+    print("=============================================")
+    print("                 Script Finished             ")
+    print("=============================================")
