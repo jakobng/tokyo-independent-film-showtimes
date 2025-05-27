@@ -2,7 +2,8 @@ import json
 import image_forum_module
 import eurospace_module 
 import shin_bungeiza_module
-import stranger_module  # <-- ADDED IMPORT FOR STRANGER
+import stranger_module  
+import ks_cinema_module # <-- ADDED IMPORT FOR K'S CINEMA
 import sys 
 import io  
 
@@ -15,7 +16,7 @@ if sys.platform == "win32":
             sys.stderr.reconfigure(encoding='utf-8', errors='replace')
         print("Note: main_scraper stdout/stderr reconfigured to UTF-8 for Windows.", file=sys.__stderr__)
     except Exception:
-        pass # Ignore errors if reconfiguration fails
+        pass 
 # --- End: Configure stdout and stderr ---
 
 def run_all_scrapers():
@@ -23,7 +24,7 @@ def run_all_scrapers():
     all_movie_listings = []
 
     # Scrape Theatre Image Forum
-    print("Scraping Theatre Image Forum...")
+    print("\nScraping Theatre Image Forum...")
     try:
         image_forum_showings = image_forum_module.scrape_image_forum()
         if image_forum_showings:
@@ -65,10 +66,10 @@ def run_all_scrapers():
         import traceback
         traceback.print_exc(file=sys.stderr)
         
-    # Scrape Stranger  <-- ADDED SECTION FOR STRANGER CINEMA
+    # Scrape Stranger
     print("\nScraping Stranger cinema...")
     try:
-        stranger_showings = stranger_module.scrape_stranger() # Call the function from stranger_module
+        stranger_showings = stranger_module.scrape_stranger() 
         if stranger_showings:
             all_movie_listings.extend(stranger_showings)
             print(f"Found {len(stranger_showings)} listings for Stranger cinema.")
@@ -76,6 +77,20 @@ def run_all_scrapers():
             print("No listings found for Stranger cinema.")
     except Exception as e:
         print(f"Error during Stranger cinema scraping: {e}", file=sys.stderr)
+        import traceback
+        traceback.print_exc(file=sys.stderr)
+
+    # Scrape K's Cinema  <-- ADDED SECTION FOR K'S CINEMA
+    print("\nScraping K's Cinema...")
+    try:
+        ks_cinema_showings = ks_cinema_module.scrape_ks_cinema() 
+        if ks_cinema_showings:
+            all_movie_listings.extend(ks_cinema_showings)
+            print(f"Found {len(ks_cinema_showings)} listings for K's Cinema.")
+        else:
+            print("No listings found for K's Cinema.")
+    except Exception as e:
+        print(f"Error during K's Cinema scraping: {e}", file=sys.stderr)
         import traceback
         traceback.print_exc(file=sys.stderr)
         
@@ -101,9 +116,6 @@ def save_to_json(data, filename="showtimes.json"):
 if __name__ == '__main__':
     collected_data = run_all_scrapers()
     if collected_data:
-        # Sort data by cinema, then date, then showtime for consistent output
-        # This assumes 'date_text' can be reliably sorted; YYYY-MM-DD format helps.
-        # If date formats vary wildly, sorting might be less effective or require normalization.
         try:
             collected_data.sort(key=lambda x: (x.get('cinema', ''), x.get('date_text', ''), x.get('showtime', '')))
         except Exception as e_sort:
@@ -111,11 +123,10 @@ if __name__ == '__main__':
             
         save_to_json(collected_data)
         print("\n--- First few aggregated results (if any) ---")
-        for i, item in enumerate(collected_data[:5]): # Print first 5 items as a sample
+        for i, item in enumerate(collected_data[:5]): 
              print(f"  {item.get('cinema')} - {item.get('date_text')} - {item.get('title')} - {item.get('showtime')}")
         if len(collected_data) > 5:
             print(f"  ... and {len(collected_data) - 5} more.")
 
     else:
         print("No data collected from any scraper, JSON file not created.")
-
