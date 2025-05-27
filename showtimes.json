@@ -1,39 +1,201 @@
 [
   {
-    "cinema": "Stranger (ストレンジャー)",
-    "date_text": "2025-05-26",
-    "title": "ミッシング・チャイルド・ビデオテープ",
-    "showtime": "00:30"
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-27",
+    "title": "星より静かに",
+    "showtime": "10:00"
   },
   {
-    "cinema": "Stranger (ストレンジャー)",
-    "date_text": "2025-05-26",
-    "title": "ANORA アノーラ",
-    "showtime": "02:35"
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-27",
+    "title": "星より静かに",
+    "showtime": "12:15"
   },
   {
-    "cinema": "Stranger (ストレンジャー)",
-    "date_text": "2025-05-26",
-    "title": "トワイライト・ウォリアーズ 決戦！九龍城砦",
-    "showtime": "05:15"
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-27",
+    "title": "それでも私は Though I’m His Daughter",
+    "showtime": "14:40"
   },
   {
-    "cinema": "Stranger (ストレンジャー)",
-    "date_text": "2025-05-26",
-    "title": "十八才",
-    "showtime": "07:45"
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-27",
+    "title": "それでも私は Though I’m His Daughter",
+    "showtime": "17:20"
   },
   {
-    "cinema": "Stranger (ストレンジャー)",
-    "date_text": "2025-05-26",
-    "title": "眠れぬ夜",
-    "showtime": "09:40"
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-27",
+    "title": "CROSSPOINT クロスポイント",
+    "showtime": "18:45"
   },
   {
-    "cinema": "Stranger (ストレンジャー)",
-    "date_text": "2025-05-26",
-    "title": "ヒプノシス レコードジャケットの美学",
-    "showtime": "11:05"
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-27",
+    "title": "真夏の果実",
+    "showtime": "21:00"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-28",
+    "title": "星より静かに",
+    "showtime": "10:00"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-28",
+    "title": "星より静かに",
+    "showtime": "12:15"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-28",
+    "title": "それでも私は Though I’m His Daughter",
+    "showtime": "14:40"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-28",
+    "title": "それでも私は Though I’m His Daughter",
+    "showtime": "17:20"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-28",
+    "title": "CROSSPOINT クロスポイント",
+    "showtime": "18:45"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-28",
+    "title": "真夏の果実",
+    "showtime": "21:00"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-29",
+    "title": "星より静かに",
+    "showtime": "10:00"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-29",
+    "title": "星より静かに",
+    "showtime": "12:15"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-29",
+    "title": "それでも私は Though I’m His Daughter",
+    "showtime": "14:40"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-29",
+    "title": "それでも私は Though I’m His Daughter",
+    "showtime": "17:20"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-29",
+    "title": "CROSSPOINT クロスポイント",
+    "showtime": "18:45"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-29",
+    "title": "真夏の果実",
+    "showtime": "21:00"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-30",
+    "title": "星より静かに",
+    "showtime": "10:00"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-30",
+    "title": "星より静かに",
+    "showtime": "12:15"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-30",
+    "title": "それでも私は Though I’m His Daughter",
+    "showtime": "14:40"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-30",
+    "title": "それでも私は Though I’m His Daughter",
+    "showtime": "17:20"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-30",
+    "title": "CROSSPOINT クロスポイント",
+    "showtime": "18:45"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-30",
+    "title": "真夏の果実",
+    "showtime": "21:00"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-31",
+    "title": "星より静かに",
+    "showtime": "15:00"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-31",
+    "title": "星より静かに",
+    "showtime": "17:25"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-05-31",
+    "title": "折にふれて",
+    "showtime": "19:00"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-06-01",
+    "title": "星より静かに",
+    "showtime": "15:00"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-06-01",
+    "title": "星より静かに",
+    "showtime": "17:25"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-06-01",
+    "title": "折にふれて",
+    "showtime": "19:00"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-06-02",
+    "title": "星より静かに",
+    "showtime": "15:00"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-06-02",
+    "title": "星より静かに",
+    "showtime": "17:25"
+  },
+  {
+    "cinema": "K's Cinema (ケイズシネマ)",
+    "date_text": "2025-06-02",
+    "title": "折にふれて",
+    "showtime": "19:00"
   },
   {
     "cinema": "Stranger (ストレンジャー)",
