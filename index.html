@@ -4,113 +4,181 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tokyo Independent Cinema Showtimes</title>
-    <style>
+<style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
             margin: 0;
             padding: 15px;
-            background-color: #f0f2f5;
-            color: #1c1e21;
-            line-height: 1.5;
+            background-color: #FCD400; /* Deep yellow background */
+            color: white; 
+            text-shadow: 
+                -1px -1px 0 #000,  
+                 1px -1px 0 #000,
+                -1px  1px 0 #000,
+                 1px  1px 0 #000; 
+            line-height: 1.6; 
         }
         .container {
             max-width: 900px;
             margin: 20px auto;
-            background-color: #fff;
+            background-color: rgba(0,0,0,0.1); 
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1);
+            border-radius: 10px; 
         }
+
         header h1 {
-            text-align: center; /* Centered as toggle is removed */
-            color: #1877f2;
+            font-family: 'Impact', Haettenschweiler, 'Arial Narrow Bold', sans-serif; 
+            color: white;
+            text-align: center;
+            font-size: 3.5em; 
             margin-bottom: 30px;
-            font-size: 2.5em;
+            text-transform: uppercase; 
+            text-shadow: 
+                -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000,
+                -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000, 3px 3px 0 #000,
+                4px 4px 0px rgba(0,0,0,0.3); 
+            letter-spacing: 2px;
         }
 
         /* Cinema Selection Grid Styles */
         #cinema-selection-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
+            gap: 20px; 
             margin-bottom: 30px;
         }
         .cinema-card {
-            background-color: #e7f3ff;
-            color: #1877f2;
-            padding: 20px;
+            background-color: #000; 
+            color: white; /* Changed to white text */
+            text-shadow: none; /* Removed outline */
+            padding: 25px 20px; 
             border-radius: 8px;
             text-align: center;
-            font-size: 1.1em;
-            font-weight: bold;
+            font-size: 1.2em; 
+            font-weight: 500; /* Adjusted font weight */
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            border: 1px solid #cfe2f3;
+            transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
+            border: 2px solid white; 
         }
         .cinema-card:hover {
-            background-color: #d0e0f0;
-            transform: translateY(-2px);
+            background-color: #333; 
+            color: #FCD400; /* Yellow text on hover */
+            border-color: #FCD400; 
+            transform: translateY(-3px) scale(1.03); 
+            text-shadow: none; /* No outline on hover */
         }
         
         .cinema-section {} 
         .cinema-header-container {
              margin-bottom: 20px; 
         }
-        .cinema-section h2 {
-            font-size: 2em;
-            color: #1c1e21;
+        .cinema-section h2 { /* Cinema Name on detail page */
+            font-size: 2.2em;
+            color: white; 
+            text-shadow: none; /* Removed outline for easier reading */
+            font-weight: 500; /* Thinner font weight */
             margin-top: 0;
             margin-bottom: 10px; 
-            border-bottom: 2px solid #1877f2;
+            border-bottom: 2px solid white; 
             padding-bottom: 10px;
         }
         .cinema-website-link { 
             display: inline-block;
             margin-bottom: 15px; 
-            padding: 8px 15px;
-            background-color: #007bff;
-            color: white !important; 
+            padding: 10px 18px; 
+            background-color: black; 
+            color: #FCD400 !important; 
+            text-shadow: 
+                -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
             text-decoration: none;
-            border-radius: 4px;
-            font-size: 0.95em;
-            transition: background-color 0.3s ease;
+            border: 1px solid white;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         .cinema-website-link:hover {
-            background-color: #0056b3;
-            text-decoration: none;
+            background-color: #333;
+            color: white !important;
+            text-shadow: 
+                -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
         }
 
         .date-section { margin-bottom: 20px; }
-        .date-section h3 {
-            font-size: 1.25em;
-            color: #4b4f56;
+        .date-section h3 { /* Date headings */
+            font-size: 1.3em;
+            color: white;
+            /* text-shadow inherited from body (thin outline) */
             margin-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.5); 
+            padding-bottom: 5px;
         }
-        .showtimes-list { list-style: none; padding-left: 10px; }
+        .showtimes-list { list-style: none; padding-left: 0; } 
         .showtimes-list li {
-            margin-bottom: 10px; padding: 8px 12px; border-radius: 6px;
-            background-color: #f7f7f7; display: flex; align-items: flex-start;
+            margin-bottom: 10px; padding: 10px 15px; border-radius: 6px;
+            background-color: rgba(0,0,0,0.2); 
+            border-left: 4px solid black; 
+            display: flex; align-items: flex-start;
         }
         .showtime-time {
-            font-weight: bold; color: #1877f2; margin-right: 12px;
-            display: inline-block; width: 55px; flex-shrink: 0;
+            font-weight: bold; color: white; 
+            /* text-shadow inherited */
+            margin-right: 15px; 
+            display: inline-block; width: auto; 
+            min-width: 55px;
+            flex-shrink: 0;
         }
         .showtime-title-container { flex-grow: 1; }
-        .showtime-title { font-weight: 500; }
-        .showtime-screen { font-style: italic; color: #606770; font-size: 0.9em; margin-left: 8px; }
+        .showtime-title { 
+            font-weight: bold; 
+            color: white; 
+            /* text-shadow inherited */
+        }
+        .showtime-screen { 
+            font-style: normal; 
+            color: white; 
+            /* text-shadow inherited */
+            font-size: 0.9em; 
+            margin-left: 8px; 
+            opacity: 0.85; 
+        }
         
         #back-to-cinemas-btn {
-            display: inline-block; margin-bottom: 20px; padding: 10px 15px;
-            background-color: #6c757d; color: white; text-decoration: none;
-            border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease;
+            display: inline-block; margin-bottom: 20px; padding: 10px 18px;
+            background-color: black; 
+            color: #FCD400 !important;  
+            text-shadow: 
+                -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+            text-decoration: none;
+            border: 1px solid white;
+            border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease, color 0.3s ease;
+            font-weight: bold;
         }
-        #back-to-cinemas-btn:hover { background-color: #5a6268; }
+        #back-to-cinemas-btn:hover { 
+            background-color: #333;
+            color: white !important;
+            text-shadow: 
+                -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        }
+
         .hidden { display: none !important; }
-        .error-message, #loading-message-text {
-            color: #d93025; font-weight: bold; text-align: center;
-            padding: 20px; font-size: 1.1em;
+        .error-message { 
+            color: white; 
+            background-color: #d93025; 
+            padding: 15px;
+            border-radius: 5px;
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; 
+            font-weight: bold; text-align: center;
+            font-size: 1.1em;
         }
-        #loading-message-text { color: #1877f2; }
+        #loading-message-text { 
+            color: black; 
+            font-weight: bold; 
+            text-align: center;
+            padding: 20px; 
+            font-size: 1.2em;
+            text-shadow: none; 
+        }
     </style>
 </head>
 <body>
@@ -137,25 +205,31 @@
             const initialLoadingMessageContainer = document.getElementById('initial-loading-message-container');
             const loadingMessageTextEl = document.getElementById('loading-message-text');
             const backButton = document.getElementById('back-to-cinemas-btn');
-            // const mainHeaderEl = document.getElementById('main-header'); // Not needed if hardcoded
             
             let fullShowtimesData = [];
-            let currentlySelectedCinemaName = null; // Keep track of selected cinema
-            let currentShowingsForSelectedCinema = []; // Keep its data for re-rendering if needed
+            let currentlySelectedCinemaName = null; 
+            let currentShowingsForSelectedCinema = []; 
 
             // --- Cinema Website URLs ---
-            // Add official website URLs here. 
-            // The KEY must EXACTLY MATCH the cinema name from your showtimes.json
             const cinemaWebsiteUrls = {
                 "テアトル新宿": "https://ttcg.jp/theatre_shinjuku/",
-                "ヒューマントラストシネマ渋谷": "https://ttcg.jp/human_trust_cinema_shibuya/", // Verify this path, could be /human_shibuya/
-                // Example: "目黒シネマ": "https://www.megurocinema.com/",
-                // Example: "K's Cinema (ケイズシネマ)": "http://www.ks-cinema.com/"
+                "ヒューマントラストシネマ渋谷": "https://ttcg.jp/human_shibuya/",
+                "K's Cinema (ケイズシネマ)": "https://www.ks-cinema.com/",
+                "Stranger (ストレンジャー)": "https://stranger.jp/",
+                "YEBISU GARDEN CINEMA": "https://www.unitedcinemas.jp/ygc/index.html",
+                "シアターギルド代官山": "https://theaterguild.co/movie/space/daikanyama/",
+                "シアター・イメージフォーラム": "https://www.imageforum.co.jp/",
+                "シネクイント渋谷": "https://www.cinequinto.com/shibuya/",
+                "シネマート新宿": "https://www.cinemart.co.jp/theater/shinjuku/",
+                "ユーロスペース": "http://www.eurospace.co.jp/",
+                "新宿シネマカリテ": "https://qualite.musashino-k.jp/",
+                "新宿武蔵野館": "https://shinjuku.musashino-k.jp/",
+                "新文芸坐": "https://www.shin-bungeiza.com/",
+                "目黒シネマ": "http://www.okura-movie.co.jp/meguro_cinema/now_showing.html"
             };
             // --- End Cinema Website URLs ---
 
             async function fetchShowtimes() {
-                // Loading message is already set in HTML
                 try {
                     const response = await fetch(jsonUrl + '?t=' + new Date().getTime()); 
                     if (!response.ok) {
@@ -234,30 +308,27 @@
                 cinemaTitleHeader.textContent = cinemaName; 
                 headerContainer.appendChild(cinemaTitleHeader);
                 
-                // --- Add website link ---
-                console.log("RenderShowtimes: Checking website URL for cinema:", cinemaName); // DEBUG
+                console.log("RenderShowtimes: Checking website URL for cinema:", cinemaName); 
                 const websiteUrl = cinemaWebsiteUrls[cinemaName];
-                console.log("RenderShowtimes: URL found in map:", websiteUrl); // DEBUG
+                console.log("RenderShowtimes: URL found in map for '" + cinemaName + "':", websiteUrl); 
 
                 if (websiteUrl) {
                     const websiteLink = document.createElement('a');
                     websiteLink.href = websiteUrl;
-                    websiteLink.textContent = "Visit Official Website"; // Hardcoded English
+                    websiteLink.textContent = "Visit Official Website"; 
                     websiteLink.className = 'cinema-website-link';
                     websiteLink.target = "_blank"; 
                     websiteLink.rel = "noopener noreferrer";
                     headerContainer.appendChild(websiteLink);
-                    console.log("RenderShowtimes: Website link ADDED for:", cinemaName); // DEBUG
+                    console.log("RenderShowtimes: Website link ADDED for:", cinemaName); 
                 } else {
-                    console.log("RenderShowtimes: No website URL found in map for:", cinemaName); // DEBUG
+                    console.log("RenderShowtimes: No website URL found in map for:", cinemaName); 
                 }
                 cinemaSectionDiv.appendChild(headerContainer);
-                // --- End website link ---
-
 
                 if (!showings || showings.length === 0) {
                     const noShowingsP = document.createElement('p');
-                    noShowingsP.textContent = "No showtimes found for this cinema for the current period."; // Hardcoded English
+                    noShowingsP.textContent = "No showtimes found for this cinema for the current period."; 
                     cinemaSectionDiv.appendChild(noShowingsP);
                     selectedCinemaShowtimesContainer.appendChild(cinemaSectionDiv);
                     return;
@@ -292,7 +363,7 @@
                     const dateDiv = document.createElement('div');
                     dateDiv.className = 'date-section';
                     const dateTitle = document.createElement('h3');
-                    dateTitle.textContent = formatDateForDisplay(dateStr); // Uses English by default now
+                    dateTitle.textContent = formatDateForDisplay(dateStr); 
                     dateDiv.appendChild(dateTitle);
                     const ul = document.createElement('ul');
                     ul.className = 'showtimes-list';
@@ -334,7 +405,7 @@
                 return null; 
             }
 
-            function formatDateForDisplay(dateString) { // Now defaults to English
+            function formatDateForDisplay(dateString) { 
                 const parsedDate = parseDateToSort(dateString);
                 
                 let matchSched = dateString.match(/^(\d{1,2})\/(\d{1,2})のスケジュール$/);
@@ -345,7 +416,7 @@
                 if (parsedDate) { 
                     return parsedDate.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
                 }
-                return dateString; // Fallback
+                return dateString; 
             }
 
             fetchShowtimes(); 
