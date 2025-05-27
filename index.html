@@ -6,22 +6,31 @@
     <title>Tokyo Independent Cinema Showtimes</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
             margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-            color: #333;
+            padding: 15px;
+            background-color: #f0f2f5;
+            color: #1c1e21;
+            line-height: 1.5;
         }
         #showtimes-container {
+            max-width: 900px;
+            margin: 20px auto;
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1);
+        }
+        header h1 {
+            text-align: center;
+            color: #1877f2; /* A slightly more vibrant blue */
+            margin-bottom: 30px;
+            font-size: 2.5em;
         }
         .cinema-section {
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #dddfe2;
         }
         .cinema-section:last-child {
             border-bottom: none;
@@ -29,95 +38,104 @@
             padding-bottom: 0;
         }
         .cinema-section h2 { /* Cinema Name */
-            font-size: 1.8em;
-            color: #333;
+            font-size: 1.75em;
+            color: #1c1e21; /* Darker for titles */
             margin-top: 0;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #1877f2;
+            padding-bottom: 10px;
         }
         .date-section {
-            margin-left: 10px; /* Indent dates under cinema */
-            margin-bottom: 15px;
+            margin-left: 5px; 
+            margin-bottom: 20px;
         }
         .date-section h3 { /* Date */
-            font-size: 1.3em;
-            color: #555;
-            margin-bottom: 10px;
+            font-size: 1.25em;
+            color: #4b4f56; /* Softer color for dates */
+            margin-bottom: 12px;
         }
         .showtimes-list {
             list-style: none;
-            padding-left: 15px; /* Indent movies under date */
+            padding-left: 10px; 
         }
         .showtimes-list li {
-            margin-bottom: 8px;
-            line-height: 1.6;
-            padding: 5px;
-            border-radius: 4px;
-        }
-        .showtimes-list li:nth-child(odd) {
-            background-color: #f9f9f9;
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background-color: #f7f7f7; /* Light background for each item */
+            display: flex; /* For better alignment of time and title */
+            align-items: flex-start;
         }
         .showtime-time {
             font-weight: bold;
-            color: #007bff; /* Example color */
-            margin-right: 10px;
+            color: #1877f2; 
+            margin-right: 12px;
             display: inline-block;
-            width: 50px; /* Align times a bit */
+            width: 55px; /* Fixed width for alignment */
+            flex-shrink: 0; /* Prevent time from shrinking */
+        }
+        .showtime-title-container {
+            flex-grow: 1;
         }
         .showtime-title {
-            font-weight: normal;
+            font-weight: 500; /* Slightly bolder titles */
         }
         .showtime-screen {
             font-style: italic;
-            color: #777;
+            color: #606770; /* Softer color for screen info */
             font-size: 0.9em;
-            margin-left: 5px;
+            margin-left: 8px;
         }
-        .error-message {
-            color: red;
+        .error-message, #loading-message {
+            color: #d93025; /* Error red */
             font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1em;
         }
         #loading-message {
-            text-align: center;
-            font-size: 1.2em;
-            padding: 20px;
+            color: #1877f2; /* Loading blue */
         }
     </style>
 </head>
 <body>
 
-    <h1>Tokyo Independent Cinema Showtimes</h1>
+    <header>
+        <h1>Tokyo Independent Cinema Showtimes</h1>
+    </header>
     <div id="showtimes-container">
         <p id="loading-message">Loading movie showtimes...</p>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // IMPORTANT: This URL should point to your publicly accessible showtimes.json
-            // If your repo is jakobng/tokyo-independent-film-showtimes, this is correct:
             const jsonUrl = 'https://jakobng.github.io/tokyo-independent-film-showtimes/showtimes.json'; 
             const showtimesContainer = document.getElementById('showtimes-container');
             const loadingMessage = document.getElementById('loading-message');
 
             async function fetchShowtimes() {
                 try {
-                    const response = await fetch(jsonUrl + '?t=' + new Date().getTime()); // Cache-busting
+                    const response = await fetch(jsonUrl + '?t=' + new Date().getTime()); 
                     if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+                        throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}. URL: ${response.url}`);
                     }
                     const showtimesData = await response.json();
-                    if (loadingMessage) loadingMessage.style.display = 'none'; // Hide loading message
+                    if (loadingMessage) loadingMessage.style.display = 'none'; 
                     displayShowtimes(showtimesData);
                 } catch (error) {
                     console.error("Could not fetch or parse showtimes:", error);
                     if (showtimesContainer) {
-                        showtimesContainer.innerHTML = '<p class="error-message">Sorry, showtimes are currently unavailable. Please check back later.</p>';
+                        showtimesContainer.innerHTML = `<p class="error-message">Sorry, showtimes are currently unavailable. Error: ${error.message}. Please check the console for more details.</p>`;
                     }
                 }
             }
 
             function displayShowtimes(data) {
-                if (!showtimesContainer) return;
-                showtimesContainer.innerHTML = ''; // Clear previous content (like loading message)
+                if (!showtimesContainer) {
+                    console.error("Showtimes container not found!");
+                    return;
+                }
+                showtimesContainer.innerHTML = ''; 
 
                 if (!data || data.length === 0) {
                     showtimesContainer.innerHTML = '<p>No showtimes found for the current period.</p>';
@@ -144,14 +162,15 @@
                     cinemaDiv.appendChild(cinemaTitle);
 
                     const byDate = showtimesByCinema[cinemaName].reduce((acc, showing) => {
-                        const date = showing.date_text || 'Unknown Date';
-                        if (!acc[date]) {
-                            acc[date] = [];
+                        const dateKey = showing.date_text || 'Unknown Date';
+                        if (!acc[dateKey]) {
+                            acc[dateKey] = [];
                         }
-                        acc[date].push(showing);
+                        acc[dateKey].push(showing);
                         return acc;
                     }, {});
 
+                    // Sort dates: YYYY-MM-DD will sort chronologically. Other formats might not.
                     const sortedDates = Object.keys(byDate).sort();
 
                     for (const dateStr of sortedDates) {
@@ -165,4 +184,95 @@
                         const ul = document.createElement('ul');
                         ul.className = 'showtimes-list';
 
-                        byDate[dateStr].sort((a, b) => (a.showtime || '').
+                        byDate[dateStr].sort((a, b) => (a.showtime || '').localeCompare(b.showtime || ''));
+
+                        byDate[dateStr].forEach(showing => {
+                            const li = document.createElement('li');
+                            let screenInfo = '';
+                            if (showing.screen && showing.screen.toLowerCase() !== "unknown screen" && showing.screen.toLowerCase() !== "unknown screen (default)") {
+                                screenInfo = `<span class="showtime-screen">(${showing.screen})</span>`;
+                            }
+                            
+                            const timeSpan = document.createElement('span');
+                            timeSpan.className = 'showtime-time';
+                            timeSpan.textContent = showing.showtime || 'N/A';
+                            li.appendChild(timeSpan);
+
+                            const titleContainer = document.createElement('span');
+                            titleContainer.className = 'showtime-title-container';
+                            
+                            const titleSpan = document.createElement('span');
+                            titleSpan.className = 'showtime-title';
+                            titleSpan.textContent = showing.title || 'Unknown Title';
+                            titleContainer.appendChild(titleSpan);
+
+                            if (screenInfo) {
+                                const screenSpan = document.createElement('span');
+                                screenSpan.className = 'showtime-screen';
+                                screenSpan.textContent = ` (${showing.screen})`; // Adjusted for clarity
+                                titleContainer.appendChild(screenSpan);
+                            }
+                            li.appendChild(titleContainer);
+                            ul.appendChild(li);
+                        });
+                        dateDiv.appendChild(ul);
+                        cinemaDiv.appendChild(dateDiv);
+                    }
+                    showtimesContainer.appendChild(cinemaDiv);
+                }
+            }
+
+            function formatDateForDisplay(dateString) {
+                // Handles "YYYY-MM-DD"
+                let match = dateString.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+                if (match) {
+                    try {
+                        const year = parseInt(match[1]);
+                        const month = parseInt(match[2]);
+                        const day = parseInt(match[3]);
+                        const dateObj = new Date(year, month - 1, day);
+                        if (!isNaN(dateObj.getTime())) {
+                            return dateObj.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+                        }
+                    } catch (e) { /* Fall through */ }
+                }
+
+                // Handles "M/Dのスケジュール" (like from Image Forum "5/27のスケジュール")
+                match = dateString.match(/^(\d{1,2})\/(\d{1,2})のスケジュール$/);
+                if (match) {
+                    try {
+                        const month = parseInt(match[1]);
+                        const day = parseInt(match[2]);
+                        // Using current year as context for display. 
+                        // This assumes the M/D format is for the current year's schedule.
+                        const dateObj = new Date(new Date().getFullYear(), month - 1, day); 
+                        if (!isNaN(dateObj.getTime())) {
+                            return dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) + " (Schedule)";
+                        }
+                    } catch (e) { /* Fall through */ }
+                }
+                
+                // Fallback for other Japanese date formats like "YYYY年MM月DD日..."
+                match = dateString.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+                if (match) {
+                    try {
+                        const year = parseInt(match[1]);
+                        const month = parseInt(match[2]);
+                        const day = parseInt(match[3]);
+                        const dateObj = new Date(year, month - 1, day);
+                        if (!isNaN(dateObj.getTime())) {
+                            return dateObj.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+                        }
+                    } catch (e) { /* Fall through */ }
+                }
+
+                // If no format matches or parsing fails, return the original string
+                console.warn("Could not parse date for display, returning original:", dateString);
+                return dateString;
+            }
+            fetchShowtimes();
+        });
+    </script>
+
+</body>
+</html>
