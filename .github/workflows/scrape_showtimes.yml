@@ -3,9 +3,7 @@ name: Scrape Movie Showtimes
 on:
   workflow_dispatch: # Allows manual triggering
   schedule:
-    # Runs every day at a specific UTC time (e.g., 15:00 UTC which is midnight JST)
-    # Adjust the cron schedule as needed. Use https://crontab.guru/ to help.
-    # This example runs at 15:00 UTC daily (00:00 JST next day)
+    # Runs every day at 15:00 UTC (midnight JST next day)
     - cron: '0 15 * * *'
 
 jobs:
@@ -25,37 +23,20 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
+          google-chrome --version # Output version for logs
 
-      - name: Install ChromeDriver # For Selenium
-        run: |
-          CHROME_VERSION=$(google-chrome --version | cut -f 3 -d ' ' | cut -f 1 -d '.')
-          echo "Detected Chrome major version: $CHROME_VERSION"
-          # Find the closest ChromeDriver version from Chrome for Testing JSON API
-          # This is a more robust way to get recent ChromeDriver versions
-          LATEST_DRIVER_VERSION=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" | jq -r ".channels.Stable.downloads.chromedriver[] | select(.platform==\"linux64\") | .url" | grep -oP "$CHROME_VERSION\.\d+\.\d+\.\d+" | head -n 1)
-          if [ -z "$LATEST_DRIVER_VERSION" ]; then
-            echo "Could not automatically determine ChromeDriver version for Chrome $CHROME_VERSION. Falling back to a known good source."
-            # Fallback if the above fails or for older versions. You might need to adjust this.
-            # For Chrome versions 115+, use the new JSON endpoints.
-            # This example attempts to find a compatible version.
-            LATEST_DRIVER_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" | jq -r ".channels.Stable.downloads.chromedriver[] | select(.platform==\"linux64\") | .url")
-          else
-            LATEST_DRIVER_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" | jq -r ".channels.Stable.downloads.chromedriver[] | select(.platform==\"linux64\") | .url")
-          fi
-          
-          echo "Using ChromeDriver URL: $LATEST_DRIVER_URL"
-          wget -N $LATEST_DRIVER_URL -O chromedriver_linux64.zip
-          unzip chromedriver_linux64.zip
-          sudo mv chromedriver-linux64/chromedriver /usr/local/bin/chromedriver # Make sure the path inside zip is correct
-          sudo chmod +x /usr/local/bin/chromedriver
-          chromedriver --version
+      # REMOVED the complex "Install ChromeDriver" step
+      # webdriver-manager in Python will handle this.
 
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r requirements.txt # Ensure requirements.txt is up-to-date
 
       - name: Run scraper script
+        # This should be the name of your main Python script that calls
+        # scrape_ygc(), scrape_cinequinto_shibuya(), etc.,
+        # and then writes showtimes.json
         run: python main_scraper.py
 
       - name: Commit and push showtimes.json
@@ -72,7 +53,4 @@ jobs:
             echo "showtimes.json committed and pushed."
           fi
         env:
-          # If your repository is private and you need to push,
-          # you might need to use a GITHUB_TOKEN or a deploy key.
-          # For public repos, the default GITHUB_TOKEN usually has write permissions.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
