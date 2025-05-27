@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tokyo Independent Cinema Showtimes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        #showtimes-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .cinema-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .cinema-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .cinema-section h2 { /* Cinema Name */
+            font-size: 1.8em;
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .date-section {
+            margin-left: 10px; /* Indent dates under cinema */
+            margin-bottom: 15px;
+        }
+        .date-section h3 { /* Date */
+            font-size: 1.3em;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .showtimes-list {
+            list-style: none;
+            padding-left: 15px; /* Indent movies under date */
+        }
+        .showtimes-list li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+            padding: 5px;
+            border-radius: 4px;
+        }
+        .showtimes-list li:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+        .showtime-time {
+            font-weight: bold;
+            color: #007bff; /* Example color */
+            margin-right: 10px;
+            display: inline-block;
+            width: 50px; /* Align times a bit */
+        }
+        .showtime-title {
+            font-weight: normal;
+        }
+        .showtime-screen {
+            font-style: italic;
+            color: #777;
+            font-size: 0.9em;
+            margin-left: 5px;
+        }
+        .error-message {
+            color: red;
+            font-weight: bold;
+        }
+        #loading-message {
+            text-align: center;
+            font-size: 1.2em;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Tokyo Independent Cinema Showtimes</h1>
+    <div id="showtimes-container">
+        <p id="loading-message">Loading movie showtimes...</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // IMPORTANT: This URL should point to your publicly accessible showtimes.json
+            // If your repo is jakobng/tokyo-independent-film-showtimes, this is correct:
+            const jsonUrl = 'https://jakobng.github.io/tokyo-independent-film-showtimes/showtimes.json'; 
+            const showtimesContainer = document.getElementById('showtimes-container');
+            const loadingMessage = document.getElementById('loading-message');
+
+            async function fetchShowtimes() {
+                try {
+                    const response = await fetch(jsonUrl + '?t=' + new Date().getTime()); // Cache-busting
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+                    }
+                    const showtimesData = await response.json();
+                    if (loadingMessage) loadingMessage.style.display = 'none'; // Hide loading message
+                    displayShowtimes(showtimesData);
+                } catch (error) {
+                    console.error("Could not fetch or parse showtimes:", error);
+                    if (showtimesContainer) {
+                        showtimesContainer.innerHTML = '<p class="error-message">Sorry, showtimes are currently unavailable. Please check back later.</p>';
+                    }
+                }
+            }
+
+            function displayShowtimes(data) {
+                if (!showtimesContainer) return;
+                showtimesContainer.innerHTML = ''; // Clear previous content (like loading message)
+
+                if (!data || data.length === 0) {
+                    showtimesContainer.innerHTML = '<p>No showtimes found for the current period.</p>';
+                    return;
+                }
+
+                const showtimesByCinema = data.reduce((acc, showing) => {
+                    const cinema = showing.cinema || 'Unknown Cinema';
+                    if (!acc[cinema]) {
+                        acc[cinema] = [];
+                    }
+                    acc[cinema].push(showing);
+                    return acc;
+                }, {});
+
+                const sortedCinemaNames = Object.keys(showtimesByCinema).sort();
+
+                for (const cinemaName of sortedCinemaNames) {
+                    const cinemaDiv = document.createElement('div');
+                    cinemaDiv.className = 'cinema-section';
+
+                    const cinemaTitle = document.createElement('h2');
+                    cinemaTitle.textContent = cinemaName;
+                    cinemaDiv.appendChild(cinemaTitle);
+
+                    const byDate = showtimesByCinema[cinemaName].reduce((acc, showing) => {
+                        const date = showing.date_text || 'Unknown Date';
+                        if (!acc[date]) {
+                            acc[date] = [];
+                        }
+                        acc[date].push(showing);
+                        return acc;
+                    }, {});
+
+                    const sortedDates = Object.keys(byDate).sort();
+
+                    for (const dateStr of sortedDates) {
+                        const dateDiv = document.createElement('div');
+                        dateDiv.className = 'date-section';
+
+                        const dateTitle = document.createElement('h3');
+                        dateTitle.textContent = formatDateForDisplay(dateStr);
+                        dateDiv.appendChild(dateTitle);
+
+                        const ul = document.createElement('ul');
+                        ul.className = 'showtimes-list';
+
+                        byDate[dateStr].sort((a, b) => (a.showtime || '').
