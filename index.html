@@ -13,7 +13,7 @@
             color: #1c1e21;
             line-height: 1.5;
         }
-        #showtimes-container {
+        .container {
             max-width: 900px;
             margin: 20px auto;
             background-color: #fff;
@@ -23,35 +23,57 @@
         }
         header h1 {
             text-align: center;
-            color: #1877f2; /* A slightly more vibrant blue */
+            color: #1877f2;
             margin-bottom: 30px;
             font-size: 2.5em;
         }
-        .cinema-section {
+
+        /* Cinema Selection Grid Styles */
+        #cinema-selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .cinema-card {
+            background-color: #e7f3ff;
+            color: #1877f2;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            border: 1px solid #cfe2f3;
+        }
+        .cinema-card:hover {
+            background-color: #d0e0f0;
+            transform: translateY(-2px);
+        }
+
+        /* Selected Cinema Showtimes Styles */
+        #selected-cinema-showtimes {
+            /* Styles from previous version can be adapted here */
+        }
+        .cinema-section { /* This will now be for the single selected cinema's details */
             margin-bottom: 35px;
-            padding-bottom: 25px;
-            border-bottom: 1px solid #dddfe2;
         }
-        .cinema-section:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-        .cinema-section h2 { /* Cinema Name */
-            font-size: 1.75em;
-            color: #1c1e21; /* Darker for titles */
+        .cinema-section h2 { /* Selected Cinema Name */
+            font-size: 2em; /* Make it prominent */
+            color: #1c1e21;
             margin-top: 0;
             margin-bottom: 20px;
             border-bottom: 2px solid #1877f2;
             padding-bottom: 10px;
         }
         .date-section {
-            margin-left: 5px; 
+            margin-left: 0px; /* No need for further indent if it's the only cinema shown */
             margin-bottom: 20px;
         }
-        .date-section h3 { /* Date */
+        .date-section h3 {
             font-size: 1.25em;
-            color: #4b4f56; /* Softer color for dates */
+            color: #4b4f56;
             margin-bottom: 12px;
         }
         .showtimes-list {
@@ -62,8 +84,8 @@
             margin-bottom: 10px;
             padding: 8px 12px;
             border-radius: 6px;
-            background-color: #f7f7f7; /* Light background for each item */
-            display: flex; /* For better alignment of time and title */
+            background-color: #f7f7f7;
+            display: flex;
             align-items: flex-start;
         }
         .showtime-time {
@@ -71,47 +93,82 @@
             color: #1877f2; 
             margin-right: 12px;
             display: inline-block;
-            width: 55px; /* Fixed width for alignment */
-            flex-shrink: 0; /* Prevent time from shrinking */
+            width: 55px; 
+            flex-shrink: 0;
         }
         .showtime-title-container {
             flex-grow: 1;
         }
         .showtime-title {
-            font-weight: 500; /* Slightly bolder titles */
+            font-weight: 500;
         }
         .showtime-screen {
             font-style: italic;
-            color: #606770; /* Softer color for screen info */
+            color: #606770;
             font-size: 0.9em;
             margin-left: 8px;
         }
+        
+        /* Back Button */
+        #back-to-cinemas-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #back-to-cinemas-btn:hover {
+            background-color: #5a6268;
+        }
+
+        .hidden {
+            display: none !important;
+        }
         .error-message, #loading-message {
-            color: #d93025; /* Error red */
+            color: #d93025;
             font-weight: bold;
             text-align: center;
             padding: 20px;
             font-size: 1.1em;
         }
         #loading-message {
-            color: #1877f2; /* Loading blue */
+            color: #1877f2;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Tokyo Independent Cinema Showtimes</h1>
-    </header>
-    <div id="showtimes-container">
-        <p id="loading-message">Loading movie showtimes...</p>
+    <div class="container">
+        <header>
+            <h1>Tokyo Independent Cinema Showtimes</h1>
+        </header>
+        
+        <button id="back-to-cinemas-btn" class="hidden">&laquo; Back to Cinemas</button>
+        
+        <div id="cinema-selection-grid">
+            </div>
+        
+        <div id="selected-cinema-showtimes">
+            </div>
+        
+        <div id="initial-loading-message-container">
+             <p id="loading-message">Loading movie showtimes...</p>
+        </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const jsonUrl = 'https://jakobng.github.io/tokyo-independent-film-showtimes/showtimes.json'; 
-            const showtimesContainer = document.getElementById('showtimes-container');
-            const loadingMessage = document.getElementById('loading-message');
+            const cinemaSelectionGrid = document.getElementById('cinema-selection-grid');
+            const selectedCinemaShowtimesContainer = document.getElementById('selected-cinema-showtimes');
+            const initialLoadingMessageContainer = document.getElementById('initial-loading-message-container');
+            const backButton = document.getElementById('back-to-cinemas-btn');
+            
+            let fullShowtimesData = []; // To store the fetched data globally within this scope
 
             async function fetchShowtimes() {
                 try {
@@ -119,111 +176,130 @@
                     if (!response.ok) {
                         throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}. URL: ${response.url}`);
                     }
-                    const showtimesData = await response.json();
-                    if (loadingMessage) loadingMessage.style.display = 'none'; 
-                    displayShowtimes(showtimesData);
+                    fullShowtimesData = await response.json();
+                    if (initialLoadingMessageContainer) initialLoadingMessageContainer.classList.add('hidden'); 
+                    displayCinemaSelection(fullShowtimesData);
                 } catch (error) {
                     console.error("Could not fetch or parse showtimes:", error);
-                    if (showtimesContainer) {
-                        showtimesContainer.innerHTML = `<p class="error-message">Sorry, showtimes are currently unavailable. Error: ${error.message}. Please check the console for more details.</p>`;
+                    if (initialLoadingMessageContainer) {
+                         initialLoadingMessageContainer.innerHTML = `<p class="error-message">Sorry, showtimes are currently unavailable. Error: ${error.message}.</p>`;
                     }
                 }
             }
 
-            function displayShowtimes(data) {
-                if (!showtimesContainer) {
-                    console.error("Showtimes container not found!");
-                    return;
-                }
-                showtimesContainer.innerHTML = ''; 
+            function displayCinemaSelection(data) {
+                if (!cinemaSelectionGrid) return;
+                
+                selectedCinemaShowtimesContainer.innerHTML = ''; // Clear specific cinema view
+                selectedCinemaShowtimesContainer.classList.add('hidden');
+                backButton.classList.add('hidden');
+                cinemaSelectionGrid.classList.remove('hidden');
+                cinemaSelectionGrid.innerHTML = ''; // Clear previous grid items
 
                 if (!data || data.length === 0) {
-                    showtimesContainer.innerHTML = '<p>No showtimes found for the current period.</p>';
+                    cinemaSelectionGrid.innerHTML = '<p>No showtimes data found.</p>';
                     return;
                 }
 
-                const showtimesByCinema = data.reduce((acc, showing) => {
-                    const cinema = showing.cinema || 'Unknown Cinema';
-                    if (!acc[cinema]) {
-                        acc[cinema] = [];
+                const cinemaNames = [...new Set(data.map(showing => showing.cinema || 'Unknown Cinema'))].sort();
+
+                cinemaNames.forEach(cinemaName => {
+                    const cinemaCard = document.createElement('div');
+                    cinemaCard.className = 'cinema-card';
+                    cinemaCard.textContent = cinemaName;
+                    cinemaCard.addEventListener('click', () => handleCinemaClick(cinemaName, data));
+                    cinemaSelectionGrid.appendChild(cinemaCard);
+                });
+            }
+
+            function handleCinemaClick(cinemaName, allData) {
+                cinemaSelectionGrid.classList.add('hidden');
+                selectedCinemaShowtimesContainer.classList.remove('hidden');
+                selectedCinemaShowtimesContainer.innerHTML = ''; // Clear before rendering new
+                backButton.classList.remove('hidden');
+
+                const showingsForSelectedCinema = allData.filter(showing => (showing.cinema || 'Unknown Cinema') === cinemaName);
+                renderShowtimesForCinema(showingsForSelectedCinema, cinemaName);
+            }
+            
+            backButton.addEventListener('click', () => {
+                displayCinemaSelection(fullShowtimesData); // Pass the original full data
+            });
+
+            function renderShowtimesForCinema(showings, cinemaName) {
+                // This function is similar to the previous displayShowtimes, but scoped to one cinema
+                const cinemaSectionDiv = document.createElement('div');
+                cinemaSectionDiv.className = 'cinema-section';
+
+                const cinemaTitleHeader = document.createElement('h2');
+                cinemaTitleHeader.textContent = cinemaName;
+                cinemaSectionDiv.appendChild(cinemaTitleHeader);
+
+                if (!showings || showings.length === 0) {
+                    cinemaSectionDiv.innerHTML += '<p>No showtimes found for this cinema for the current period.</p>';
+                    selectedCinemaShowtimesContainer.appendChild(cinemaSectionDiv);
+                    return;
+                }
+
+                const byDate = showings.reduce((acc, showing) => {
+                    const dateKey = showing.date_text || 'Unknown Date';
+                    if (!acc[dateKey]) {
+                        acc[dateKey] = [];
                     }
-                    acc[cinema].push(showing);
+                    acc[dateKey].push(showing);
                     return acc;
                 }, {});
 
-                const sortedCinemaNames = Object.keys(showtimesByCinema).sort();
+                const sortedDates = Object.keys(byDate).sort();
 
-                for (const cinemaName of sortedCinemaNames) {
-                    const cinemaDiv = document.createElement('div');
-                    cinemaDiv.className = 'cinema-section';
+                for (const dateStr of sortedDates) {
+                    const dateDiv = document.createElement('div');
+                    dateDiv.className = 'date-section';
 
-                    const cinemaTitle = document.createElement('h2');
-                    cinemaTitle.textContent = cinemaName;
-                    cinemaDiv.appendChild(cinemaTitle);
+                    const dateTitle = document.createElement('h3');
+                    dateTitle.textContent = formatDateForDisplay(dateStr);
+                    dateDiv.appendChild(dateTitle);
 
-                    const byDate = showtimesByCinema[cinemaName].reduce((acc, showing) => {
-                        const dateKey = showing.date_text || 'Unknown Date';
-                        if (!acc[dateKey]) {
-                            acc[dateKey] = [];
+                    const ul = document.createElement('ul');
+                    ul.className = 'showtimes-list';
+
+                    byDate[dateStr].sort((a, b) => (a.showtime || '').localeCompare(b.showtime || ''));
+
+                    byDate[dateStr].forEach(showing => {
+                        const li = document.createElement('li');
+                        let screenInfo = '';
+                        if (showing.screen && showing.screen.toLowerCase() !== "unknown screen" && showing.screen.toLowerCase() !== "unknown screen (default)") {
+                            screenInfo = `<span class="showtime-screen">(${showing.screen})</span>`;
                         }
-                        acc[dateKey].push(showing);
-                        return acc;
-                    }, {});
+                        
+                        const timeSpan = document.createElement('span');
+                        timeSpan.className = 'showtime-time';
+                        timeSpan.textContent = showing.showtime || 'N/A';
+                        li.appendChild(timeSpan);
 
-                    // Sort dates: YYYY-MM-DD will sort chronologically. Other formats might not.
-                    const sortedDates = Object.keys(byDate).sort();
+                        const titleContainer = document.createElement('span');
+                        titleContainer.className = 'showtime-title-container';
+                        
+                        const titleSpan = document.createElement('span');
+                        titleSpan.className = 'showtime-title';
+                        titleSpan.textContent = showing.title || 'Unknown Title';
+                        titleContainer.appendChild(titleSpan);
 
-                    for (const dateStr of sortedDates) {
-                        const dateDiv = document.createElement('div');
-                        dateDiv.className = 'date-section';
-
-                        const dateTitle = document.createElement('h3');
-                        dateTitle.textContent = formatDateForDisplay(dateStr);
-                        dateDiv.appendChild(dateTitle);
-
-                        const ul = document.createElement('ul');
-                        ul.className = 'showtimes-list';
-
-                        byDate[dateStr].sort((a, b) => (a.showtime || '').localeCompare(b.showtime || ''));
-
-                        byDate[dateStr].forEach(showing => {
-                            const li = document.createElement('li');
-                            let screenInfo = '';
-                            if (showing.screen && showing.screen.toLowerCase() !== "unknown screen" && showing.screen.toLowerCase() !== "unknown screen (default)") {
-                                screenInfo = `<span class="showtime-screen">(${showing.screen})</span>`;
-                            }
-                            
-                            const timeSpan = document.createElement('span');
-                            timeSpan.className = 'showtime-time';
-                            timeSpan.textContent = showing.showtime || 'N/A';
-                            li.appendChild(timeSpan);
-
-                            const titleContainer = document.createElement('span');
-                            titleContainer.className = 'showtime-title-container';
-                            
-                            const titleSpan = document.createElement('span');
-                            titleSpan.className = 'showtime-title';
-                            titleSpan.textContent = showing.title || 'Unknown Title';
-                            titleContainer.appendChild(titleSpan);
-
-                            if (screenInfo) {
-                                const screenSpan = document.createElement('span');
-                                screenSpan.className = 'showtime-screen';
-                                screenSpan.textContent = ` (${showing.screen})`; // Adjusted for clarity
-                                titleContainer.appendChild(screenSpan);
-                            }
-                            li.appendChild(titleContainer);
-                            ul.appendChild(li);
-                        });
-                        dateDiv.appendChild(ul);
-                        cinemaDiv.appendChild(dateDiv);
-                    }
-                    showtimesContainer.appendChild(cinemaDiv);
+                        if (screenInfo) { // Append screen info if available
+                            const screenSpan = document.createElement('span');
+                            screenSpan.innerHTML = screenInfo; // Use innerHTML as screenInfo already contains span tags
+                            titleContainer.appendChild(screenSpan);
+                        }
+                        li.appendChild(titleContainer);
+                        ul.appendChild(li);
+                    });
+                    dateDiv.appendChild(ul);
+                    cinemaSectionDiv.appendChild(dateDiv);
                 }
+                selectedCinemaShowtimesContainer.appendChild(cinemaSectionDiv);
             }
 
             function formatDateForDisplay(dateString) {
-                // Handles "YYYY-MM-DD"
                 let match = dateString.match(/^(\d{4})-(\d{2})-(\d{2})$/);
                 if (match) {
                     try {
@@ -237,14 +313,11 @@
                     } catch (e) { /* Fall through */ }
                 }
 
-                // Handles "M/Dのスケジュール" (like from Image Forum "5/27のスケジュール")
                 match = dateString.match(/^(\d{1,2})\/(\d{1,2})のスケジュール$/);
                 if (match) {
                     try {
                         const month = parseInt(match[1]);
                         const day = parseInt(match[2]);
-                        // Using current year as context for display. 
-                        // This assumes the M/D format is for the current year's schedule.
                         const dateObj = new Date(new Date().getFullYear(), month - 1, day); 
                         if (!isNaN(dateObj.getTime())) {
                             return dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) + " (Schedule)";
@@ -252,7 +325,6 @@
                     } catch (e) { /* Fall through */ }
                 }
                 
-                // Fallback for other Japanese date formats like "YYYY年MM月DD日..."
                 match = dateString.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
                 if (match) {
                     try {
@@ -265,8 +337,6 @@
                         }
                     } catch (e) { /* Fall through */ }
                 }
-
-                // If no format matches or parsing fails, return the original string
                 console.warn("Could not parse date for display, returning original:", dateString);
                 return dateString;
             }
