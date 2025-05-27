@@ -49,23 +49,23 @@
         }
         .cinema-card {
             background-color: #000; 
-            color: white; /* Changed to white text */
-            text-shadow: none; /* Removed outline */
+            color: white;
+            text-shadow: none;
             padding: 25px 20px; 
             border-radius: 8px;
             text-align: center;
             font-size: 1.2em; 
-            font-weight: 500; /* Adjusted font weight */
+            font-weight: 500;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
             border: 2px solid white; 
         }
         .cinema-card:hover {
             background-color: #333; 
-            color: #FCD400; /* Yellow text on hover */
+            color: #FCD400; 
             border-color: #FCD400; 
             transform: translateY(-3px) scale(1.03); 
-            text-shadow: none; /* No outline on hover */
+            text-shadow: none; 
         }
         
         .cinema-section {} 
@@ -75,8 +75,8 @@
         .cinema-section h2 { /* Cinema Name on detail page */
             font-size: 2.2em;
             color: white; 
-            text-shadow: none; /* Removed outline for easier reading */
-            font-weight: 500; /* Thinner font weight */
+            text-shadow: none; 
+            font-weight: 500; 
             margin-top: 0;
             margin-bottom: 10px; 
             border-bottom: 2px solid white; 
@@ -85,6 +85,7 @@
         .cinema-website-link { 
             display: inline-block;
             margin-bottom: 15px; 
+            margin-right: 10px; /* Added margin for spacing if other links appear */
             padding: 10px 18px; 
             background-color: black; 
             color: #FCD400 !important; 
@@ -108,7 +109,6 @@
         .date-section h3 { /* Date headings */
             font-size: 1.3em;
             color: white;
-            /* text-shadow inherited from body (thin outline) */
             margin-bottom: 12px;
             border-bottom: 1px solid rgba(255,255,255,0.5); 
             padding-bottom: 5px;
@@ -122,22 +122,31 @@
         }
         .showtime-time {
             font-weight: bold; color: white; 
-            /* text-shadow inherited */
             margin-right: 15px; 
             display: inline-block; width: auto; 
             min-width: 55px;
             flex-shrink: 0;
         }
         .showtime-title-container { flex-grow: 1; }
-        .showtime-title { 
+        .showtime-title { /* For the original scraped title if not linked */
             font-weight: bold; 
             color: white; 
-            /* text-shadow inherited */
         }
+        .letterboxd-linked-title { /* For the TMDB/English title link */
+            font-weight: bold; 
+            color: white; /* Keeping it white to match, but link behavior will apply */
+            text-decoration: underline; 
+            margin-left: 8px; /* Space it out from the Japanese title */
+        }
+        .letterboxd-linked-title:hover {
+            text-decoration: none; 
+            color: #FCD400; /* Optional hover color to match other hover effects */
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        }
+
         .showtime-screen { 
             font-style: normal; 
             color: white; 
-            /* text-shadow inherited */
             font-size: 0.9em; 
             margin-left: 8px; 
             opacity: 0.85; 
@@ -210,7 +219,6 @@
             let currentlySelectedCinemaName = null; 
             let currentShowingsForSelectedCinema = []; 
 
-            // --- Cinema Website URLs ---
             const cinemaWebsiteUrls = {
                 "テアトル新宿": "https://ttcg.jp/theatre_shinjuku/",
                 "ヒューマントラストシネマ渋谷": "https://ttcg.jp/human_shibuya/",
@@ -227,7 +235,6 @@
                 "新文芸坐": "https://www.shin-bungeiza.com/",
                 "目黒シネマ": "http://www.okura-movie.co.jp/meguro_cinema/now_showing.html"
             };
-            // --- End Cinema Website URLs ---
 
             async function fetchShowtimes() {
                 try {
@@ -308,10 +315,7 @@
                 cinemaTitleHeader.textContent = cinemaName; 
                 headerContainer.appendChild(cinemaTitleHeader);
                 
-                console.log("RenderShowtimes: Checking website URL for cinema:", cinemaName); 
                 const websiteUrl = cinemaWebsiteUrls[cinemaName];
-                console.log("RenderShowtimes: URL found in map for '" + cinemaName + "':", websiteUrl); 
-
                 if (websiteUrl) {
                     const websiteLink = document.createElement('a');
                     websiteLink.href = websiteUrl;
@@ -320,9 +324,6 @@
                     websiteLink.target = "_blank"; 
                     websiteLink.rel = "noopener noreferrer";
                     headerContainer.appendChild(websiteLink);
-                    console.log("RenderShowtimes: Website link ADDED for:", cinemaName); 
-                } else {
-                    console.log("RenderShowtimes: No website URL found in map for:", cinemaName); 
                 }
                 cinemaSectionDiv.appendChild(headerContainer);
 
@@ -368,9 +369,27 @@
                     const ul = document.createElement('ul');
                     ul.className = 'showtimes-list';
                     byDate[dateStr].sort((a, b) => (a.showtime || '').localeCompare(b.showtime || ''));
+                    
                     byDate[dateStr].forEach(showing => {
                         const li = document.createElement('li');
-                        const movieTitle = showing.movie_title || showing.title || 'Unknown Title'; 
+                        const originalScrapedTitle = showing.movie_title || showing.title || 'Unknown Title';
+                        
+                        const letterboxdLink = showing.letterboxd_link;
+                        const displayTitleFromTMDB = showing.tmdb_display_title; 
+                        
+                        let titleDisplayHtml = `<span class="showtime-title">${originalScrapedTitle}</span>`; // Default to original title
+
+                        if (letterboxdLink) {
+                            if (displayTitleFromTMDB && displayTitleFromTMDB.trim() !== "" && displayTitleFromTMDB.toLowerCase() !== originalScrapedTitle.toLowerCase()) {
+                                // If TMDB title is present and different, show both: Original (TMDB/English Link)
+                                titleDisplayHtml = `<span class="showtime-title">${originalScrapedTitle}</span> <a href="${letterboxdLink}" target="_blank" rel="noopener noreferrer" class="letterboxd-linked-title" title="View '${displayTitleFromTMDB}' on Letterboxd">(${displayTitleFromTMDB})</a>`;
+                            } else {
+                                // If TMDB title is same as original, or not present, just link the original title
+                                const linkText = (displayTitleFromTMDB && displayTitleFromTMDB.trim() !== "") ? displayTitleFromTMDB : originalScrapedTitle;
+                                titleDisplayHtml = `<a href="${letterboxdLink}" target="_blank" rel="noopener noreferrer" class="showtime-title letterboxd-linked-title" title="View '${linkText}' on Letterboxd">${originalScrapedTitle}</a>`;
+                            }
+                        }
+
                         const currentScreenName = String(showing.screen_name || showing.screen || "").trim(); 
                         let screenInfo = '';
                         if (showIndividualScreenNames) {
@@ -378,10 +397,11 @@
                                 screenInfo = `<span class="showtime-screen">(${currentScreenName})</span>`;
                             }
                         }
+
                         li.innerHTML = `
                             <span class="showtime-time">${showing.showtime || 'N/A'}</span>
                             <span class="showtime-title-container">
-                                <span class="showtime-title">${movieTitle}</span>
+                                ${titleDisplayHtml}
                                 ${screenInfo}
                             </span>`;
                         ul.appendChild(li);
