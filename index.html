@@ -22,7 +22,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1);
         }
         header h1 {
-            text-align: center;
+            text-align: center; /* Centered as toggle is removed */
             color: #1877f2;
             margin-bottom: 30px;
             font-size: 2.5em;
@@ -51,126 +51,111 @@
             background-color: #d0e0f0;
             transform: translateY(-2px);
         }
-
-        /* Selected Cinema Showtimes Styles */
-        #selected-cinema-showtimes {
-            /* Styles from previous version can be adapted here */
+        
+        .cinema-section {} 
+        .cinema-header-container {
+             margin-bottom: 20px; 
         }
-        .cinema-section { /* This will now be for the single selected cinema's details */
-            margin-bottom: 35px;
-        }
-        .cinema-section h2 { /* Selected Cinema Name */
-            font-size: 2em; /* Make it prominent */
+        .cinema-section h2 {
+            font-size: 2em;
             color: #1c1e21;
             margin-top: 0;
-            margin-bottom: 20px;
+            margin-bottom: 10px; 
             border-bottom: 2px solid #1877f2;
             padding-bottom: 10px;
         }
-        .date-section {
-            margin-left: 0px; /* No need for further indent if it's the only cinema shown */
-            margin-bottom: 20px;
+        .cinema-website-link { 
+            display: inline-block;
+            margin-bottom: 15px; 
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white !important; 
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.95em;
+            transition: background-color 0.3s ease;
         }
+        .cinema-website-link:hover {
+            background-color: #0056b3;
+            text-decoration: none;
+        }
+
+        .date-section { margin-bottom: 20px; }
         .date-section h3 {
             font-size: 1.25em;
             color: #4b4f56;
             margin-bottom: 12px;
         }
-        .showtimes-list {
-            list-style: none;
-            padding-left: 10px; 
-        }
+        .showtimes-list { list-style: none; padding-left: 10px; }
         .showtimes-list li {
-            margin-bottom: 10px;
-            padding: 8px 12px;
-            border-radius: 6px;
-            background-color: #f7f7f7;
-            display: flex;
-            align-items: flex-start;
+            margin-bottom: 10px; padding: 8px 12px; border-radius: 6px;
+            background-color: #f7f7f7; display: flex; align-items: flex-start;
         }
         .showtime-time {
-            font-weight: bold;
-            color: #1877f2; 
-            margin-right: 12px;
-            display: inline-block;
-            width: 55px; 
-            flex-shrink: 0;
+            font-weight: bold; color: #1877f2; margin-right: 12px;
+            display: inline-block; width: 55px; flex-shrink: 0;
         }
-        .showtime-title-container {
-            flex-grow: 1;
-        }
-        .showtime-title {
-            font-weight: 500;
-        }
-        .showtime-screen {
-            font-style: italic;
-            color: #606770;
-            font-size: 0.9em;
-            margin-left: 8px;
-        }
+        .showtime-title-container { flex-grow: 1; }
+        .showtime-title { font-weight: 500; }
+        .showtime-screen { font-style: italic; color: #606770; font-size: 0.9em; margin-left: 8px; }
         
-        /* Back Button */
         #back-to-cinemas-btn {
-            display: inline-block;
-            margin-bottom: 20px;
-            padding: 10px 15px;
-            background-color: #6c757d;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+            display: inline-block; margin-bottom: 20px; padding: 10px 15px;
+            background-color: #6c757d; color: white; text-decoration: none;
+            border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease;
         }
-        #back-to-cinemas-btn:hover {
-            background-color: #5a6268;
+        #back-to-cinemas-btn:hover { background-color: #5a6268; }
+        .hidden { display: none !important; }
+        .error-message, #loading-message-text {
+            color: #d93025; font-weight: bold; text-align: center;
+            padding: 20px; font-size: 1.1em;
         }
-
-        .hidden {
-            display: none !important;
-        }
-        .error-message, #loading-message {
-            color: #d93025;
-            font-weight: bold;
-            text-align: center;
-            padding: 20px;
-            font-size: 1.1em;
-        }
-        #loading-message {
-            color: #1877f2;
-        }
+        #loading-message-text { color: #1877f2; }
     </style>
 </head>
 <body>
-
     <div class="container">
         <header>
-            <h1>Tokyo Independent Cinema Showtimes</h1>
+            <h1 id="main-header">Tokyo Independent Cinema Showtimes</h1>
         </header>
         
         <button id="back-to-cinemas-btn" class="hidden">&laquo; Back to Cinemas</button>
         
-        <div id="cinema-selection-grid">
-            </div>
-        
-        <div id="selected-cinema-showtimes">
-            </div>
+        <div id="cinema-selection-grid"></div>
+        <div id="selected-cinema-showtimes"></div>
         
         <div id="initial-loading-message-container">
-             <p id="loading-message">Loading movie showtimes...</p>
+             <p id="loading-message-text">Loading movie showtimes...</p>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const jsonUrl = 'https://jakobng.github.io/tokyo-independent-film-showtimes/showtimes.json'; 
+            const jsonUrl = 'showtimes.json'; 
             const cinemaSelectionGrid = document.getElementById('cinema-selection-grid');
             const selectedCinemaShowtimesContainer = document.getElementById('selected-cinema-showtimes');
             const initialLoadingMessageContainer = document.getElementById('initial-loading-message-container');
+            const loadingMessageTextEl = document.getElementById('loading-message-text');
             const backButton = document.getElementById('back-to-cinemas-btn');
+            // const mainHeaderEl = document.getElementById('main-header'); // Not needed if hardcoded
             
-            let fullShowtimesData = []; // To store the fetched data globally within this scope
+            let fullShowtimesData = [];
+            let currentlySelectedCinemaName = null; // Keep track of selected cinema
+            let currentShowingsForSelectedCinema = []; // Keep its data for re-rendering if needed
+
+            // --- Cinema Website URLs ---
+            // Add official website URLs here. 
+            // The KEY must EXACTLY MATCH the cinema name from your showtimes.json
+            const cinemaWebsiteUrls = {
+                "テアトル新宿": "https://ttcg.jp/theatre_shinjuku/",
+                "ヒューマントラストシネマ渋谷": "https://ttcg.jp/human_trust_cinema_shibuya/", // Verify this path, could be /human_shibuya/
+                // Example: "目黒シネマ": "https://www.megurocinema.com/",
+                // Example: "K's Cinema (ケイズシネマ)": "http://www.ks-cinema.com/"
+            };
+            // --- End Cinema Website URLs ---
 
             async function fetchShowtimes() {
+                // Loading message is already set in HTML
                 try {
                     const response = await fetch(jsonUrl + '?t=' + new Date().getTime()); 
                     if (!response.ok) {
@@ -181,116 +166,153 @@
                     displayCinemaSelection(fullShowtimesData);
                 } catch (error) {
                     console.error("Could not fetch or parse showtimes:", error);
-                    if (initialLoadingMessageContainer) {
-                         initialLoadingMessageContainer.innerHTML = `<p class="error-message">Sorry, showtimes are currently unavailable. Error: ${error.message}.</p>`;
+                    if (loadingMessageTextEl) { 
+                         loadingMessageTextEl.textContent = "Sorry, showtimes are currently unavailable. Error: " + error.message;
+                         if(initialLoadingMessageContainer) initialLoadingMessageContainer.classList.remove('hidden');
                     }
                 }
             }
 
             function displayCinemaSelection(data) {
+                currentlySelectedCinemaName = null; 
+                currentShowingsForSelectedCinema = [];
+
                 if (!cinemaSelectionGrid) return;
                 
-                selectedCinemaShowtimesContainer.innerHTML = ''; // Clear specific cinema view
+                selectedCinemaShowtimesContainer.innerHTML = ''; 
                 selectedCinemaShowtimesContainer.classList.add('hidden');
                 backButton.classList.add('hidden');
                 cinemaSelectionGrid.classList.remove('hidden');
-                cinemaSelectionGrid.innerHTML = ''; // Clear previous grid items
+                cinemaSelectionGrid.innerHTML = '';
 
                 if (!data || data.length === 0) {
-                    cinemaSelectionGrid.innerHTML = '<p>No showtimes data found.</p>';
+                    cinemaSelectionGrid.innerHTML = `<p>No showtimes data found.</p>`;
                     return;
                 }
 
-                const cinemaNames = [...new Set(data.map(showing => showing.cinema || 'Unknown Cinema'))].sort();
+                const allExtractedNames = data.map((showing) => {
+                    return showing.cinema_name || showing.cinema || 'Unknown Cinema';
+                });
+                const cinemaNames = [...new Set(allExtractedNames)].sort();
 
                 cinemaNames.forEach(cinemaName => {
                     const cinemaCard = document.createElement('div');
                     cinemaCard.className = 'cinema-card';
-                    cinemaCard.textContent = cinemaName;
+                    cinemaCard.textContent = cinemaName; 
                     cinemaCard.addEventListener('click', () => handleCinemaClick(cinemaName, data));
                     cinemaSelectionGrid.appendChild(cinemaCard);
                 });
             }
 
             function handleCinemaClick(cinemaName, allData) {
-                cinemaSelectionGrid.classList.add('hidden');
-                selectedCinemaShowtimesContainer.classList.remove('hidden');
-                selectedCinemaShowtimesContainer.innerHTML = ''; // Clear before rendering new
-                backButton.classList.remove('hidden');
+                currentlySelectedCinemaName = cinemaName; 
+                currentShowingsForSelectedCinema = allData.filter(showing => 
+                    (showing.cinema_name || showing.cinema || 'Unknown Cinema') === cinemaName
+                );
 
-                const showingsForSelectedCinema = allData.filter(showing => (showing.cinema || 'Unknown Cinema') === cinemaName);
-                renderShowtimesForCinema(showingsForSelectedCinema, cinemaName);
+                cinemaSelectionGrid.classList.add('hidden');
+                selectedCinemaShowtimesContainer.innerHTML = ''; 
+                selectedCinemaShowtimesContainer.classList.remove('hidden');
+                backButton.classList.remove('hidden');
+                renderShowtimesForCinema(currentShowingsForSelectedCinema, cinemaName);
             }
             
             backButton.addEventListener('click', () => {
-                displayCinemaSelection(fullShowtimesData); // Pass the original full data
+                displayCinemaSelection(fullShowtimesData);
             });
 
             function renderShowtimesForCinema(showings, cinemaName) {
-                // This function is similar to the previous displayShowtimes, but scoped to one cinema
+                selectedCinemaShowtimesContainer.innerHTML = ''; 
+
                 const cinemaSectionDiv = document.createElement('div');
                 cinemaSectionDiv.className = 'cinema-section';
 
+                const headerContainer = document.createElement('div');
+                headerContainer.className = 'cinema-header-container';
+
                 const cinemaTitleHeader = document.createElement('h2');
-                cinemaTitleHeader.textContent = cinemaName;
-                cinemaSectionDiv.appendChild(cinemaTitleHeader);
+                cinemaTitleHeader.textContent = cinemaName; 
+                headerContainer.appendChild(cinemaTitleHeader);
+                
+                // --- Add website link ---
+                console.log("RenderShowtimes: Checking website URL for cinema:", cinemaName); // DEBUG
+                const websiteUrl = cinemaWebsiteUrls[cinemaName];
+                console.log("RenderShowtimes: URL found in map:", websiteUrl); // DEBUG
+
+                if (websiteUrl) {
+                    const websiteLink = document.createElement('a');
+                    websiteLink.href = websiteUrl;
+                    websiteLink.textContent = "Visit Official Website"; // Hardcoded English
+                    websiteLink.className = 'cinema-website-link';
+                    websiteLink.target = "_blank"; 
+                    websiteLink.rel = "noopener noreferrer";
+                    headerContainer.appendChild(websiteLink);
+                    console.log("RenderShowtimes: Website link ADDED for:", cinemaName); // DEBUG
+                } else {
+                    console.log("RenderShowtimes: No website URL found in map for:", cinemaName); // DEBUG
+                }
+                cinemaSectionDiv.appendChild(headerContainer);
+                // --- End website link ---
+
 
                 if (!showings || showings.length === 0) {
-                    cinemaSectionDiv.innerHTML += '<p>No showtimes found for this cinema for the current period.</p>';
+                    const noShowingsP = document.createElement('p');
+                    noShowingsP.textContent = "No showtimes found for this cinema for the current period."; // Hardcoded English
+                    cinemaSectionDiv.appendChild(noShowingsP);
                     selectedCinemaShowtimesContainer.appendChild(cinemaSectionDiv);
                     return;
                 }
 
+                let uniqueScreenNames = new Set();
+                if (showings && showings.length > 0) {
+                    showings.forEach(s => {
+                        const sn = String(s.screen_name || s.screen || "").trim();
+                        if (sn && sn.toLowerCase() !== "unknown screen" && sn.toLowerCase() !== "unknown screen (default)") {
+                            uniqueScreenNames.add(sn);
+                        }
+                    });
+                }
+                const showIndividualScreenNames = uniqueScreenNames.size > 1;
+
                 const byDate = showings.reduce((acc, showing) => {
                     const dateKey = showing.date_text || 'Unknown Date';
-                    if (!acc[dateKey]) {
-                        acc[dateKey] = [];
-                    }
+                    if (!acc[dateKey]) acc[dateKey] = [];
                     acc[dateKey].push(showing);
                     return acc;
                 }, {});
 
-                const sortedDates = Object.keys(byDate).sort();
+                const sortedDates = Object.keys(byDate).sort((a, b) => {
+                    const dateA = parseDateToSort(a);
+                    const dateB = parseDateToSort(b);
+                    if (dateA && dateB) return dateA - dateB;
+                    return a.localeCompare(b); 
+                });
 
                 for (const dateStr of sortedDates) {
                     const dateDiv = document.createElement('div');
                     dateDiv.className = 'date-section';
-
                     const dateTitle = document.createElement('h3');
-                    dateTitle.textContent = formatDateForDisplay(dateStr);
+                    dateTitle.textContent = formatDateForDisplay(dateStr); // Uses English by default now
                     dateDiv.appendChild(dateTitle);
-
                     const ul = document.createElement('ul');
                     ul.className = 'showtimes-list';
-
                     byDate[dateStr].sort((a, b) => (a.showtime || '').localeCompare(b.showtime || ''));
-
                     byDate[dateStr].forEach(showing => {
                         const li = document.createElement('li');
+                        const movieTitle = showing.movie_title || showing.title || 'Unknown Title'; 
+                        const currentScreenName = String(showing.screen_name || showing.screen || "").trim(); 
                         let screenInfo = '';
-                        if (showing.screen && showing.screen.toLowerCase() !== "unknown screen" && showing.screen.toLowerCase() !== "unknown screen (default)") {
-                            screenInfo = `<span class="showtime-screen">(${showing.screen})</span>`;
+                        if (showIndividualScreenNames) {
+                            if (currentScreenName && currentScreenName.toLowerCase() !== "unknown screen" && currentScreenName.toLowerCase() !== "unknown screen (default)") {
+                                screenInfo = `<span class="showtime-screen">(${currentScreenName})</span>`;
+                            }
                         }
-                        
-                        const timeSpan = document.createElement('span');
-                        timeSpan.className = 'showtime-time';
-                        timeSpan.textContent = showing.showtime || 'N/A';
-                        li.appendChild(timeSpan);
-
-                        const titleContainer = document.createElement('span');
-                        titleContainer.className = 'showtime-title-container';
-                        
-                        const titleSpan = document.createElement('span');
-                        titleSpan.className = 'showtime-title';
-                        titleSpan.textContent = showing.title || 'Unknown Title';
-                        titleContainer.appendChild(titleSpan);
-
-                        if (screenInfo) { // Append screen info if available
-                            const screenSpan = document.createElement('span');
-                            screenSpan.innerHTML = screenInfo; // Use innerHTML as screenInfo already contains span tags
-                            titleContainer.appendChild(screenSpan);
-                        }
-                        li.appendChild(titleContainer);
+                        li.innerHTML = `
+                            <span class="showtime-time">${showing.showtime || 'N/A'}</span>
+                            <span class="showtime-title-container">
+                                <span class="showtime-title">${movieTitle}</span>
+                                ${screenInfo}
+                            </span>`;
                         ul.appendChild(li);
                     });
                     dateDiv.appendChild(ul);
@@ -298,51 +320,37 @@
                 }
                 selectedCinemaShowtimesContainer.appendChild(cinemaSectionDiv);
             }
-
-            function formatDateForDisplay(dateString) {
+            
+            function parseDateToSort(dateString) {
                 let match = dateString.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-                if (match) {
-                    try {
-                        const year = parseInt(match[1]);
-                        const month = parseInt(match[2]);
-                        const day = parseInt(match[3]);
-                        const dateObj = new Date(year, month - 1, day);
-                        if (!isNaN(dateObj.getTime())) {
-                            return dateObj.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-                        }
-                    } catch (e) { /* Fall through */ }
-                }
-
+                if (match) return new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3]));
+                
                 match = dateString.match(/^(\d{1,2})\/(\d{1,2})のスケジュール$/);
-                if (match) {
-                    try {
-                        const month = parseInt(match[1]);
-                        const day = parseInt(match[2]);
-                        const dateObj = new Date(new Date().getFullYear(), month - 1, day); 
-                        if (!isNaN(dateObj.getTime())) {
-                            return dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) + " (Schedule)";
-                        }
-                    } catch (e) { /* Fall through */ }
-                }
+                if (match) return new Date(new Date().getFullYear(), parseInt(match[1]) - 1, parseInt(match[2]));
                 
                 match = dateString.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
-                if (match) {
-                    try {
-                        const year = parseInt(match[1]);
-                        const month = parseInt(match[2]);
-                        const day = parseInt(match[3]);
-                        const dateObj = new Date(year, month - 1, day);
-                        if (!isNaN(dateObj.getTime())) {
-                            return dateObj.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-                        }
-                    } catch (e) { /* Fall through */ }
-                }
-                console.warn("Could not parse date for display, returning original:", dateString);
-                return dateString;
+                if (match) return new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3]));
+                
+                return null; 
             }
-            fetchShowtimes();
+
+            function formatDateForDisplay(dateString) { // Now defaults to English
+                const parsedDate = parseDateToSort(dateString);
+                
+                let matchSched = dateString.match(/^(\d{1,2})\/(\d{1,2})のスケジュール$/);
+                if (matchSched && parsedDate) { 
+                    return `${parsedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} (${parsedDate.toLocaleDateString('en-US', { weekday: 'short' })}) (Schedule)`;
+                }
+
+                if (parsedDate) { 
+                    return parsedDate.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+                }
+                return dateString; // Fallback
+            }
+
+            fetchShowtimes(); 
+
         });
     </script>
-
 </body>
 </html>
