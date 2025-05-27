@@ -1,4 +1,4 @@
-name: Scrape Movie Showtimes (No Gemini)
+name: Scrape Movie Showtimes (TMDB/Letterboxd Focused)
 
 on:
   workflow_dispatch: # Allows manual triggering
@@ -8,7 +8,7 @@ on:
 
 jobs:
   scrape_and_commit:
-    runs-on: ubuntu-latest # Use a Linux runner
+    runs-on: ubuntu-latest
 
     steps:
       - name: Check out repository
@@ -28,22 +28,17 @@ jobs:
 
       - name: Install ChromeDriver
         run: |
-          # Get full Chrome version (e.g., 125.0.6422.76)
           CHROME_VERSION_FULL_STRING=$(google-chrome --version)
           echo "Full Chrome Version String: $CHROME_VERSION_FULL_STRING"
-          
-          # Extract the full version number (e.g., 125.0.6422.76)
           CHROME_VERSION_NUMBER=$(echo "$CHROME_VERSION_FULL_STRING" | awk '{print $3}')
           echo "Detected Chrome Version Number: $CHROME_VERSION_NUMBER"
-
-          # Get the ChromeDriver download URL for this specific Chrome version
-          # Uses the new Chrome for Testing JSON endpoints
+          
+          # Use the Chrome for Testing JSON endpoints to get the correct ChromeDriver URL
           CHROMEDRIVER_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json" | jq -r --arg version "$CHROME_VERSION_NUMBER" '.versions[] | select(.version==$version) | .downloads.chromedriver[] | select(.platform=="linux64") | .url' | head -n 1)
 
           if [ -z "$CHROMEDRIVER_URL" ]; then
             echo "Could not find exact match ChromeDriver for Chrome $CHROME_VERSION_NUMBER. Trying to find closest match by major version."
             CHROME_MAJOR_VERSION=$(echo "$CHROME_VERSION_NUMBER" | cut -d. -f1)
-            # Fallback: Get the latest stable ChromeDriver URL for the major version if exact match fails
             CHROMEDRIVER_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" | jq -r --arg major_version "$CHROME_MAJOR_VERSION" '.channels.Stable.downloads.chromedriver[] | select(.platform=="linux64" and (.url | contains($major_version))) | .url' | head -n1 )
           fi
           
@@ -54,44 +49,57 @@ jobs:
 
           echo "Using ChromeDriver URL: $CHROMEDRIVER_URL"
           wget -O chromedriver_linux64.zip "$CHROMEDRIVER_URL"
-          # Unzip and move, ensure correct internal path of the zip
           unzip chromedriver_linux64.zip -d ./chromedriver_temp
-          # The zip from chrome-for-testing often has a structure like: chromedriver-linux64/chromedriver
+          
           if [ -f ./chromedriver_temp/chromedriver-linux64/chromedriver ]; then
             sudo mv ./chromedriver_temp/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
-          elif [ -f ./chromedriver_temp/chromedriver ]; then # Sometimes it's directly in the zip
+          elif [ -f ./chromedriver_temp/chromedriver ]; then
             sudo mv ./chromedriver_temp/chromedriver /usr/local/bin/chromedriver
           else
             echo "ERROR: chromedriver executable not found in expected path within zip."
-            ls -R ./chromedriver_temp # List contents for debugging
+            ls -R ./chromedriver_temp 
             exit 1
           fi
           sudo chmod +x /usr/local/bin/chromedriver
-          rm -rf chromedriver_linux64.zip ./chromedriver_temp # Clean up
+          rm -rf chromedriver_linux64.zip ./chromedriver_temp
           echo "ChromeDriver version installed:"
           chromedriver --version
 
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          # Ensure requirements.txt does NOT necessarily need google-generativeai if you're not using Gemini
           pip install -r requirements.txt 
+          # Ensure 'requests' is in requirements.txt for TMDB API calls.
+          # 'BeautifulSoup4' might not be strictly needed by main_scraper2.py anymore if Eiga.com HTML parsing is gone,
+          # but individual cinema scrapers might still use it. Keep it if unsure.
 
       - name: Run scraper script
-        # No GEMINI_API_KEY needed here
-        run: python main_scraper2.py # Assuming your reverted main scraper is named this
+        run: python main_scraper2.py
+        env:
+          # IMPORTANT: Add your TMDB_API_KEY as a secret in your GitHub repository
+          # Go to your repository > Settings > Secrets and variables > Actions > New repository secret
+          # Name the secret TMDB_API_KEY and paste your key as the value.
+          # The Python script is set up to read this environment variable if TMDB_API_KEY constant is not hardcoded
+          # OR ensure the key is hardcoded in main_scraper2.py as you requested earlier.
+          # If hardcoded, this env var here isn't strictly needed by the script, but it's good practice for future.
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }} 
 
-      - name: Commit and push showtimes.json
+      - name: Commit and push generated files
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add showtimes.json # Or whatever your output JSON file is named
+          
+          # Add all relevant output files
+          git add showtimes.json 
+          git add tmdb_cache.json # Add the TMDB cache file
+          # git add eiga_cache.json # Remove this if you're no longer generating/using eiga_cache.json
+
           if git diff --staged --quiet; then
-            echo "No changes to showtimes.json to commit."
+            echo "No changes to commit."
           else
-            git commit -m "Automated update of showtimes.json"
+            git commit -m "Automated update of showtimes and cache files"
             git push
-            echo "showtimes.json committed and pushed."
+            echo "Generated files committed and pushed."
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
