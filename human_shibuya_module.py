@@ -5,43 +5,42 @@ import requests
 
 # --- Constants ---
 BASE_URL = "https://ttcg.jp"
-SCHEDULE_DATA_URL = f"{BASE_URL}/data/theatre_shinjuku.js"
-PURCHASABLE_DATA_URL = f"{BASE_URL}/data/purchasable.js"
-CINEMA_NAME = "テアトル新宿"
-THEATRE_CODE = "theatre_shinjuku" # Used as a key in purchasable.js
+# Updated for Human Trust Cinema Shibuya
+SCHEDULE_DATA_URL = f"{BASE_URL}/data/human_shibuya.js"
+PURCHASABLE_DATA_URL = f"{BASE_URL}/data/purchasable.js" # This URL is common
+CINEMA_NAME = "ヒューマントラストシネマ渋谷"
+THEATRE_CODE = "human_shibuya" # Updated theatre code
 
-# --- Helper Functions ---
+__all__ = ["scrape_human_shibuya"]
+
+# --- Helper Functions (identical to theatre_shinjuku_module) ---
 
 def _fetch_json_data(url: str) -> Any:
     """Fetches data from a URL and parses it as JSON."""
     try:
-        response = requests.get(url, timeout=15) # Increased timeout
+        response = requests.get(url, timeout=15)
         response.raise_for_status()
         content = response.text
         
-        # Attempt to strip common JS variable assignments or JSONP wrappers
         if content.endswith(';'):
             content = content[:-1]
         
-        # Handle "var variableName = jsonContent;"
         if '=' in content:
             parts = content.split('=', 1)
             if len(parts) > 1:
                 potential_json = parts[1].strip()
-                # Basic check if it looks like JSON
                 if (potential_json.startswith('{') and potential_json.endswith('}')) or \
                    (potential_json.startswith('[') and potential_json.endswith(']')):
                     content = potential_json
         
-        # Handle potential callback(jsonContent)
         if content.startswith('callback(') and content.endswith(')'):
             content = content[len('callback('):-1]
             
         return json.loads(content)
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching URL {url}: {e}")
+        print(f"Error fetching URL {url} for {CINEMA_NAME}: {e}")
     except json.JSONDecodeError as e:
-        print(f"Error decoding JSON from {url}: {e}")
+        print(f"Error decoding JSON from {url} for {CINEMA_NAME}: {e}")
         print(f"Content snippet: {content[:500]}...")
     return None
 
@@ -83,33 +82,49 @@ def _get_availability_status_and_url(time_info: Dict, theatre_purchasable: bool)
     purchase_url = url if can_purchase_online_now and url and str(url).startswith("http") else None
     return status_text, purchase_url
 
-def _get_screen_display_name(json_screen_name: str) -> str:
-    """Maps JSON screen name to display name."""
-    if json_screen_name == "座席券": 
-        return "odessaシアター"
-    return json_screen_name 
+def _get_screen_display_name(json_screen_name: str, movie_title: str = "") -> str:
+    """
+    Maps JSON screen name to display name.
+    For Human Trust Shibuya, screen names like "ｼｱﾀｰ1" (half-width) are common.
+    We'll try to normalize them slightly if needed, but mostly use them as is.
+    """
+    # Example: "ｼｱﾀｰ1" -> "シアター1" (Full-width for consistency if desired)
+    # However, the raw names from their JSON (e.g., screen_name_short) are often what's displayed.
+    # For now, we'll assume the name from JSON is mostly usable.
+    # If specific mappings are needed (like "座席券" for Theatre Shinjuku), they'd go here.
+    # Human Trust Shibuya seems to use names like "ｼｱﾀｰ1", "ｼｱﾀｰ2", "ｼｱﾀｰ3" in screen_name_short.
+    # The 'name' field in the screen object might be more descriptive.
+    
+    # Let's assume the 'name' field in screen_info is the one to use.
+    # If it's like "ｼｱﾀｰ1(座席券)", we might want to simplify it.
+    if "(座席券)" in json_screen_name:
+        return json_screen_name.replace("(座席券)", "").strip()
+    
+    return json_screen_name
+
 
 # --- Main Scraper Function ---
 
-def scrape_theatre_shinjuku(max_days: int = 7) -> List[Dict]:
+def scrape_human_shibuya(max_days: int = 7) -> List[Dict]:
     """
-    Scrapes movie showings for Theatre Shinjuku for up to max_days.
+    Scrapes movie showings for Human Trust Cinema Shibuya for up to max_days.
     """
     fetched_schedule_data = _fetch_json_data(SCHEDULE_DATA_URL)
     purchasable_info = _fetch_json_data(PURCHASABLE_DATA_URL)
 
     actual_schedule_data = None
+    # The .js file might be wrapped in a list containing one dictionary
     if isinstance(fetched_schedule_data, list):
         if len(fetched_schedule_data) == 1 and isinstance(fetched_schedule_data[0], dict):
             actual_schedule_data = fetched_schedule_data[0]
         else:
-            print(f"DEBUG: Fetched schedule_data is a list but not in expected format. Len: {len(fetched_schedule_data)}")
+            print(f"DEBUG: Fetched schedule_data for {CINEMA_NAME} is a list but not in expected format. Len: {len(fetched_schedule_data)}")
             return []
     elif isinstance(fetched_schedule_data, dict):
         actual_schedule_data = fetched_schedule_data
     
     if not actual_schedule_data or not purchasable_info:
-        print("Failed to fetch or parse critical schedule or purchasable data correctly. Aborting.")
+        print(f"Failed to fetch or parse critical schedule or purchasable data for {CINEMA_NAME}. Aborting.")
         return []
 
     is_theatre_purchasable = purchasable_info.get(THEATRE_CODE, False)
@@ -123,15 +138,13 @@ def scrape_theatre_shinjuku(max_days: int = 7) -> List[Dict]:
 
     for date_obj in dates_to_process:
         try:
-            # Ensure date components are strings for key creation and formatting
             raw_year = str(date_obj['date_year'])
-            raw_month = str(date_obj['date_month']) # Keep raw for key
-            raw_day = str(date_obj['date_day'])   # Keep raw for key
+            raw_month = str(date_obj['date_month']) 
+            raw_day = str(date_obj['date_day'])   
             
-            # For display/output, ensure padding
             display_month = raw_month.zfill(2)
             display_day = raw_day.zfill(2)
-            current_date_iso_str = f"{raw_year}-{display_month}-{display_day}" # Changed variable name for clarity
+            current_date_iso_str = f"{raw_year}-{display_month}-{display_day}"
             
             movie_ids_for_date = date_obj.get('movie', [])
 
@@ -142,8 +155,6 @@ def scrape_theatre_shinjuku(max_days: int = 7) -> List[Dict]:
                 if isinstance(movie_data_for_id, list):
                     if movie_data_for_id and isinstance(movie_data_for_id[0], dict):
                         processed_movie_details = movie_data_for_id[0] 
-                    else:
-                        pass 
                 elif isinstance(movie_data_for_id, dict):
                     processed_movie_details = movie_data_for_id
                 
@@ -167,8 +178,9 @@ def scrape_theatre_shinjuku(max_days: int = 7) -> List[Dict]:
                     if not isinstance(screen_info, dict): 
                         continue
 
-                    raw_screen_name = screen_info.get('name', 'スクリーン情報なし')
-                    screen_display_name = _get_screen_display_name(raw_screen_name)
+                    # Use 'screen_name_short' if 'name' is too verbose or includes "(座席券)"
+                    raw_screen_name = screen_info.get('screen_name_short') or screen_info.get('name', 'スクリーン情報なし')
+                    screen_display_name = _get_screen_display_name(raw_screen_name, movie_title)
                     
                     for time_info in screen_info.get('time', []):
                         if not isinstance(time_info, dict): 
@@ -191,7 +203,7 @@ def scrape_theatre_shinjuku(max_days: int = 7) -> List[Dict]:
                         showing_info = {
                             "cinema_name": CINEMA_NAME,
                             "movie_title": movie_title,
-                            "date_text": current_date_iso_str, # Changed "date" to "date_text"
+                            "date_text": current_date_iso_str,
                             "showtime": showtime_str,
                             "end_time": end_time_str,
                             "screen_name": screen_display_name,
@@ -210,27 +222,26 @@ def scrape_theatre_shinjuku(max_days: int = 7) -> List[Dict]:
             
     unique_showings_dict = {}
     for s_item in all_showings:
-        # Ensure "date_text" is used in the key for uniqueness check
         key = (s_item["cinema_name"], s_item["movie_title"], s_item["date_text"], s_item["showtime"], s_item["screen_name"])
         if key not in unique_showings_dict:
             unique_showings_dict[key] = s_item
             
     return list(unique_showings_dict.values())
 
-# --- Main Execution ---
+# --- Main Execution (for testing this module directly) ---
 if __name__ == "__main__":
     print(f"INFO: Scraping {CINEMA_NAME} for up to 7 days...")
-    showings = scrape_theatre_shinjuku(max_days=7)
+    showings = scrape_human_shibuya(max_days=7)
     
-    print(f"\nCollected {len(showings)} showings.")
+    print(f"\nCollected {len(showings)} showings for {CINEMA_NAME}.")
     if showings:
         print("\nFirst few showings:")
         for i, showing in enumerate(showings[:5]):
-            print(f"--- Showing {i+1} ---")
+            print(f"--- Showing {i+1} ({CINEMA_NAME}) ---")
             for key, value in showing.items():
                 print(f"  {key}: {value}")
         
-        print(f"\n--- Example of a showing with purchase URL (if any) ---")
+        print(f"\n--- Example of a showing with purchase URL (if any) from {CINEMA_NAME} ---")
         found_purchasable = False
         for showing in showings:
             if showing["purchase_url"]:
@@ -239,7 +250,7 @@ if __name__ == "__main__":
                 found_purchasable = True
                 break
         if not found_purchasable:
-            print("  No showings with an active online purchase URL found in the sample.")
+            print(f"  No showings with an active online purchase URL found in the sample for {CINEMA_NAME}.")
     else:
-        print("No showings collected or an error occurred during scraping.")
+        print(f"No showings collected for {CINEMA_NAME} or an error occurred during scraping.")
 
