@@ -27,6 +27,7 @@ import cinema_qualite_module
 import theatre_shinjuku_module
 import human_shibuya_module
 import cine_quinto_module
+import yebisu_garden_module
 
 # ---------------------------------------------------------------------------
 #  Configure UTF‑8 stdout / stderr on Windows so Japanese prints correctly
@@ -85,6 +86,7 @@ def run_all_scrapers() -> List[Dict]:
     all_rows += _run_scraper("Theatre Shinjuku",         theatre_shinjuku_module.scrape_theatre_shinjuku)
     all_rows += _run_scraper("Human Trust Cinema Shibuya", human_shibuya_module.scrape_human_shibuya)
     all_rows += _run_scraper("Cine Quinto",              cine_quinto_module.scrape_cinequinto_shibuya)
+    all_rows += _run_scraper("YEBISU Garden Cinema",     yebisu_garden_module.scrape_ygc)
 
 
     print(f"\nTotal listings collected from all cinemas: {len(all_rows)}")
