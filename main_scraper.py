@@ -1,132 +1,122 @@
+# main_scraper.py – orchestrates all individual cinema scrapers
+# Author: ChatGPT assistant (2025‑05‑27)
+#
+# Usage:
+#     python main_scraper.py  # collects listings and writes showtimes.json
+#
+# ---------------------------------------------------------------------------
+#  Standard library imports
+# ---------------------------------------------------------------------------
 import json
-import image_forum_module
-import eurospace_module 
-import shin_bungeiza_module
-import stranger_module  
-import ks_cinema_module # <-- ADDED IMPORT FOR K'S CINEMA
-import sys 
-import io  
+import sys
+import io
+from typing import List, Dict, Callable
 
-# --- Start: Configure stdout and stderr for UTF-8 on Windows (for this script's prints) ---
+# ---------------------------------------------------------------------------
+#  Import individual cinema modules
+# ---------------------------------------------------------------------------
+# NOTE: Keep this list alphabetised for sanity!
+import cinemart_shinjuku_module            # NEW: Cinemart Shinjuku
+import eurospace_module
+import image_forum_module
+import ks_cinema_module
+import musashino_kan_module                # Shinjuku Musashino‑kan
+import shin_bungeiza_module
+import stranger_module
+import cinema_qualite_module
+
+# ---------------------------------------------------------------------------
+#  Configure UTF‑8 stdout / stderr on Windows so Japanese prints correctly
+# ---------------------------------------------------------------------------
 if sys.platform == "win32":
     try:
-        if sys.stdout.encoding != 'utf-8':
-            sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-        if sys.stderr.encoding != 'utf-8':
-            sys.stderr.reconfigure(encoding='utf-8', errors='replace')
-        print("Note: main_scraper stdout/stderr reconfigured to UTF-8 for Windows.", file=sys.__stderr__)
+        if sys.stdout.encoding.lower() != "utf-8":
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        if sys.stderr.encoding.lower() != "utf-8":
+            sys.stderr.reconfigure(encoding="utf-8", errors="replace")
     except Exception:
-        pass 
-# --- End: Configure stdout and stderr ---
+        # Fails on older Pythons – non‑fatal
+        pass
 
-def run_all_scrapers():
-    print("Starting all scrapers...")
-    all_movie_listings = []
+# ---------------------------------------------------------------------------
+#  Helper to run a single scraper with common error handling
+# ---------------------------------------------------------------------------
 
-    # Scrape Theatre Image Forum
-    print("\nScraping Theatre Image Forum...")
+def _run_scraper(label: str, func: Callable[[], List[Dict]]):
+    """Run *func* (a scraper) and return its list of listing dicts.
+
+    Any exceptions are caught and logged; the function then returns an empty
+    list so that the rest of the scrapers continue to run.
+    """
+    print(f"\nScraping {label} …")
     try:
-        image_forum_showings = image_forum_module.scrape_image_forum()
-        if image_forum_showings:
-            all_movie_listings.extend(image_forum_showings)
-            print(f"Found {len(image_forum_showings)} listings for Theatre Image Forum.")
+        rows = func() or []
+        if rows:
+            print(f"Found {len(rows)} listings for {label}.")
         else:
-            print("No listings found for Theatre Image Forum.")
-    except Exception as e:
-        print(f"Error during Image Forum scraping: {e}", file=sys.stderr)
+            print(f"No listings found for {label}.")
+        return rows
+    except Exception as exc:
+        print(f"Error during {label} scraping: {exc}", file=sys.stderr)
         import traceback
         traceback.print_exc(file=sys.stderr)
+        return []
+
+# ---------------------------------------------------------------------------
+#  Main orchestrator that executes every scraper
+# ---------------------------------------------------------------------------
+
+def run_all_scrapers() -> List[Dict]:
+    print("Starting all scrapers …")
+    all_rows: List[Dict] = []
+
+    # Order loosely west‑to‑east across Tokyo, then alphabetical within area.
+    all_rows += _run_scraper("Theatre Image Forum",      image_forum_module.scrape_image_forum)
+    all_rows += _run_scraper("Eurospace",                eurospace_module.scrape_eurospace)
+    all_rows += _run_scraper("Shin‑Bungeiza",            shin_bungeiza_module.scrape_shin_bungeiza)
+    all_rows += _run_scraper("Stranger",                 stranger_module.scrape_stranger)
+    all_rows += _run_scraper("K's Cinema",               ks_cinema_module.scrape_ks_cinema)
+    all_rows += _run_scraper("Shinjuku Musashino‑kan",   musashino_kan_module.scrape_musashino_kan)
+    all_rows += _run_scraper("Cinemart Shinjuku",        cinemart_shinjuku_module.scrape_cinemart_shinjuku)  # NEW
+    all_rows += _run_scraper("Cinema Qualite",           cinema_qualite_module.scrape_cinema_qualite)  # NEW
 
 
-    # Scrape Eurospace
-    print("\nScraping Eurospace...")
+    print(f"\nTotal listings collected from all cinemas: {len(all_rows)}")
+    return all_rows
+
+# ---------------------------------------------------------------------------
+#  JSON output helper
+# ---------------------------------------------------------------------------
+
+def save_to_json(data: List[Dict], filename: str = "showtimes.json") -> None:
+    """Write *data* to *filename* in UTF‑8 JSON."""
     try:
-        eurospace_showings = eurospace_module.scrape_eurospace()
-        if eurospace_showings:
-            all_movie_listings.extend(eurospace_showings)
-            print(f"Found {len(eurospace_showings)} listings for Eurospace.")
-        else:
-            print("No listings found for Eurospace.")
-    except Exception as e:
-        print(f"Error during Eurospace scraping: {e}", file=sys.stderr)
+        with open(filename, "w", encoding="utf-8") as fp:
+            json.dump(data, fp, ensure_ascii=False, indent=2)
+        print(f"Data successfully saved to {filename} (\u2192 {len(data)} rows).")
+    except IOError as io_err:
+        print(f"IO error saving {filename}: {io_err}", file=sys.stderr)
+    except Exception as exc:
+        print(f"Unexpected error while saving JSON: {exc}", file=sys.stderr)
         import traceback
         traceback.print_exc(file=sys.stderr)
 
-    # Scrape Shin-Bungeiza
-    print("\nScraping Shin-Bungeiza...")
-    try:
-        shin_bungeiza_showings = shin_bungeiza_module.scrape_shin_bungeiza()
-        if shin_bungeiza_showings:
-            all_movie_listings.extend(shin_bungeiza_showings)
-            print(f"Found {len(shin_bungeiza_showings)} listings for Shin-Bungeiza.")
-        else:
-            print("No listings found for Shin-Bungeiza.")
-    except Exception as e:
-        print(f"Error during Shin-Bungeiza scraping: {e}", file=sys.stderr)
-        import traceback
-        traceback.print_exc(file=sys.stderr)
-        
-    # Scrape Stranger
-    print("\nScraping Stranger cinema...")
-    try:
-        stranger_showings = stranger_module.scrape_stranger() 
-        if stranger_showings:
-            all_movie_listings.extend(stranger_showings)
-            print(f"Found {len(stranger_showings)} listings for Stranger cinema.")
-        else:
-            print("No listings found for Stranger cinema.")
-    except Exception as e:
-        print(f"Error during Stranger cinema scraping: {e}", file=sys.stderr)
-        import traceback
-        traceback.print_exc(file=sys.stderr)
+# ---------------------------------------------------------------------------
+#  Command‑line entry‑point
+# ---------------------------------------------------------------------------
 
-    # Scrape K's Cinema  <-- ADDED SECTION FOR K'S CINEMA
-    print("\nScraping K's Cinema...")
-    try:
-        ks_cinema_showings = ks_cinema_module.scrape_ks_cinema() 
-        if ks_cinema_showings:
-            all_movie_listings.extend(ks_cinema_showings)
-            print(f"Found {len(ks_cinema_showings)} listings for K's Cinema.")
-        else:
-            print("No listings found for K's Cinema.")
-    except Exception as e:
-        print(f"Error during K's Cinema scraping: {e}", file=sys.stderr)
-        import traceback
-        traceback.print_exc(file=sys.stderr)
-        
-    # --- LATER, YOU WILL ADD CALLS TO OTHER CINEMA SCRAPERS HERE ---
+if __name__ == "__main__":
+    dataset = run_all_scrapers()
 
-    print(f"\nTotal listings collected from all scrapers: {len(all_movie_listings)}")
-    return all_movie_listings
-
-def save_to_json(data, filename="showtimes.json"):
-    """Saves the provided data to a JSON file."""
-    try:
-        with open(filename, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-        print(f"Data successfully saved to {filename}")
-    except IOError as e:
-        print(f"Error saving data to {filename}: {e}", file=sys.stderr)
-    except Exception as e:
-        print(f"An unexpected error occurred while saving to JSON: {e}", file=sys.stderr)
-        import traceback
-        traceback.print_exc(file=sys.stderr)
-
-
-if __name__ == '__main__':
-    collected_data = run_all_scrapers()
-    if collected_data:
+    if dataset:
         try:
-            collected_data.sort(key=lambda x: (x.get('cinema', ''), x.get('date_text', ''), x.get('showtime', '')))
-        except Exception as e_sort:
-            print(f"Note: Could not sort collected data due to an error: {e_sort}. Proceeding with unsorted data.", file=sys.stderr)
-            
-        save_to_json(collected_data)
-        print("\n--- First few aggregated results (if any) ---")
-        for i, item in enumerate(collected_data[:5]): 
-             print(f"  {item.get('cinema')} - {item.get('date_text')} - {item.get('title')} - {item.get('showtime')}")
-        if len(collected_data) > 5:
-            print(f"  ... and {len(collected_data) - 5} more.")
+            # Primary sort to make diff‑ing easier between runs
+            dataset.sort(key=lambda d: (
+                d.get("cinema", ""),
+                d.get("date_text", ""),
+                d.get("showtime", ""),
+            ))
+        except Exception as sort_err:
+            print(f"Note: could not sort dataset due to {sort_err}. Proceeding unsorted.")
 
-    else:
-        print("No data collected from any scraper, JSON file not created.")
+    save_to_json(dataset)
