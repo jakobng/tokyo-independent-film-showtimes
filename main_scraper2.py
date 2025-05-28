@@ -27,6 +27,17 @@ import yebisu_garden_module
 import theatreguild_daikanyama_module
 import meguro_cinema_module
 import polepole_module
+import shimotakaido_module
+import nfaj_calendar_module    as nfaj_module
+import human_yurakucho_module                               
+import waseda_shochiku_module
+import k2_cinema_module   
+import bacchus_calendar_module
+import cinema_rosa_module   
+import chupki_module
+import laputa_asagaya_module                            
+
+
 
 # --- Google Gemini API Import ---
 try:
@@ -49,7 +60,7 @@ TMDB_API_KEY = 'da2b1bc852355f12a86dd5e7ec48a1ee'
 TMDB_API_BASE_URL = 'https://api.themoviedb.org/3'
 TMDB_CACHE_FILE = "tmdb_cache.json"
 LETTERBOXD_TMDB_BASE_URL = "https://letterboxd.com/tmdb/"
-GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY' # <<< --- PASTE YOUR KEY HERE
+GEMINI_API_KEY = 'AIzaSyBN94-OYBGsA3gtQGed3Xgyq60XtjxS9NI' # <<< --- PASTE YOUR KEY HERE
 GEMINI_MODEL_NAME = 'gemini-1.5-flash'
 gemini_model = None
 EIGA_SEARCH_BASE_URL = "https://eiga.com/search/"
@@ -410,6 +421,15 @@ def run_all_scrapers(): # ... (same as before, ensure all modules are listed)
     all_listings += _run_scraper("Theatre Guild Daikanyama", theatreguild_daikanyama_module.scrape_theatreguild_daikanyama)
     all_listings += _run_scraper("Meguro Cinema", meguro_cinema_module.scrape_meguro_cinema)
     all_listings += _run_scraper("Pole-Pole Higashi-Nakano", polepole_module.scrape_polepole)
+    all_listings += _run_scraper("Human Trust Cinema Yurakucho", human_yurakucho_module.scrape_human_yurakucho)
+    all_listings += _run_scraper("Waseda Shochiku",waseda_shochiku_module.scrape_waseda_shochiku)
+    all_listings += _run_scraper("Shimotakaido Cinema",shimotakaido_module.scrape_shimotakaido)
+    all_listings += _run_scraper("National Film Archive of Japan", nfaj_module.scrape_nfaj_calendar)
+    all_listings += _run_scraper("K2 Cinema", k2_cinema_module.scrape_k2_cinema)
+    all_listings += _run_scraper("Theater Bacchus",bacchus_calendar_module.scrape_bacchus_calendar)
+    all_listings += _run_scraper("Laputa Asagaya",laputa_asagaya_module.scrape_laputa_asagaya_selenium)
+    all_listings += _run_scraper("Chupki",chupki_module.scrape_chupki)  # default max_days=10)
+    all_listings += _run_scraper("Ikebukuro Cinema Rosa", lambda:cinema_rosa_module.scrape_cinema_rosa_schedule(web_key="c34cee0e-5a5e-4b99-8978-f04879a82299", cinema_name_override="池袋シネマ・ロサ"))
     print(f"\nCollected a total of {len(all_listings)} showings.")
     return all_listings
 
