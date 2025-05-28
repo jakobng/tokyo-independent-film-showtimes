@@ -11,9 +11,24 @@
     "id": 30198,
     "title": "紅い眼鏡"
   },
-  "結界の寺": null,
-  "ざくろの色": null,
-  "チャップリンの番頭／子宝騒動": null,
+  "結界の寺": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E7%B5%90%E7%95%8C%E3%81%AE%E5%AF%BA"
+  },
+  "ざくろの色": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%81%96%E3%81%8F%E3%82%8D%E3%81%AE%E8%89%B2"
+  },
+  "チャップリンの番頭／子宝騒動": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%80%90%E7%AC%AC%E4%BA%94%E5%9B%9E%E3%82%AB%E3%83%84%E3%83%99%E3%83%B3%E6%98%A0%E7%94%BB%E7%A5%AD%E3%80%91%E3%83%81%E3%83%A3%E3%83%83%E3%83%97%E3%83%AA%E3%83%B3%E3%81%AE%E7%95%AA%E9%A0%AD%EF%BC%8F%E5%AD%90%E5%AE%9D%E9%A8%92%E5%8B%95"
+  },
   "血": {
     "id": 592452,
     "title": "血まみれスケバンチェーンソーRED 前編 ネロの復讐"
@@ -26,14 +41,29 @@
     "id": 467938,
     "title": "REVENGE リベンジ"
   },
-  "Dr.カキゾエ 歩く処方箋": null,
-  "バースデイ・パーティ／天国の暴動": null,
+  "Dr.カキゾエ 歩く処方箋": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/Dr.%E3%82%AB%E3%82%AD%E3%82%BE%E3%82%A8%20%E6%AD%A9%E3%81%8F%E5%87%A6%E6%96%B9%E7%AE%8B%E2%98%85%E3%83%88%E3%83%BC%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%BC%E4%BB%98%E3%81%8D"
+  },
+  "バースデイ・パーティ／天国の暴動": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%90%E3%83%BC%E3%82%B9%E3%83%87%E3%82%A4%E3%83%BB%E3%83%91%E3%83%BC%E3%83%86%E3%82%A3%EF%BC%8F%E5%A4%A9%E5%9B%BD%E3%81%AE%E6%9A%B4%E5%8B%95"
+  },
   "ロボット・ドリームズ": {
     "id": 838240,
     "title": "ロボット・ドリームズ"
   },
   "テルマがゆく": null,
-  "ジェイ・ローゼンブラット特集：私はかつて映画作家だった Jay Rosenblatt: I Used To Be a Filmmaker": null,
+  "ジェイ・ローゼンブラット特集：私はかつて映画作家だった Jay Rosenblatt: I Used To Be a Filmmaker": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%82%B8%E3%82%A7%E3%82%A4%E3%83%BB%E3%83%AD%E3%83%BC%E3%82%BC%E3%83%B3%E3%83%96%E3%83%A9%E3%83%83%E3%83%88%E7%89%B9%E9%9B%86%EF%BC%9A%E7%A7%81%E3%81%AF%E3%81%8B%E3%81%A4%E3%81%A6%E6%98%A0%E7%94%BB%E4%BD%9C%E5%AE%B6%E3%81%A0%E3%81%A3%E3%81%9F%20Jay%20Rosenblatt%3A%20I%20Used%20To%20Be%20a%20Filmmaker"
+  },
   "グランド・マスター": {
     "id": 44865,
     "title": "グランド・マスター"
@@ -51,7 +81,12 @@
     "id": 438339,
     "title": "夜空はいつでも最高密度の青色だ"
   },
-  "怪談 皿屋敷／クトゥルフの呼び声": null,
+  "怪談 皿屋敷／クトゥルフの呼び声": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%80%90%E7%AC%AC%E4%BA%94%E5%9B%9E%E3%82%AB%E3%83%84%E3%83%99%E3%83%B3%E6%98%A0%E7%94%BB%E7%A5%AD%E3%80%91%E6%80%AA%E8%AB%87%20%E7%9A%BF%E5%B1%8B%E6%95%B7%EF%BC%8F%E3%82%AF%E3%83%88%E3%82%A5%E3%83%AB%E3%83%95%E3%81%AE%E5%91%BC%E3%81%B3%E5%A3%B0"
+  },
   "もず": {
     "id": 593128,
     "title": "もず"
@@ -64,7 +99,12 @@
     "id": 35854,
     "title": "導火線 FLASH POINT"
   },
-  "溶岩の家": null,
+  "溶岩の家": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E6%BA%B6%E5%B2%A9%E3%81%AE%E5%AE%B6"
+  },
   "美しい星": {
     "id": 449225,
     "title": "美しい星"
@@ -77,14 +117,34 @@
     "id": 1101179,
     "title": "片思い世界"
   },
-  "わたのまち、応答セヨ": null,
+  "わたのまち、応答セヨ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%82%8F%E3%81%9F%E3%81%AE%E3%81%BE%E3%81%A1%E3%80%81%E5%BF%9C%E7%AD%94%E3%82%BB%E3%83%A8"
+  },
   "太陽（ティダ）の運命": {
     "id": 1443397,
     "title": "太陽（ティダ）の運命"
   },
-  "十八才": null,
-  "ベテラン凶悪犯罪捜査班": null,
-  "ドッグ・レディ": null,
+  "十八才": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E5%8D%81%E5%85%AB%E6%89%8D"
+  },
+  "ベテラン凶悪犯罪捜査班": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%99%E3%83%86%E3%83%A9%E3%83%B3%E5%87%B6%E6%82%AA%E7%8A%AF%E7%BD%AA%E6%8D%9C%E6%9F%BB%E7%8F%AD"
+  },
+  "ドッグ・レディ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%89%E3%83%83%E3%82%B0%E3%83%BB%E3%83%AC%E3%83%87%E3%82%A3"
+  },
   "無名の人生": {
     "id": 1441453,
     "title": "無名の人生"
@@ -113,7 +173,12 @@
     "id": 1064213,
     "title": "ANORA アノーラ"
   },
-  "詩人たちは": null,
+  "詩人たちは": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E8%A9%A9%E4%BA%BA%E3%81%9F%E3%81%A1%E3%81%AF%E3%80%9C"
+  },
   "アイアン・ジャイアント": {
     "id": 10386,
     "title": "アイアン・ジャイアント"
@@ -126,17 +191,52 @@
     "id": 70927,
     "title": "じゃりン子チエ 劇場版"
   },
-  "石の上の花": null,
-  "ネファリアス": null,
-  "新世紀ロマンティクス": null,
-  "ブルースの魂": null,
-  "ボールド アズ、君": null,
+  "石の上の花": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E7%9F%B3%E3%81%AE%E4%B8%8A%E3%81%AE%E8%8A%B1"
+  },
+  "ネファリアス": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%8D%E3%83%95%E3%82%A1%E3%83%AA%E3%82%A2%E3%82%B9"
+  },
+  "新世紀ロマンティクス": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E6%96%B0%E4%B8%96%E7%B4%80%E3%83%AD%E3%83%9E%E3%83%B3%E3%83%86%E3%82%A3%E3%82%AF%E3%82%B9"
+  },
+  "ブルースの魂": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%96%E3%83%AB%E3%83%BC%E3%82%B9%E3%81%AE%E9%AD%82"
+  },
+  "ボールド アズ、君": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%9C%E3%83%BC%E3%83%AB%E3%83%89%20%E3%82%A2%E3%82%BA%E3%80%81%E5%90%9B%E3%80%82"
+  },
   "赤毛のアン グリーンゲーブルズへの道": {
     "id": 373394,
     "title": "赤毛のアン グリーンゲーブルズへの道"
   },
-  "ゴールデン・エイティーズ": null,
-  "スラム砦の伝説": null,
+  "ゴールデン・エイティーズ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%82%B4%E3%83%BC%E3%83%AB%E3%83%87%E3%83%B3%E3%83%BB%E3%82%A8%E3%82%A4%E3%83%86%E3%82%A3%E3%83%BC%E3%82%BA"
+  },
+  "スラム砦の伝説": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%82%B9%E3%83%A9%E3%83%A0%E7%A0%A6%E3%81%AE%E4%BC%9D%E8%AA%AC"
+  },
   "カリガリ博士": {
     "id": 109133,
     "title": "怪人カリガリ博士"
@@ -146,7 +246,12 @@
     "id": 612415,
     "title": "Queer Japan"
   },
-  "STARDUST ZERO": null,
+  "STARDUST ZERO": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/STARDUST%20ZERO%EF%BC%BB0530%EF%BD%B2%EF%BE%8D%EF%BE%9E%EF%BE%9D%EF%BE%84%EF%BC%BD"
+  },
   "恋空": {
     "id": 40713,
     "title": "恋空"
@@ -155,25 +260,60 @@
     "id": 1012837,
     "title": "ボーン・トゥ・フライ"
   },
-  "第34回日プロ大賞授賞式": null,
-  "一晩中": null,
-  "ドラゴン・ハートー霊界探訪記ー": null,
+  "第34回日プロ大賞授賞式": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E7%AC%AC34%E5%9B%9E%E6%97%A5%E3%83%97%E3%83%AD%E5%A4%A7%E8%B3%9E%E6%8E%88%E8%B3%9E%E5%BC%8F"
+  },
+  "一晩中": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E4%B8%80%E6%99%A9%E4%B8%AD"
+  },
+  "ドラゴン・ハートー霊界探訪記ー": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%89%E3%83%A9%E3%82%B4%E3%83%B3%E3%83%BB%E3%83%8F%E3%83%BC%E3%83%88%E3%83%BC%E9%9C%8A%E7%95%8C%E6%8E%A2%E8%A8%AA%E8%A8%98%E3%83%BC"
+  },
   "恋の花咲く 伊豆の踊子": {
     "id": 164105,
     "title": "恋の花咲く 伊豆の踊子"
   },
-  "普通の生活』ほか短編7作品": null,
-  "アンドリエーシ": null,
+  "普通の生活』ほか短編7作品": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%80%8E%E6%99%AE%E9%80%9A%E3%81%AE%E7%94%9F%E6%B4%BB%E3%80%8F%E3%81%BB%E3%81%8B%E7%9F%AD%E7%B7%A87%E4%BD%9C%E5%93%81"
+  },
+  "アンドリエーシ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%82%A2%E3%83%B3%E3%83%89%E3%83%AA%E3%82%A8%E3%83%BC%E3%82%B7"
+  },
   "CROSSPOINT クロスポイント": {
     "id": 1297201,
     "title": "Crosspoint"
   },
-  "ホテル・モンタレー": null,
+  "ホテル・モンタレー": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%9B%E3%83%86%E3%83%AB%E3%83%BB%E3%83%A2%E3%83%B3%E3%82%BF%E3%83%AC%E3%83%BC"
+  },
   "ガラ": {
     "id": 372756,
     "title": "ガラスの花と壊す世界"
   },
-  "ドラゴン・ハート 霊界探訪記": null,
+  "ドラゴン・ハート 霊界探訪記": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%89%E3%83%A9%E3%82%B4%E3%83%B3%E3%83%BB%E3%83%8F%E3%83%BC%E3%83%88%20%E9%9C%8A%E7%95%8C%E6%8E%A2%E8%A8%AA%E8%A8%98"
+  },
   "アイルランド映画祭2025＞青いヴァイオリンの奇跡": null,
   "続・黄金の七人 ／レインボー作戦": {
     "id": 168536,
@@ -187,7 +327,12 @@
     "id": 538620,
     "title": "世界でいちばん貧しい大統領　愛と闘争の男、ホセ・ムヒカ"
   },
-  "内定代行": null,
+  "内定代行": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E5%86%85%E5%AE%9A%E4%BB%A3%E8%A1%8C"
+  },
   "トレインスポッティング": {
     "id": 627,
     "title": "トレインスポッティング"
@@ -196,15 +341,35 @@
     "id": 75362,
     "title": "BADBOYS"
   },
-  "アントニーとクレオパトラ": null,
-  "娼生": null,
+  "アントニーとクレオパトラ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%80%90%E7%AC%AC%E4%BA%94%E5%9B%9E%E3%82%AB%E3%83%84%E3%83%99%E3%83%B3%E6%98%A0%E7%94%BB%E7%A5%AD%E3%80%91%E3%82%A2%E3%83%B3%E3%83%88%E3%83%8B%E3%83%BC%E3%81%A8%E3%82%AF%E3%83%AC%E3%82%AA%E3%83%91%E3%83%88%E3%83%A9"
+  },
+  "娼生": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E5%A8%BC%E7%94%9F"
+  },
   "MIRRORLIAR FILMS Season7": null,
   "Flow": {
     "id": 262610,
     "title": "Flow"
   },
-  "サムサッカー": null,
-  "サスカッチ・サンセット": null,
+  "サムサッカー": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%82%B5%E3%83%A0%E3%82%B5%E3%83%83%E3%82%AB%E3%83%BC"
+  },
+  "サスカッチ・サンセット": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%82%B5%E3%82%B9%E3%82%AB%E3%83%83%E3%83%81%E3%83%BB%E3%82%B5%E3%83%B3%E3%82%BB%E3%83%83%E3%83%88"
+  },
   "グレース": {
     "id": 11575,
     "title": "グレートレース"
@@ -213,7 +378,12 @@
     "id": 457832,
     "title": "リセット 決死のカウントダウン"
   },
-  "星より静かに": null,
+  "星より静かに": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E6%98%9F%E3%82%88%E3%82%8A%E9%9D%99%E3%81%8B%E3%81%AB"
+  },
   "カップルズ": {
     "id": 54421,
     "title": "カップルズ"
@@ -222,12 +392,22 @@
     "id": 112538,
     "title": "超劇場版ケロロ軍曹 3 ケロロ対ケロロ 天空大決戦であります！"
   },
-  "デビルズ・バス THE DEVIL'S BATH": null,
+  "デビルズ・バス THE DEVIL'S BATH": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%87%E3%83%93%E3%83%AB%E3%82%BA%E3%83%BB%E3%83%90%E3%82%B9%20THE%20DEVIL%27S%20BATH"
+  },
   "折にふれて": {
     "id": 1306455,
     "title": "折にふれて"
   },
-  "アンナの出会い": null,
+  "アンナの出会い": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%82%A2%E3%83%B3%E3%83%8A%E3%81%AE%E5%87%BA%E4%BC%9A%E3%81%84"
+  },
   "グリーンブック": {
     "id": 490132,
     "title": "グリーンブック"
@@ -240,13 +420,28 @@
     "id": 823598,
     "title": "ゴールドフィンガー 巨大金融詐欺事件"
   },
-  "サザンオールスターズ LIVE TOUR 2025「THA": null,
+  "サザンオールスターズ LIVE TOUR 2025「THA": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%82%B5%E3%82%B6%E3%83%B3%E3%82%AA%E3%83%BC%E3%83%AB%E3%82%B9%E3%82%BF%E3%83%BC%E3%82%BA%20LIVE%20TOUR%202025%E3%80%8CTHA"
+  },
   "青銅の基督": {
     "id": 199236,
     "title": "青銅の基督"
   },
-  "蒲田モダンことはじめ／母": null,
-  "ｻｽｶｯﾁ・ｻﾝｾｯﾄ": null,
+  "蒲田モダンことはじめ／母": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%80%90%E7%AC%AC%E4%BA%94%E5%9B%9E%E3%82%AB%E3%83%84%E3%83%99%E3%83%B3%E6%98%A0%E7%94%BB%E7%A5%AD%E3%80%91%E8%92%B2%E7%94%B0%E3%83%A2%E3%83%80%E3%83%B3%E3%81%93%E3%81%A8%E3%81%AF%E3%81%98%E3%82%81%EF%BC%8F%E6%AF%8D"
+  },
+  "ｻｽｶｯﾁ・ｻﾝｾｯﾄ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%80%90odessa%E3%80%91%EF%BD%BB%EF%BD%BD%EF%BD%B6%EF%BD%AF%EF%BE%81%E3%83%BB%EF%BD%BB%EF%BE%9D%EF%BD%BE%EF%BD%AF%EF%BE%84"
+  },
   "アイルランド映画祭2025＞フォー・マザーズ": null,
   "悪女の季節": {
     "id": 535789,
@@ -256,7 +451,12 @@
     "id": 11171,
     "title": "Mysterious Skin"
   },
-  "チャージマン研": null,
+  "チャージマン研": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%81%E3%83%A3%E3%83%BC%E3%82%B8%E3%83%9E%E3%83%B3%E7%A0%94%EF%BC%81%E2%98%85%E4%B8%8A%E6%98%A0%E5%BE%8C%E3%83%88%E3%83%BC%E3%82%AF%E4%BB%98"
+  },
   "今日の空が一番好き": {
     "id": 1361156,
     "title": "今日の空が一番好きとまだ言えない僕は"
@@ -275,7 +475,12 @@
     "id": 311105,
     "title": "放浪三昧"
   },
-  "ミュージック・フォー ・ブラック・ピジョン -ジャズが生まれる瞬間": null,
+  "ミュージック・フォー ・ブラック・ピジョン -ジャズが生まれる瞬間": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%9F%E3%83%A5%E3%83%BC%E3%82%B8%E3%83%83%E3%82%AF%E3%83%BB%E3%83%95%E3%82%A9%E3%83%BC%20%E3%83%BB%E3%83%96%E3%83%A9%E3%83%83%E3%82%AF%E3%83%BB%E3%83%94%E3%82%B8%E3%83%A7%E3%83%B3%20-%E3%82%B8%E3%83%A3%E3%82%BA%E3%81%8C%E7%94%9F%E3%81%BE%E3%82%8C%E3%82%8B%E7%9E%AC%E9%96%93-"
+  },
   "舟を編む": {
     "id": 182827,
     "title": "舟を編む"
@@ -285,26 +490,66 @@
     "title": "よそ者の会"
   },
   "アイルランド映画祭2025＞「ブルー・ロード エドナ・オブライエン物語": null,
-  "ヒプノシス レコードジャケットの美学": null,
-  "バロウズ": null,
+  "ヒプノシス レコードジャケットの美学": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%92%E3%83%97%E3%83%8E%E3%82%B7%E3%82%B9%20%E3%83%AC%E3%82%B3%E3%83%BC%E3%83%89%E3%82%B8%E3%83%A3%E3%82%B1%E3%83%83%E3%83%88%E3%81%AE%E7%BE%8E%E5%AD%A6"
+  },
+  "バロウズ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%90%E3%83%AD%E3%82%A6%E3%82%BA"
+  },
   "ピンク・フラミンゴ": {
     "id": 692,
     "title": "ピンク・フラミンゴ"
   },
-  "ダーティ・マネー": null,
-  "恋人強奪": null,
+  "ダーティ・マネー": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%80%E3%83%BC%E3%83%86%E3%82%A3%E3%83%BB%E3%83%9E%E3%83%8D%E3%83%BC"
+  },
+  "恋人強奪": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%80%90%E7%AC%AC%E4%BA%94%E5%9B%9E%E3%82%AB%E3%83%84%E3%83%99%E3%83%B3%E6%98%A0%E7%94%BB%E7%A5%AD%E3%80%91%E6%81%8B%E4%BA%BA%E5%BC%B7%E5%A5%AA"
+  },
   "6時間後に君は死ぬ": {
     "id": 277623,
     "title": "6時間後に君は死ぬ"
   },
-  "ベルリン・天使の詩 ４Ｋレストア版": null,
-  "狂ったリビドー": null,
-  "KIDDO キドー": null,
+  "ベルリン・天使の詩 ４Ｋレストア版": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%99%E3%83%AB%E3%83%AA%E3%83%B3%E3%83%BB%E5%A4%A9%E4%BD%BF%E3%81%AE%E8%A9%A9%20%EF%BC%94%EF%BC%AB%E3%83%AC%E3%82%B9%E3%83%88%E3%82%A2%E7%89%88"
+  },
+  "狂ったリビドー": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E7%8B%82%E3%81%A3%E3%81%9F%E3%83%AA%E3%83%93%E3%83%89%E3%83%BC"
+  },
+  "KIDDO キドー": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/KIDDO%20%E3%82%AD%E3%83%89%E3%83%BC"
+  },
   "海街diary": {
     "id": 315846,
     "title": "海街diary"
   },
-  "IT'S NOT ME イッツ・ノット・ミー": null,
+  "IT'S NOT ME イッツ・ノット・ミー": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/IT%27S%20NOT%20ME%20%E3%82%A4%E3%83%83%E3%83%84%E3%83%BB%E3%83%8E%E3%83%83%E3%83%88%E3%83%BB%E3%83%9F%E3%83%BC"
+  },
   "今日の空が一番好き、とまだ言えない僕は": {
     "id": 1361156,
     "title": "今日の空が一番好きとまだ言えない僕は"
@@ -319,7 +564,12 @@
     "id": 426063,
     "title": "ノスフェラトゥ"
   },
-  "ゲッベルス ヒトラーをプロデュースした男": null,
+  "ゲッベルス ヒトラーをプロデュースした男": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%82%B2%E3%83%83%E3%83%99%E3%83%AB%E3%82%B9%20%E3%83%92%E3%83%88%E3%83%A9%E3%83%BC%E3%82%92%E3%83%97%E3%83%AD%E3%83%87%E3%83%A5%E3%83%BC%E3%82%B9%E3%81%97%E3%81%9F%E7%94%B7"
+  },
   "暗殺": {
     "id": 970347,
     "title": "ザ・キラー ジョン・ウー/暗殺者の挽歌"
@@ -336,7 +586,12 @@
     "id": 1125897,
     "title": "Boneless Lantern"
   },
-  "オステンデ": null,
+  "オステンデ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%82%AA%E3%82%B9%E3%83%86%E3%83%B3%E3%83%87"
+  },
   "現代人": {
     "id": 199470,
     "title": "現代人"
@@ -362,18 +617,38 @@
     "id": 100,
     "title": "ロック、ストック&トゥー・スモーキング・バレルズ"
   },
-  "劇場が終わるとき": null,
+  "劇場が終わるとき": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E5%8A%87%E5%A0%B4%E3%81%8C%E7%B5%82%E3%82%8F%E3%82%8B%E3%81%A8%E3%81%8D"
+  },
   "とうちゃん": {
     "id": 1028269,
     "title": "欲しがり奈々ちゃん ～ひとくち、ちょうだい～"
   },
-  "デビルズ・バス": null,
-  "惑星ラブソング 特別上映会": null,
+  "デビルズ・バス": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%87%E3%83%93%E3%83%AB%E3%82%BA%E3%83%BB%E3%83%90%E3%82%B9"
+  },
+  "惑星ラブソング 特別上映会": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E6%83%91%E6%98%9F%E3%83%A9%E3%83%96%E3%82%BD%E3%83%B3%E3%82%B0%E3%80%80%E7%89%B9%E5%88%A5%E4%B8%8A%E6%98%A0%E4%BC%9A"
+  },
   "インファナル・アフェア": {
     "id": 10775,
     "title": "インファナル・アフェア"
   },
-  "ジョン・バージャーと4つの季節 The Seasons In Quincy: Four Portraits of John Berger": null,
+  "ジョン・バージャーと4つの季節 The Seasons In Quincy: Four Portraits of John Berger": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%82%B8%E3%83%A7%E3%83%B3%E3%83%BB%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A3%E3%83%BC%E3%81%A84%E3%81%A4%E3%81%AE%E5%AD%A3%E7%AF%80%20The%20Seasons%20In%20Quincy%3A%20Four%20Portraits%20of%20John%20Berger"
+  },
   "骨": {
     "id": 381902,
     "title": "西遊記 孫悟空 vs 白骨夫人"
@@ -390,22 +665,42 @@
     "id": 715742,
     "title": "トレンケ・ラウケン"
   },
-  "ベテラン 凶悪犯罪捜査班": null,
+  "ベテラン 凶悪犯罪捜査班": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%99%E3%83%86%E3%83%A9%E3%83%B3%E3%80%80%E5%87%B6%E6%82%AA%E7%8A%AF%E7%BD%AA%E6%8D%9C%E6%9F%BB%E7%8F%AD"
+  },
   "ヴァージン・スーサイズ": {
     "id": 1443,
     "title": "ヴァージン・スーサイズ"
   },
-  "Ondan Sonra": null,
+  "Ondan Sonra": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/Ondan%20Sonra%EF%BC%BB0530%EF%BD%B2%EF%BE%8D%EF%BE%9E%EF%BE%9D%EF%BE%84%EF%BC%BD"
+  },
   "火の馬": {
     "id": 57212,
     "title": "戦火の馬"
   },
-  "オルメイヤーの阿房宮": null,
+  "オルメイヤーの阿房宮": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%82%AA%E3%83%AB%E3%83%A1%E3%82%A4%E3%83%A4%E3%83%BC%E3%81%AE%E9%98%BF%E6%88%BF%E5%AE%AE"
+  },
   "眠れぬ夜": {
     "id": 11338,
     "title": "眠れぬ夜のために"
   },
-  "特集上映〉アラン・ギロディ監督特集": null,
+  "特集上映〉アラン・ギロディ監督特集": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%80%88%E7%89%B9%E9%9B%86%E4%B8%8A%E6%98%A0%E3%80%89%E3%82%A2%E3%83%A9%E3%83%B3%E3%83%BB%E3%82%AE%E3%83%AD%E3%83%87%E3%82%A3%E7%9B%A3%E7%9D%A3%E7%89%B9%E9%9B%86"
+  },
   "VENUS ヴィーナス": {
     "id": 13771,
     "title": "ヴィーナス"
@@ -426,7 +721,12 @@
     "id": 1137219,
     "title": "NOT BEER"
   },
-  "キムソジュン": null,
+  "キムソジュン": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%82%AD%E3%83%A0%E3%82%BD%E3%82%B8%E3%83%A5%E3%83%B3"
+  },
   "ジャンヌ・ディエルマン ブリュッセル1080、 コメルス河畔通り23番地": {
     "id": 44012,
     "title": "ジャンヌ・ディエルマン ブリュッセル1080、コメルス河畔通り23番地"
@@ -435,9 +735,24 @@
     "id": 286872,
     "title": "酔っぱらい天国"
   },
-  "マリリン・モンロー 私の愛しかた": null,
-  "ドレスコーズLIVE映像上映会": null,
-  "メイデン The MAIDEN": null,
+  "マリリン・モンロー 私の愛しかた": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%9E%E3%83%AA%E3%83%AA%E3%83%B3%E3%83%BB%E3%83%A2%E3%83%B3%E3%83%AD%E3%83%BC%E3%80%80%E7%A7%81%E3%81%AE%E6%84%9B%E3%81%97%E3%81%8B%E3%81%9F"
+  },
+  "ドレスコーズLIVE映像上映会": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%89%E3%83%AC%E3%82%B9%E3%82%B3%E3%83%BC%E3%82%BALIVE%E6%98%A0%E5%83%8F%E4%B8%8A%E6%98%A0%E4%BC%9A"
+  },
+  "メイデン The MAIDEN": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%A1%E3%82%A4%E3%83%87%E3%83%B3%20The%20MAIDEN"
+  },
   "ベン・ハー": {
     "id": 665,
     "title": "ベン・ハー"
@@ -446,12 +761,22 @@
     "id": 108808,
     "title": "桜の森の満開の下"
   },
-  "真夏の果実": null,
+  "真夏の果実": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E7%9C%9F%E5%A4%8F%E3%81%AE%E6%9E%9C%E5%AE%9F"
+  },
   "たべっ子どうぶつ": {
     "id": 1329578,
     "title": "たべっ子どうぶつ THE MOVIE"
   },
-  "それでも私は Though I’m His Daughter": null,
+  "それでも私は Though I’m His Daughter": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%81%9D%E3%82%8C%E3%81%A7%E3%82%82%E7%A7%81%E3%81%AF%20Though%20I%E2%80%99m%20His%20Daughter"
+  },
   "君の名前で僕を呼んで": {
     "id": 398818,
     "title": "君の名前で僕を呼んで"
@@ -495,40 +820,140 @@
     "title": "ミッシング・チャイルド・ビデオテープ"
   },
   "フェイクアウト": null,
-  "アシク・ケリブ": null,
-  "BADBOYS-THE MOVIE": null,
-  "伝説巨神イデオン": null,
-  "ｺﾛｯｻﾙ･ﾕｰｽ": null,
-  "ｳﾞｧﾝﾀﾞの部屋": null,
-  "ｵｽﾃﾝﾃﾞ": null,
-  "ﾄﾞｯｸﾞ･ﾚﾃﾞｨ": null,
-  "5時から7時までのジュヒ": null,
-  "999号室": null,
-  "THEATER＋神さまの轍 -checkpoint of the life": null,
+  "アシク・ケリブ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%82%A2%E3%82%B7%E3%82%AF%E3%83%BB%E3%82%B1%E3%83%AA%E3%83%96"
+  },
+  "BADBOYS-THE MOVIE": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/BADBOYS-THE%20MOVIE-"
+  },
+  "伝説巨神イデオン": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%80%8C%E4%BC%9D%E8%AA%AC%E5%B7%A8%E7%A5%9E%E3%82%A4%E3%83%87%E3%82%AA%E3%83%B3%E3%80%8D%E4%B8%80%E6%8C%99%E4%B8%8A%E6%98%A0"
+  },
+  "ｺﾛｯｻﾙ･ﾕｰｽ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%EF%BD%BA%EF%BE%9B%EF%BD%AF%EF%BD%BB%EF%BE%99%EF%BD%A5%EF%BE%95%EF%BD%B0%EF%BD%BD"
+  },
+  "ｳﾞｧﾝﾀﾞの部屋": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%EF%BD%B3%EF%BE%9E%EF%BD%A7%EF%BE%9D%EF%BE%80%EF%BE%9E%E3%81%AE%E9%83%A8%E5%B1%8B"
+  },
+  "ｵｽﾃﾝﾃﾞ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%EF%BD%B5%EF%BD%BD%EF%BE%83%EF%BE%9D%EF%BE%83%EF%BE%9E"
+  },
+  "ﾄﾞｯｸﾞ･ﾚﾃﾞｨ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%EF%BE%84%EF%BE%9E%EF%BD%AF%EF%BD%B8%EF%BE%9E%EF%BD%A5%EF%BE%9A%EF%BE%83%EF%BE%9E%EF%BD%A8"
+  },
+  "5時から7時までのジュヒ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/5%E6%99%82%E3%81%8B%E3%82%897%E6%99%82%E3%81%BE%E3%81%A7%E3%81%AE%E3%82%B8%E3%83%A5%E3%83%92"
+  },
+  "999号室": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/999%E5%8F%B7%E5%AE%A4"
+  },
+  "THEATER＋神さまの轍 -checkpoint of the life": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/THEATER%EF%BC%8B%E7%A5%9E%E3%81%95%E3%81%BE%E3%81%AE%E8%BD%8D%20-checkpoint%20of%20the%20life-"
+  },
   "どうすればよかったか": {
     "id": 1188968,
     "tmdb_title": "どうすればよかったか？"
   },
-  "ひと夏のファンタジア": null,
-  "デリカド DELIKADO": null,
-  "デヴォキ 神に捧げられた女たち 劇場版": null,
-  "ノーバディーズ・ヒーロー": null,
+  "ひと夏のファンタジア": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%81%B2%E3%81%A8%E5%A4%8F%E3%81%AE%E3%83%95%E3%82%A1%E3%83%B3%E3%82%BF%E3%82%B8%E3%82%A2"
+  },
+  "デリカド DELIKADO": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%87%E3%83%AA%E3%82%AB%E3%83%89%20DELIKADO"
+  },
+  "デヴォキ 神に捧げられた女たち 劇場版": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%87%E3%83%B4%E3%82%A9%E3%82%AD%20%E7%A5%9E%E3%81%AB%E6%8D%A7%E3%81%92%E3%82%89%E3%82%8C%E3%81%9F%E5%A5%B3%E3%81%9F%E3%81%A1%20%E5%8A%87%E5%A0%B4%E7%89%88"
+  },
+  "ノーバディーズ・ヒーロー": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%8E%E3%83%BC%E3%83%90%E3%83%87%E3%82%A3%E3%83%BC%E3%82%BA%E3%83%BB%E3%83%92%E3%83%BC%E3%83%AD%E3%83%BC"
+  },
   "ノー・アザー・ランド 故郷は他にない": {
     "id": 1232493,
     "tmdb_title": "ノー・アザー・ランド 故郷は他にない"
   },
-  "ミゼリコルディア": null,
-  "作道雄監督×津田寛治さん トークイベント": null,
+  "ミゼリコルディア": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%9F%E3%82%BC%E3%83%AA%E3%82%B3%E3%83%AB%E3%83%87%E3%82%A3%E3%82%A2"
+  },
+  "作道雄監督×津田寛治さん トークイベント": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E4%BD%9C%E9%81%93%E9%9B%84%E7%9B%A3%E7%9D%A3%C3%97%E6%B4%A5%E7%94%B0%E5%AF%9B%E6%B2%BB%E3%81%95%E3%82%93%20%E3%83%88%E3%83%BC%E3%82%AF%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88"
+  },
   "君の忘れ方": {
     "id": 1377524,
     "tmdb_title": "君の忘れ方"
   },
-  "湖の見知らぬ男": null,
-  "能登デモクラシー": null,
-  "赤毛のアン ～グリーンゲーブルズへの道": null,
+  "湖の見知らぬ男": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E6%B9%96%E3%81%AE%E8%A6%8B%E7%9F%A5%E3%82%89%E3%81%AC%E7%94%B7"
+  },
+  "能登デモクラシー": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E8%83%BD%E7%99%BB%E3%83%87%E3%83%A2%E3%82%AF%E3%83%A9%E3%82%B7%E3%83%BC"
+  },
+  "赤毛のアン ～グリーンゲーブルズへの道": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E8%B5%A4%E6%AF%9B%E3%81%AE%E3%82%A2%E3%83%B3%20%EF%BD%9E%E3%82%B0%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B2%E3%83%BC%E3%83%96%E3%83%AB%E3%82%BA%E3%81%B8%E3%81%AE%E9%81%93%EF%BD%9E"
+  },
   "鹿の国": {
     "id": 1438120,
     "tmdb_title": "鹿の国"
   },
-  "ﾄﾞﾗｺﾞﾝ･ﾊｰﾄ": null
+  "ﾄﾞﾗｺﾞﾝ･ﾊｰﾄ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%80%90%E6%97%A5%E6%9C%AC%E8%AA%9E%E5%AD%97%E5%B9%95%E3%80%91%EF%BE%84%EF%BE%9E%EF%BE%97%EF%BD%BA%EF%BE%9E%EF%BE%9D%EF%BD%A5%EF%BE%8A%EF%BD%B0%EF%BE%84"
+  }
 }
