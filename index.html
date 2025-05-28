@@ -7,18 +7,17 @@
 <style>
         :root {
             --primary-yellow: #FFC300;
-            --light-bg: #f4f4f4; /* Slightly softer light background */
+            --light-bg: #f4f4f4; 
             --content-bg: #ffffff;
             --dark-text: #333333;
             --medium-text: #555555;
             --light-text-on-dark: #f0f0f0;
             --border-color: #e0e0e0;
             --shadow-color: rgba(0, 0, 0, 0.1);
-            --category-header-bg: #efefef; /* Background for category headers */
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-            margin: 0; padding: 20px; background-color: var(--light-bg); /* Using the softer light bg */
+            margin: 0; padding: 20px; background-color: var(--light-bg);
             color: var(--dark-text); line-height: 1.6; font-size: 16px;
         }
         .container {
@@ -35,53 +34,53 @@
             content: ''; display: block; width: 80px; height: 4px;
             background-color: var(--primary-yellow); margin: 15px auto 0;
         }
-        /* Updated #cinema-selection-grid to be a simple container */
-        #cinema-selection-grid-container { /* Renamed for clarity if needed, or keep as cinema-selection-grid */
+        #cinema-selection-grid-container {
             margin-bottom: 40px;
         }
         .category-block {
-            margin-bottom: 40px; /* Space between category groups */
+            margin-bottom: 35px;
         }
-        .category-block h3 { /* Style for category headers */
-            font-size: 1.8em;
+        .category-block h3 { /* Category headers - made smaller */
+            font-size: 1.0em; /
             color: var(--dark-text);
-            margin-top: 20px;
-            margin-bottom: 25px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid var(--primary-yellow);
-            font-weight: 700;
-            letter-spacing: 0.5px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-yellow); /* Slightly thinner border */
+            font-weight: 600; 
+            letter-spacing: 0.2px;
         }
-        .cinema-card-container { /* This will now be the grid for cards */
+        .cinema-card-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 25px;
+            gap: 20px;
         }
         .cinema-card {
             background-color: var(--content-bg); color: var(--dark-text);
-            padding: 20px;
+            padding: 18px;
             border-radius: 8px; text-align: center;
-            font-size: 1.1em; font-weight: 600; cursor: pointer;
+            font-size: 1.05em; font-weight: 600; cursor: pointer;
             transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, border-color 0.2s ease-out;
             border: 1px solid var(--border-color); box-shadow: 0 2px 5px var(--shadow-color);
             display: flex;
             flex-direction: column;
             justify-content: center;
-            min-height: 100px;
+            min-height: 90px;
         }
         .cinema-card:hover {
             border-color: var(--primary-yellow);
             transform: translateY(-5px) scale(1.02);
             box-shadow: 0 8px 20px rgba(0,0,0,0.12);
         }
-        .cinema-japanese-name { /* This will now hold the primary display name */
+        .cinema-japanese-name { 
             display: block;
             color: var(--dark-text);
+            font-weight: 600; 
         }
         .cinema-card:hover .cinema-japanese-name {
             color: var(--primary-yellow);
         }
-        .cinema-english-name-card { /* This will now hold the secondary display name */
+        .cinema-english-name-card { 
             font-size: 0.8em;
             font-weight: 400;
             color: var(--medium-text);
@@ -89,18 +88,34 @@
             margin-top: 4px;
             line-height: 1.2;
         }
+        .cinema-location-card { 
+            font-size: 0.7em; 
+            font-weight: 400;
+            color: #6c757d; 
+            display: block;
+            margin-top: 3px;
+            line-height: 1.1;
+        }
         .cinema-section h2 {
             font-size: 2em; color: var(--dark-text); font-weight: 600;
             margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid var(--primary-yellow);
             padding-bottom: 10px; line-height: 1.3;
         }
-        .cinema-english-name-header { /* This will now hold the secondary display name for headers */
+        .cinema-english-name-header { 
             font-size: 0.6em;
             font-weight: 500;
             color: var(--medium-text);
             display: block;
             margin-top: 2px;
             line-height: 1.2;
+        }
+        .cinema-location-header {
+            font-size: 0.5em; 
+            font-weight: 400;
+            color: #6c757d;
+            display: block;
+            margin-top: 1px;
+            line-height: 1.1;
         }
         .action-button {
             display: inline-block; margin-bottom: 15px; margin-right: 10px; padding: 10px 20px;
@@ -158,7 +173,8 @@
     <div class="container">
         <header> <h1 id="main-header">Tokyo Independent Cinema Showtimes</h1> </header>
         <button id="back-to-cinemas-btn" class="action-button hidden">&laquo; Back to Cinemas</button>
-        <div id="cinema-selection-grid-container"> </div>
+        <div id="cinema-selection-grid-container">
+            </div>
         <div id="selected-cinema-showtimes"></div>
         <div id="initial-loading-message-container"> <p id="loading-message-text">Loading movie showtimes...</p> </div>
     </div>
@@ -166,20 +182,20 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const jsonUrl = 'showtimes.json';
-            const cinemaSelectionGridContainerEl = document.getElementById('cinema-selection-grid-container'); // Using the new ID
+            const cinemaSelectionGridContainerEl = document.getElementById('cinema-selection-grid-container');
             const selectedCinemaShowtimesContainer = document.getElementById('selected-cinema-showtimes');
             const initialLoadingMessageContainer = document.getElementById('initial-loading-message-container');
             const loadingMessageTextEl = document.getElementById('loading-message-text');
             const backButton = document.getElementById('back-to-cinemas-btn');
             let fullShowtimesData = [];
 
-            // Ensure keys here EXACTLY match cinema names from your showtimes.json
             const cinemaWebsiteUrls = {
                 "K's Cinema (ケイズシネマ)": "https://www.ks-cinema.com/",
                 "シネマート新宿": "https://www.cinemart.co.jp/theater/shinjuku/",
                 "新宿シネマカリテ": "https://qualite.musashino-k.jp/",
                 "新宿武蔵野館": "https://shinjuku.musashino-k.jp/",
                 "テアトル新宿": "https://ttcg.jp/theatre_shinjuku/",
+                "早稲田松竹": "http://www.wasedashochiku.co.jp/",
                 "シアターギルド代官山": "https://theaterguild.co/movie/space/daikanyama/",
                 "YEBISU GARDEN CINEMA": "https://www.unitedcinemas.jp/ygc/index.html",
                 "シアター・イメージフォーラム": "https://www.imageforum.co.jp/",
@@ -197,32 +213,25 @@
                 "ラピュタ阿佐ヶ谷": "https://www.laputa-jp.com/",
                 "下高井戸シネマ": "http://www.shimotakaidocinema.com/",
                 "国立映画アーカイブ": "https://www.nfaj.go.jp/",
-                "早稲田松竹": "http://www.wasedashochiku.co.jp/",
                 "池袋シネマ・ロサ": "https://www.cinemarosa.net/"
             };
 
-            // For cinemas where the name in showtimes.json is English-like,
-            // but you want a specific Japanese name as the PRIMARY display.
-            // Key: Name as it appears in showtimes.json
-            // Value: Preferred Japanese name for display
             const preferredJapaneseDisplayNames = {
                 "YEBISU GARDEN CINEMA": "恵比寿ガーデンシネマ",
                 "K2 Cinema": "K2シネマ",
-                "Theater Bacchus": "シアターバッカス高円寺", // Example, adjust as needed
-                "Chupki": "チュプキ・タバタ" // Example, adjust as needed
+                "Theater Bacchus": "シアターバッカス高円寺",
+                "Chupki": "チュプキ・タバタ",
             };
 
-            // Provides English names, primarily for when the name in showtimes.json is Japanese,
-            // OR to provide a specific English variant if the JSON name is already English but different.
-            // Key: Name as it appears in showtimes.json
             const cinemaEnglishNames = {
                 "K's Cinema (ケイズシネマ)": "K's Cinema",
                 "シネマート新宿": "Cinemart Shinjuku",
                 "新宿シネマカリテ": "Shinjuku Cinema Qualite",
                 "新宿武蔵野館": "Shinjuku Musashino-kan",
                 "テアトル新宿": "Theatre Shinjuku",
+                "早稲田松竹": "Waseda Shochiku",
                 "シアターギルド代官山": "Theatre Guild Daikanyama",
-                "YEBISU GARDEN CINEMA": "Yebisu Garden Cinema", // Can be same as JSON key if it's already English
+                "YEBISU GARDEN CINEMA": "Yebisu Garden Cinema",
                 "シアター・イメージフォーラム": "Theatre Image Forum",
                 "シネクイント渋谷": "Cine Quinto Shibuya",
                 "ユーロスペース": "Eurospace",
@@ -231,22 +240,37 @@
                 "新文芸坐": "Shin-Bungeiza",
                 "目黒シネマ": "Meguro Cinema",
                 "ポレポレ東中野": "Pole Pole Higashi-Nakano",
-                "Chupki": "Chupki Tabata", // Or "Chupki" if that's preferred English
-                "K2 Cinema": "K2 Cinema", // Or "K2 Cinema Shimo-kitazawa"
+                "Chupki": "Chupki Tabata",
+                "K2 Cinema": "K2 Cinema",
                 "Theater Bacchus": "Theater Bacchus",
                 "ヒューマントラストシネマ有楽町": "Human Trust Cinema Yurakucho",
                 "ラピュタ阿佐ヶ谷": "Laputa Asagaya",
                 "下高井戸シネマ": "Shimotakaido Cinema",
                 "国立映画アーカイブ": "National Film Archive of Japan",
-                "早稲田松竹": "Waseda Shochiku",
                 "池袋シネマ・ロサ": "Ikebukuro Cinema Rosa"
+            };
+            
+            const cinemaLocations = {
+                "Stranger (ストレンジャー)": "Sumida-ku 墨田区",
+                "新文芸坐": "Toshima-ku 豊島区",
+                "目黒シネマ": "Shinagawa-ku 品川区 (Meguro Area)", // Technically Shinagawa, near Meguro
+                "ポレポレ東中野": "Nakano-ku 中野区",
+                "Chupki": "Kita-ku 北区", // If primary name is チュプキ・タバタ, this could be just "田端" or Kita-ku
+                "K2 Cinema": "Setagaya-ku 世田谷区 (下北沢)",
+                "Theater Bacchus": "Suginami-ku 杉並区 (高円寺)",
+                "ヒューマントラストシネマ有楽町": "Chiyoda-ku 千代田区",
+                "ラピュタ阿佐ヶ谷": "Suginami-ku 杉並区",
+                "下高井戸シネマ": "Setagaya-ku 世田谷区",
+                "国立映画アーカイブ": "Chuo-ku 中央区 (京橋)",
+                "池袋シネマ・ロサ": "Toshima-ku 豊島区"
+                // Waseda Shochiku is now in Shinjuku-ku category, location tag might be optional
             };
 
             const cinemaCategories = [
-                { name: "SHINJUKU",
+                { name: "SHINJUKU-KU", // Renamed
                   cinemas: [
                     "K's Cinema (ケイズシネマ)", "シネマート新宿", "新宿シネマカリテ",
-                    "新宿武蔵野館", "テアトル新宿"
+                    "新宿武蔵野館", "テアトル新宿", "早稲田松竹" // Moved Waseda Shochiku
                   ]
                 },
                 { name: "SHIBUYA-KU",
@@ -255,9 +279,7 @@
                     "シネクイント渋谷", "ユーロスペース", "ヒューマントラストシネマ渋谷"
                   ]
                 }
-                // "OTHER" category will be handled dynamically
             ];
-
 
             function isProbablyNotJapanese(text) {
                 if (!text) return false;
@@ -303,13 +325,13 @@
                 const allCinemaNamesFromData = [...new Set(data.map(s => s.cinema_name || s.cinema || 'Unknown Cinema'))];
                 const categorizedCinemaNames = new Set();
 
-                function createCinemaCard(cinemaNameInJson) {
+                function createCinemaCard(cinemaNameInJson, isOtherCategoryCinema) {
                     const cinemaCard = document.createElement('div');
                     cinemaCard.className = 'cinema-card';
                     
                     let primaryDisplayName = cinemaNameInJson;
                     let secondaryDisplayName = null;
-
+                    
                     if (preferredJapaneseDisplayNames.hasOwnProperty(cinemaNameInJson)) {
                         primaryDisplayName = preferredJapaneseDisplayNames[cinemaNameInJson];
                         secondaryDisplayName = cinemaNameInJson; 
@@ -322,56 +344,64 @@
                             }
                         }
                     }
-                    // ---- DEBUGGING CONSOLE LOG ----
-                    console.log(`Card Gen - JSON Name: "${cinemaNameInJson}", Primary: "${primaryDisplayName}", Secondary: "${secondaryDisplayName}"`);
-                    // ------------------------------
+                    
+                    let locationTextForCard = isOtherCategoryCinema && cinemaLocations.hasOwnProperty(cinemaNameInJson) 
+                                            ? cinemaLocations[cinemaNameInJson] 
+                                            : null;
 
-                    const japaneseNameHtml = `<span class="cinema-japanese-name">${primaryDisplayName}</span>`;
-                    let englishNameHtml = '';
+                    console.log(`Card Gen - JSON Name: "${cinemaNameInJson}", Primary: "${primaryDisplayName}", Secondary: "${secondaryDisplayName || 'None'}", Location: "${locationTextForCard || 'None'}"`);
+
+                    const mainNameHtml = `<span class="cinema-japanese-name">${primaryDisplayName}</span>`;
+                    let subNameHtml = '';
                     if (secondaryDisplayName) {
                         const mainLower = primaryDisplayName.toLowerCase();
                         const subLower = secondaryDisplayName.toLowerCase();
                         const primaryPartOfMain = primaryDisplayName.split(" (")[0].trim().toLowerCase();
 
                         if (subLower !== mainLower && subLower !== primaryPartOfMain) {
-                            englishNameHtml = `<span class="cinema-english-name-card">(${secondaryDisplayName})</span>`;
+                            subNameHtml = `<span class="cinema-english-name-card">(${secondaryDisplayName})</span>`;
                         } else if (subLower !== mainLower && !primaryDisplayName.includes('(')) {
-                             englishNameHtml = `<span class="cinema-english-name-card">(${secondaryDisplayName})</span>`;
+                             subNameHtml = `<span class="cinema-english-name-card">(${secondaryDisplayName})</span>`;
                         }
                     }
                     
-                    cinemaCard.innerHTML = japaneseNameHtml + englishNameHtml;
+                    let locationHtml = '';
+                    if (locationTextForCard) { 
+                        locationHtml = `<span class="cinema-location-card">${locationTextForCard}</span>`;
+                    }
+                    
+                    cinemaCard.innerHTML = mainNameHtml + subNameHtml + locationHtml;
                     cinemaCard.addEventListener('click', () => handleCinemaClick(cinemaNameInJson, fullShowtimesData));
                     return cinemaCard;
                 }
 
-
                 cinemaCategories.forEach(category => {
                     const categoryBlock = document.createElement('div');
                     categoryBlock.className = 'category-block';
-
                     const categoryHeader = document.createElement('h3');
                     categoryHeader.textContent = category.name;
-                    categoryBlock.appendChild(categoryHeader);
-
+                    
                     const cardContainer = document.createElement('div');
                     cardContainer.className = 'cinema-card-container';
 
                     const cinemasInThisCategory = allCinemaNamesFromData
                         .filter(nameInJson => category.cinemas.includes(nameInJson))
                         .map(nameInJson => {
-                            let primaryDisplayName = preferredJapaneseDisplayNames.hasOwnProperty(nameInJson) 
-                                                     ? preferredJapaneseDisplayNames[nameInJson] 
-                                                     : nameInJson;
-                            return { originalName: nameInJson, displaySortName: primaryDisplayName.toLowerCase() };
+                            let pdName = nameInJson;
+                            if (preferredJapaneseDisplayNames.hasOwnProperty(nameInJson)) {
+                                pdName = preferredJapaneseDisplayNames[nameInJson];
+                            }
+                            return { originalName: nameInJson, displaySortName: pdName.toLowerCase() };
                         })
                         .sort((a, b) => a.displaySortName.localeCompare(b.displaySortName));
 
-                    cinemasInThisCategory.forEach(cinemaObj => {
-                        categorizedCinemaNames.add(cinemaObj.originalName);
-                        cardContainer.appendChild(createCinemaCard(cinemaObj.originalName));
-                    });
                     if (cinemasInThisCategory.length > 0) {
+                         categoryBlock.appendChild(categoryHeader);
+                        cinemasInThisCategory.forEach(cinemaObj => {
+                            categorizedCinemaNames.add(cinemaObj.originalName);
+                            // Pass false for isOtherCategoryCinema for these defined categories
+                            cardContainer.appendChild(createCinemaCard(cinemaObj.originalName, false)); 
+                        });
                         categoryBlock.appendChild(cardContainer);
                         cinemaSelectionGridContainerEl.appendChild(categoryBlock);
                     }
@@ -380,10 +410,11 @@
                 const otherCinemas = allCinemaNamesFromData
                     .filter(nameInJson => !categorizedCinemaNames.has(nameInJson))
                      .map(nameInJson => {
-                        let primaryDisplayName = preferredJapaneseDisplayNames.hasOwnProperty(nameInJson) 
-                                                 ? preferredJapaneseDisplayNames[nameInJson] 
-                                                 : nameInJson;
-                        return { originalName: nameInJson, displaySortName: primaryDisplayName.toLowerCase() };
+                        let pdName = nameInJson;
+                         if (preferredJapaneseDisplayNames.hasOwnProperty(nameInJson)) {
+                            pdName = preferredJapaneseDisplayNames[nameInJson];
+                        }
+                        return { originalName: nameInJson, displaySortName: pdName.toLowerCase() };
                     })
                     .sort((a,b) => a.displaySortName.localeCompare(b.displaySortName));
 
@@ -391,13 +422,14 @@
                     const otherCategoryBlock = document.createElement('div');
                     otherCategoryBlock.className = 'category-block';
                     const otherHeader = document.createElement('h3');
-                    otherHeader.textContent = "OTHER LOCATIONS"; // Changed for clarity
+                    otherHeader.textContent = "OTHER LOCATIONS";
                     otherCategoryBlock.appendChild(otherHeader);
                     const otherCardContainer = document.createElement('div');
                     otherCardContainer.className = 'cinema-card-container';
 
                     otherCinemas.forEach(cinemaObj => {
-                        otherCardContainer.appendChild(createCinemaCard(cinemaObj.originalName));
+                        // Pass true for isOtherCategoryCinema for this "OTHER" group
+                        otherCardContainer.appendChild(createCinemaCard(cinemaObj.originalName, true)); 
                     });
                     otherCategoryBlock.appendChild(otherCardContainer);
                     cinemaSelectionGridContainerEl.appendChild(otherCategoryBlock);
@@ -430,6 +462,12 @@
                 
                 let primaryDisplayNameForHeader = cinemaNameInJson;
                 let secondaryDisplayNameForHeader = null;
+                
+                // Determine if this cinema is in the "OTHER" category for location display in header
+                let isOtherForHeader = !cinemaCategories.some(cat => cat.cinemas.includes(cinemaNameInJson));
+                let locationTextForHeader = isOtherForHeader && cinemaLocations.hasOwnProperty(cinemaNameInJson) 
+                                          ? cinemaLocations[cinemaNameInJson] 
+                                          : null;
 
                 if (preferredJapaneseDisplayNames.hasOwnProperty(cinemaNameInJson)) {
                     primaryDisplayNameForHeader = preferredJapaneseDisplayNames[cinemaNameInJson];
@@ -444,20 +482,26 @@
                     }
                 }
                 
-                let japaneseNameForHeaderHtml = `<span class="cinema-japanese-name">${primaryDisplayNameForHeader}</span>`;
-                let englishNameForHeaderSpanHtml = '';
+                let mainNameForHeaderHtml = `<span class="cinema-japanese-name">${primaryDisplayNameForHeader}</span>`;
+                let subNameForHeaderHtml = '';
                 if (secondaryDisplayNameForHeader) {
                     const mainLower = primaryDisplayNameForHeader.toLowerCase();
                     const subLower = secondaryDisplayNameForHeader.toLowerCase();
                     const primaryPartOfMain = primaryDisplayNameForHeader.split(" (")[0].trim().toLowerCase();
 
                     if (subLower !== mainLower && subLower !== primaryPartOfMain) {
-                         englishNameForHeaderSpanHtml = `<span class="cinema-english-name-header">(${secondaryDisplayNameForHeader})</span>`;
+                         subNameForHeaderHtml = `<span class="cinema-english-name-header">(${secondaryDisplayNameForHeader})</span>`;
                     } else if (subLower !== mainLower && !primaryDisplayNameForHeader.includes('(')) {
-                         englishNameForHeaderSpanHtml = `<span class="cinema-english-name-header">(${secondaryDisplayNameForHeader})</span>`;
+                         subNameForHeaderHtml = `<span class="cinema-english-name-header">(${secondaryDisplayNameForHeader})</span>`;
                     }
                 }
-                cinemaTitleHeader.innerHTML = japaneseNameForHeaderHtml + englishNameForHeaderSpanHtml;
+
+                let locationHeaderHtml = '';
+                if (locationTextForHeader) { // Add location to header if applicable
+                    locationHeaderHtml = `<span class="cinema-location-header">[${locationTextForHeader}]</span>`;
+                }
+
+                cinemaTitleHeader.innerHTML = mainNameForHeaderHtml + subNameForHeaderHtml + locationHeaderHtml;
                 headerContainer.appendChild(cinemaTitleHeader);
 
                 const websiteUrl = cinemaWebsiteUrls[cinemaNameInJson] || cinemaWebsiteUrls[cinemaNameInJson.replace(/\s*\(.*\)$/, '').trim()];
