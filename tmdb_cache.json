@@ -1464,5 +1464,30 @@
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
     "eiga_search_link": "https://eiga.com/search/%E5%9B%9A%E3%82%8F%E3%82%8C%E3%81%AE%E7%BE%8E%E5%A5%B3"
+  },
+  "青い春": {
+    "id": 33333,
+    "tmdb_title": "Blue Spring",
+    "tmdb_original_title": "青い春",
+    "letterboxd_english_title": null
+  },
+  "104歳、哲代さんのひとり暮らし": {
+    "id": 1467188,
+    "tmdb_title": "104歳、哲代さんのひとり暮らし",
+    "tmdb_original_title": "104歳、哲代さんのひとり暮らし",
+    "letterboxd_english_title": null
+  },
+  "ハッピー⭐︎エンド": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%8F%E3%83%83%E3%83%94%E3%83%BC%E2%AD%90%EF%B8%8E%E3%82%A8%E3%83%B3%E3%83%89"
+  },
+  "犬の裁判": {
+    "id": 1056648,
+    "tmdb_title": "Dog on Trial",
+    "tmdb_original_title": "Le Procès du Chien",
+    "letterboxd_english_title": null
   }
 }
