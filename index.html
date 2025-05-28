@@ -41,13 +41,13 @@
             margin-bottom: 35px;
         }
         .category-block h3 { /* Category headers - made smaller */
-            font-size: 1.0em; /
+            font-size: 1.4em; 
             color: var(--dark-text);
             margin-top: 15px;
             margin-bottom: 20px;
             padding-bottom: 8px;
-            border-bottom: 2px solid var(--primary-yellow); /* Slightly thinner border */
-            font-weight: 600; 
+            border-bottom: 2px solid var(--primary-yellow); 
+            font-weight: 600;
             letter-spacing: 0.2px;
         }
         .cinema-card-container {
@@ -75,7 +75,7 @@
         .cinema-japanese-name { 
             display: block;
             color: var(--dark-text);
-            font-weight: 600; 
+            font-weight: 600;
         }
         .cinema-card:hover .cinema-japanese-name {
             color: var(--primary-yellow);
@@ -89,9 +89,9 @@
             line-height: 1.2;
         }
         .cinema-location-card { 
-            font-size: 0.7em; 
+            font-size: 0.7em;
             font-weight: 400;
-            color: #6c757d; 
+            color: #6c757d;
             display: block;
             margin-top: 3px;
             line-height: 1.1;
@@ -110,7 +110,7 @@
             line-height: 1.2;
         }
         .cinema-location-header {
-            font-size: 0.5em; 
+            font-size: 0.5em;
             font-weight: 400;
             color: #6c757d;
             display: block;
@@ -173,7 +173,7 @@
     <div class="container">
         <header> <h1 id="main-header">Tokyo Independent Cinema Showtimes</h1> </header>
         <button id="back-to-cinemas-btn" class="action-button hidden">&laquo; Back to Cinemas</button>
-        <div id="cinema-selection-grid-container">
+        <div id="cinema-selection-grid-container"> 
             </div>
         <div id="selected-cinema-showtimes"></div>
         <div id="initial-loading-message-container"> <p id="loading-message-text">Loading movie showtimes...</p> </div>
@@ -217,14 +217,18 @@
             };
 
             const preferredJapaneseDisplayNames = {
+                "Chupki": "チュプキ・タバタ",
+                "K's Cinema (ケイズシネマ)": "ケイズシネマ",
+                "Stranger (ストレンジャー)": "ストレンジャー", // This key must match JSON if Stranger is included
                 "YEBISU GARDEN CINEMA": "恵比寿ガーデンシネマ",
                 "K2 Cinema": "K2シネマ",
                 "Theater Bacchus": "シアターバッカス高円寺",
-                "Chupki": "チュプキ・タバタ",
             };
 
             const cinemaEnglishNames = {
+                "Chupki": "Chupki Tabata",
                 "K's Cinema (ケイズシネマ)": "K's Cinema",
+                "Stranger (ストレンジャー)": "Stranger", // This key must match JSON if Stranger is included
                 "シネマート新宿": "Cinemart Shinjuku",
                 "新宿シネマカリテ": "Shinjuku Cinema Qualite",
                 "新宿武蔵野館": "Shinjuku Musashino-kan",
@@ -236,11 +240,9 @@
                 "シネクイント渋谷": "Cine Quinto Shibuya",
                 "ユーロスペース": "Eurospace",
                 "ヒューマントラストシネマ渋谷": "Human Trust Cinema Shibuya",
-                "Stranger (ストレンジャー)": "Stranger",
                 "新文芸坐": "Shin-Bungeiza",
                 "目黒シネマ": "Meguro Cinema",
                 "ポレポレ東中野": "Pole Pole Higashi-Nakano",
-                "Chupki": "Chupki Tabata",
                 "K2 Cinema": "K2 Cinema",
                 "Theater Bacchus": "Theater Bacchus",
                 "ヒューマントラストシネマ有楽町": "Human Trust Cinema Yurakucho",
@@ -253,9 +255,9 @@
             const cinemaLocations = {
                 "Stranger (ストレンジャー)": "Sumida-ku 墨田区",
                 "新文芸坐": "Toshima-ku 豊島区",
-                "目黒シネマ": "Shinagawa-ku 品川区 (Meguro Area)", // Technically Shinagawa, near Meguro
+                "目黒シネマ": "Shinagawa-ku 品川区 (Meguro Area)",
                 "ポレポレ東中野": "Nakano-ku 中野区",
-                "Chupki": "Kita-ku 北区", // If primary name is チュプキ・タバタ, this could be just "田端" or Kita-ku
+                "Chupki": "Kita-ku 北区", 
                 "K2 Cinema": "Setagaya-ku 世田谷区 (下北沢)",
                 "Theater Bacchus": "Suginami-ku 杉並区 (高円寺)",
                 "ヒューマントラストシネマ有楽町": "Chiyoda-ku 千代田区",
@@ -263,14 +265,13 @@
                 "下高井戸シネマ": "Setagaya-ku 世田谷区",
                 "国立映画アーカイブ": "Chuo-ku 中央区 (京橋)",
                 "池袋シネマ・ロサ": "Toshima-ku 豊島区"
-                // Waseda Shochiku is now in Shinjuku-ku category, location tag might be optional
             };
 
             const cinemaCategories = [
-                { name: "SHINJUKU-KU", // Renamed
+                { name: "SHINJUKU-KU", 
                   cinemas: [
                     "K's Cinema (ケイズシネマ)", "シネマート新宿", "新宿シネマカリテ",
-                    "新宿武蔵野館", "テアトル新宿", "早稲田松竹" // Moved Waseda Shochiku
+                    "新宿武蔵野館", "テアトル新宿", "早稲田松竹"
                   ]
                 },
                 { name: "SHIBUYA-KU",
@@ -334,7 +335,7 @@
                     
                     if (preferredJapaneseDisplayNames.hasOwnProperty(cinemaNameInJson)) {
                         primaryDisplayName = preferredJapaneseDisplayNames[cinemaNameInJson];
-                        secondaryDisplayName = cinemaNameInJson; 
+                        secondaryDisplayName = cinemaEnglishNames.hasOwnProperty(cinemaNameInJson) ? cinemaEnglishNames[cinemaNameInJson] : cinemaNameInJson;
                     } else if (cinemaEnglishNames.hasOwnProperty(cinemaNameInJson)) {
                         const mappedEnglish = cinemaEnglishNames[cinemaNameInJson];
                         if (mappedEnglish && mappedEnglish.toLowerCase() !== primaryDisplayName.toLowerCase()) {
@@ -399,7 +400,6 @@
                          categoryBlock.appendChild(categoryHeader);
                         cinemasInThisCategory.forEach(cinemaObj => {
                             categorizedCinemaNames.add(cinemaObj.originalName);
-                            // Pass false for isOtherCategoryCinema for these defined categories
                             cardContainer.appendChild(createCinemaCard(cinemaObj.originalName, false)); 
                         });
                         categoryBlock.appendChild(cardContainer);
@@ -428,7 +428,6 @@
                     otherCardContainer.className = 'cinema-card-container';
 
                     otherCinemas.forEach(cinemaObj => {
-                        // Pass true for isOtherCategoryCinema for this "OTHER" group
                         otherCardContainer.appendChild(createCinemaCard(cinemaObj.originalName, true)); 
                     });
                     otherCategoryBlock.appendChild(otherCardContainer);
@@ -463,7 +462,6 @@
                 let primaryDisplayNameForHeader = cinemaNameInJson;
                 let secondaryDisplayNameForHeader = null;
                 
-                // Determine if this cinema is in the "OTHER" category for location display in header
                 let isOtherForHeader = !cinemaCategories.some(cat => cat.cinemas.includes(cinemaNameInJson));
                 let locationTextForHeader = isOtherForHeader && cinemaLocations.hasOwnProperty(cinemaNameInJson) 
                                           ? cinemaLocations[cinemaNameInJson] 
@@ -471,7 +469,7 @@
 
                 if (preferredJapaneseDisplayNames.hasOwnProperty(cinemaNameInJson)) {
                     primaryDisplayNameForHeader = preferredJapaneseDisplayNames[cinemaNameInJson];
-                    secondaryDisplayNameForHeader = cinemaNameInJson;
+                    secondaryDisplayNameForHeader = cinemaEnglishNames.hasOwnProperty(cinemaNameInJson) ? cinemaEnglishNames[cinemaNameInJson] : cinemaNameInJson;
                 } else if (cinemaEnglishNames.hasOwnProperty(cinemaNameInJson)) {
                     const mappedEnglish = cinemaEnglishNames[cinemaNameInJson];
                      if (mappedEnglish && mappedEnglish.toLowerCase() !== primaryDisplayNameForHeader.toLowerCase()) {
@@ -495,9 +493,8 @@
                          subNameForHeaderHtml = `<span class="cinema-english-name-header">(${secondaryDisplayNameForHeader})</span>`;
                     }
                 }
-
                 let locationHeaderHtml = '';
-                if (locationTextForHeader) { // Add location to header if applicable
+                if (locationTextForHeader) {
                     locationHeaderHtml = `<span class="cinema-location-header">[${locationTextForHeader}]</span>`;
                 }
 
