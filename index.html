@@ -7,7 +7,7 @@
 <style>
         :root {
             --primary-yellow: #FFC300;
-            --light-bg: #f4f4f4; 
+            --light-bg: #f4f4f4;
             --content-bg: #ffffff;
             --dark-text: #333333;
             --medium-text: #555555;
@@ -41,12 +41,12 @@
             margin-bottom: 35px;
         }
         .category-block h3 { /* Category headers - made smaller */
-            font-size: 1.4em; 
+            font-size: 1.4em;
             color: var(--dark-text);
             margin-top: 15px;
             margin-bottom: 20px;
             padding-bottom: 8px;
-            border-bottom: 2px solid var(--primary-yellow); 
+            border-bottom: 2px solid var(--primary-yellow);
             font-weight: 600;
             letter-spacing: 0.2px;
         }
@@ -72,7 +72,7 @@
             transform: translateY(-5px) scale(1.02);
             box-shadow: 0 8px 20px rgba(0,0,0,0.12);
         }
-        .cinema-japanese-name { 
+        .cinema-japanese-name {
             display: block;
             color: var(--dark-text);
             font-weight: 600;
@@ -80,7 +80,7 @@
         .cinema-card:hover .cinema-japanese-name {
             color: var(--primary-yellow);
         }
-        .cinema-english-name-card { 
+        .cinema-english-name-card {
             font-size: 0.8em;
             font-weight: 400;
             color: var(--medium-text);
@@ -88,7 +88,7 @@
             margin-top: 4px;
             line-height: 1.2;
         }
-        .cinema-location-card { 
+        .cinema-location-card {
             font-size: 0.7em;
             font-weight: 400;
             color: #6c757d;
@@ -101,7 +101,7 @@
             margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid var(--primary-yellow);
             padding-bottom: 10px; line-height: 1.3;
         }
-        .cinema-english-name-header { 
+        .cinema-english-name-header {
             font-size: 0.6em;
             font-weight: 500;
             color: var(--medium-text);
@@ -152,7 +152,7 @@
         .showtime-title { font-weight: 600; color: var(--dark-text); }
         a.showtime-title { text-decoration: none; color: var(--dark-text); transition: color 0.2s ease; }
         a.showtime-title:hover { color: var(--primary-yellow); text-decoration: underline; }
-        .tmdb-english-title, .gemini-english-title {
+        .tmdb-english-title, .gemini-english-title, .lb-english-title { /* MODIFIED: Added .lb-english-title */
             font-style: normal; color: var(--medium-text); margin-left: 8px;
             opacity: 1; font-size: 0.9em; font-weight: 400;
         }
@@ -173,7 +173,7 @@
     <div class="container">
         <header> <h1 id="main-header">Tokyo Independent Cinema Showtimes</h1> </header>
         <button id="back-to-cinemas-btn" class="action-button hidden">&laquo; Back to Cinemas</button>
-        <div id="cinema-selection-grid-container"> 
+        <div id="cinema-selection-grid-container">
             </div>
         <div id="selected-cinema-showtimes"></div>
         <div id="initial-loading-message-container"> <p id="loading-message-text">Loading movie showtimes...</p> </div>
@@ -219,7 +219,7 @@
             const preferredJapaneseDisplayNames = {
                 "Chupki": "チュプキ・タバタ",
                 "K's Cinema (ケイズシネマ)": "ケイズシネマ",
-                "Stranger (ストレンジャー)": "ストレンジャー", // This key must match JSON if Stranger is included
+                "Stranger (ストレンジャー)": "ストレンジャー",
                 "YEBISU GARDEN CINEMA": "恵比寿ガーデンシネマ",
                 "K2 Cinema": "K2シネマ",
                 "Theater Bacchus": "シアターバッカス高円寺",
@@ -228,7 +228,7 @@
             const cinemaEnglishNames = {
                 "Chupki": "Chupki Tabata",
                 "K's Cinema (ケイズシネマ)": "K's Cinema",
-                "Stranger (ストレンジャー)": "Stranger", // This key must match JSON if Stranger is included
+                "Stranger (ストレンジャー)": "Stranger",
                 "シネマート新宿": "Cinemart Shinjuku",
                 "新宿シネマカリテ": "Shinjuku Cinema Qualite",
                 "新宿武蔵野館": "Shinjuku Musashino-kan",
@@ -251,13 +251,13 @@
                 "国立映画アーカイブ": "National Film Archive of Japan",
                 "池袋シネマ・ロサ": "Ikebukuro Cinema Rosa"
             };
-            
+
             const cinemaLocations = {
                 "Stranger (ストレンジャー)": "Sumida-ku 墨田区",
                 "新文芸坐": "Toshima-ku 豊島区",
                 "目黒シネマ": "Shinagawa-ku 品川区 (Meguro Area)",
                 "ポレポレ東中野": "Nakano-ku 中野区",
-                "Chupki": "Kita-ku 北区", 
+                "Chupki": "Kita-ku 北区",
                 "K2 Cinema": "Setagaya-ku 世田谷区 (下北沢)",
                 "Theater Bacchus": "Suginami-ku 杉並区 (高円寺)",
                 "ヒューマントラストシネマ有楽町": "Chiyoda-ku 千代田区",
@@ -268,7 +268,7 @@
             };
 
             const cinemaCategories = [
-                { name: "SHINJUKU-KU", 
+                { name: "SHINJUKU-KU",
                   cinemas: [
                     "K's Cinema (ケイズシネマ)", "シネマート新宿", "新宿シネマカリテ",
                     "新宿武蔵野館", "テアトル新宿", "早稲田松竹"
@@ -284,13 +284,14 @@
 
             function isProbablyNotJapanese(text) {
                 if (!text) return false;
-                if (!/[a-zA-Z]/.test(text)) return false;
+                if (!/[a-zA-Z]/.test(text)) return false; // Must contain at least one Latin character
                 const japaneseCharCount = (text.match(/[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/g) || []).length;
                 const latinCharCount = (text.match(/[a-zA-Z]/g) || []).length;
-                if (japaneseCharCount > 0 && latinCharCount <= japaneseCharCount && text.length > 5) {
-                     return false;
+                // If it has Japanese chars, Latin chars should be significantly more, or very few JP chars
+                if (japaneseCharCount > 0) {
+                    return latinCharCount > japaneseCharCount * 2 || (japaneseCharCount <= 2 && latinCharCount > japaneseCharCount);
                 }
-                return true;
+                return true; // No Japanese characters, and we know it has Latin from the first check.
             }
 
             async function fetchShowtimes() {
@@ -329,10 +330,10 @@
                 function createCinemaCard(cinemaNameInJson, isOtherCategoryCinema) {
                     const cinemaCard = document.createElement('div');
                     cinemaCard.className = 'cinema-card';
-                    
+
                     let primaryDisplayName = cinemaNameInJson;
                     let secondaryDisplayName = null;
-                    
+
                     if (preferredJapaneseDisplayNames.hasOwnProperty(cinemaNameInJson)) {
                         primaryDisplayName = preferredJapaneseDisplayNames[cinemaNameInJson];
                         secondaryDisplayName = cinemaEnglishNames.hasOwnProperty(cinemaNameInJson) ? cinemaEnglishNames[cinemaNameInJson] : cinemaNameInJson;
@@ -345,12 +346,10 @@
                             }
                         }
                     }
-                    
-                    let locationTextForCard = isOtherCategoryCinema && cinemaLocations.hasOwnProperty(cinemaNameInJson) 
-                                            ? cinemaLocations[cinemaNameInJson] 
-                                            : null;
 
-                    console.log(`Card Gen - JSON Name: "${cinemaNameInJson}", Primary: "${primaryDisplayName}", Secondary: "${secondaryDisplayName || 'None'}", Location: "${locationTextForCard || 'None'}"`);
+                    let locationTextForCard = isOtherCategoryCinema && cinemaLocations.hasOwnProperty(cinemaNameInJson)
+                                            ? cinemaLocations[cinemaNameInJson]
+                                            : null;
 
                     const mainNameHtml = `<span class="cinema-japanese-name">${primaryDisplayName}</span>`;
                     let subNameHtml = '';
@@ -365,12 +364,12 @@
                              subNameHtml = `<span class="cinema-english-name-card">(${secondaryDisplayName})</span>`;
                         }
                     }
-                    
+
                     let locationHtml = '';
-                    if (locationTextForCard) { 
+                    if (locationTextForCard) {
                         locationHtml = `<span class="cinema-location-card">${locationTextForCard}</span>`;
                     }
-                    
+
                     cinemaCard.innerHTML = mainNameHtml + subNameHtml + locationHtml;
                     cinemaCard.addEventListener('click', () => handleCinemaClick(cinemaNameInJson, fullShowtimesData));
                     return cinemaCard;
@@ -381,7 +380,7 @@
                     categoryBlock.className = 'category-block';
                     const categoryHeader = document.createElement('h3');
                     categoryHeader.textContent = category.name;
-                    
+
                     const cardContainer = document.createElement('div');
                     cardContainer.className = 'cinema-card-container';
 
@@ -400,7 +399,7 @@
                          categoryBlock.appendChild(categoryHeader);
                         cinemasInThisCategory.forEach(cinemaObj => {
                             categorizedCinemaNames.add(cinemaObj.originalName);
-                            cardContainer.appendChild(createCinemaCard(cinemaObj.originalName, false)); 
+                            cardContainer.appendChild(createCinemaCard(cinemaObj.originalName, false));
                         });
                         categoryBlock.appendChild(cardContainer);
                         cinemaSelectionGridContainerEl.appendChild(categoryBlock);
@@ -428,7 +427,7 @@
                     otherCardContainer.className = 'cinema-card-container';
 
                     otherCinemas.forEach(cinemaObj => {
-                        otherCardContainer.appendChild(createCinemaCard(cinemaObj.originalName, true)); 
+                        otherCardContainer.appendChild(createCinemaCard(cinemaObj.originalName, true));
                     });
                     otherCategoryBlock.appendChild(otherCardContainer);
                     cinemaSelectionGridContainerEl.appendChild(otherCategoryBlock);
@@ -444,7 +443,7 @@
                 document.getElementById('main-header').scrollIntoView({ behavior: 'smooth' });
                 renderShowtimesForCinema(showings, cinemaName);
             }
-            
+
             backButton.addEventListener('click', () => {
                 displayCinemaSelection(fullShowtimesData);
                 document.getElementById('main-header').scrollIntoView({ behavior: 'smooth' });
@@ -456,15 +455,15 @@
                 cinemaSectionDiv.className = 'cinema-section';
                 const headerContainer = document.createElement('div');
                 headerContainer.className = 'cinema-header-container';
-                
+
                 const cinemaTitleHeader = document.createElement('h2');
-                
+
                 let primaryDisplayNameForHeader = cinemaNameInJson;
                 let secondaryDisplayNameForHeader = null;
-                
+
                 let isOtherForHeader = !cinemaCategories.some(cat => cat.cinemas.includes(cinemaNameInJson));
-                let locationTextForHeader = isOtherForHeader && cinemaLocations.hasOwnProperty(cinemaNameInJson) 
-                                          ? cinemaLocations[cinemaNameInJson] 
+                let locationTextForHeader = isOtherForHeader && cinemaLocations.hasOwnProperty(cinemaNameInJson)
+                                          ? cinemaLocations[cinemaNameInJson]
                                           : null;
 
                 if (preferredJapaneseDisplayNames.hasOwnProperty(cinemaNameInJson)) {
@@ -479,7 +478,7 @@
                         }
                     }
                 }
-                
+
                 let mainNameForHeaderHtml = `<span class="cinema-japanese-name">${primaryDisplayNameForHeader}</span>`;
                 let subNameForHeaderHtml = '';
                 if (secondaryDisplayNameForHeader) {
@@ -541,48 +540,70 @@
                     dateDiv.appendChild(dateTitle);
                     const ul = document.createElement('ul'); ul.className = 'showtimes-list';
                     byDate[dateStr].sort((a, b) => (a.showtime || '').localeCompare(b.showtime || ''));
-                    
+
                     byDate[dateStr].forEach(showing => {
                         const li = document.createElement('li');
                         const originalScrapedTitle = showing.movie_title || showing.title || 'Unknown Title';
-                        
+
                         const letterboxdLink = showing.letterboxd_link;
+                        const letterboxdEnglishTitle = showing.letterboxd_english_title; // <-- Get the new title
                         const displayTitleFromTMDB = showing.tmdb_display_title;
                         const geminiEnglishTitle = showing.gemini_english_title;
                         const eigaSearchLink = showing.eiga_search_link;
-                        
+
                         let titleDisplayHtml = '';
                         let accompanyingEnglishTitleSpan = '';
+                        let titleAttributeText = originalScrapedTitle; // Default title for the link's "title" attribute
 
                         if (letterboxdLink) {
-                            let titleAttributeText = originalScrapedTitle;
-                            if (displayTitleFromTMDB && displayTitleFromTMDB.trim() !== "" && 
+                            let chosenEnglishTitle = null;
+                            let chosenEnglishClass = '';
+
+                            // Prioritize Letterboxd English Title
+                            if (letterboxdEnglishTitle && letterboxdEnglishTitle.trim() !== "" &&
+                                letterboxdEnglishTitle.toLowerCase() !== originalScrapedTitle.toLowerCase() &&
+                                isProbablyNotJapanese(letterboxdEnglishTitle)) {
+                                chosenEnglishTitle = letterboxdEnglishTitle;
+                                chosenEnglishClass = 'lb-english-title';
+                                titleAttributeText = letterboxdEnglishTitle;
+                            }
+                            // Fallback to TMDB Display Title
+                            else if (displayTitleFromTMDB && displayTitleFromTMDB.trim() !== "" &&
                                 displayTitleFromTMDB.toLowerCase() !== originalScrapedTitle.toLowerCase() &&
                                 isProbablyNotJapanese(displayTitleFromTMDB)) {
-                                accompanyingEnglishTitleSpan = ` <span class="tmdb-english-title">(${displayTitleFromTMDB})</span>`;
+                                chosenEnglishTitle = displayTitleFromTMDB;
+                                chosenEnglishClass = 'tmdb-english-title';
                                 titleAttributeText = displayTitleFromTMDB;
                             }
+
+                            if (chosenEnglishTitle) {
+                                accompanyingEnglishTitleSpan = ` <span class="${chosenEnglishClass}">(${chosenEnglishTitle})</span>`;
+                            }
+
                             titleDisplayHtml = `<a href="${letterboxdLink}" target="_blank" rel="noopener noreferrer" class="showtime-title" title="View '${titleAttributeText}' on Letterboxd">${originalScrapedTitle}</a>${accompanyingEnglishTitleSpan}`;
-                        
+
                         } else if (eigaSearchLink) {
+                            // Eiga link, use Gemini title if available and suitable
                             if (geminiEnglishTitle && geminiEnglishTitle.trim() !== "" &&
-                                geminiEnglishTitle.toUpperCase() !== 'NO_TITLE_FOUND' && 
+                                geminiEnglishTitle.toUpperCase() !== 'NO_TITLE_FOUND' &&
                                 geminiEnglishTitle.toLowerCase() !== originalScrapedTitle.toLowerCase() &&
                                 isProbablyNotJapanese(geminiEnglishTitle)) {
                                 accompanyingEnglishTitleSpan = ` <span class="gemini-english-title">(${geminiEnglishTitle})</span>`;
+                                titleAttributeText = geminiEnglishTitle; // Update title attribute for Eiga link too
                             }
-                            titleDisplayHtml = `<a href="${eigaSearchLink}" target="_blank" rel="noopener noreferrer" class="showtime-title" title="Search '${originalScrapedTitle}' on Eiga.com">${originalScrapedTitle}</a>${accompanyingEnglishTitleSpan}<span class="eiga-link-indicator">(Eiga.com)</span>`;
-                        
+                            titleDisplayHtml = `<a href="${eigaSearchLink}" target="_blank" rel="noopener noreferrer" class="showtime-title" title="Search '${originalScrapedTitle}' ${titleAttributeText !== originalScrapedTitle ? '(Eng: ' + titleAttributeText + ')' : ''} on Eiga.com">${originalScrapedTitle}</a>${accompanyingEnglishTitleSpan}<span class="eiga-link-indicator">(Eiga.com)</span>`;
+
                         } else {
+                            // No external links, use Gemini title if available and suitable
                             titleDisplayHtml = `<span class="showtime-title">${originalScrapedTitle}</span>`;
-                            if (geminiEnglishTitle && geminiEnglishTitle.trim() !== "" && 
-                                geminiEnglishTitle.toUpperCase() !== 'NO_TITLE_FOUND' && 
+                            if (geminiEnglishTitle && geminiEnglishTitle.trim() !== "" &&
+                                geminiEnglishTitle.toUpperCase() !== 'NO_TITLE_FOUND' &&
                                 geminiEnglishTitle.toLowerCase() !== originalScrapedTitle.toLowerCase() &&
                                 isProbablyNotJapanese(geminiEnglishTitle)) {
                                 titleDisplayHtml += ` <span class="gemini-english-title">(${geminiEnglishTitle})</span>`;
                             }
                         }
-                        
+
                         li.innerHTML = `<span class="showtime-time">${showing.showtime || 'N/A'}</span> <span class="showtime-title-container">${titleDisplayHtml}</span>`;
                         ul.appendChild(li);
                     });
@@ -591,21 +612,23 @@
                 }
                 selectedCinemaShowtimesContainer.appendChild(cinemaSectionDiv);
             }
-            
+
             function parseDateToSort(dateString) {
                 if (dateString === 'Unknown Date') return null;
                 let match = dateString.match(/^(\d{4})-(\d{2})-(\d{2})$/);
                 if (match) return new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3]));
-                match = dateString.match(/^(\d{1,2})\/(\d{1,2})のスケジュール$/);
+                match = dateString.match(/^(\d{1,2})\/(\d{1,2})のスケジュール$/); // e.g., "5/28のスケジュール"
                 if (match) {
                     const today = new Date(); let year = today.getFullYear();
-                    const month = parseInt(match[1]) -1;
-                    if (month < today.getMonth() && Math.abs(today.getMonth() - month) > 6 ) {
-                        if (month < today.getMonth()) year +=1;
+                    const month = parseInt(match[1]) -1; // JS months are 0-indexed
+                    const day = parseInt(match[2]);
+                     // Basic logic to handle year crossover for past months that are for next year
+                    if (month < today.getMonth() && (today.getMonth() - month > 6)) { // If showing for Jan and current is Dec
+                        year +=1;
                     }
-                    return new Date(year, month, parseInt(match[2]));
+                    return new Date(year, month, day);
                 }
-                match = dateString.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+                match = dateString.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/); // e.g., "2025年5月28日"
                 if (match) return new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3]));
                 try { const d = new Date(dateString); if (!isNaN(d.getTime())) return d; } catch(e) { /* ignore */ }
                 return null;
@@ -617,7 +640,7 @@
                 let matchSched = dateString.match(/^(\d{1,2})\/(\d{1,2})のスケジュール$/);
                 if (matchSched && parsedDate) return `${parsedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} (${parsedDate.toLocaleDateString('en-US', { weekday: 'short' })}) (Schedule)`;
                 if (parsedDate) return parsedDate.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-                return dateString;
+                return dateString; // Fallback to original string if no parsing worked
             }
 
             fetchShowtimes();
