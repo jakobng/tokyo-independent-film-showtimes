@@ -1,15 +1,18 @@
 {
   "クィア QUEER": {
     "id": 612415,
-    "title": "Queer Japan"
+    "title": "Queer Japan",
+    "letterboxd_english_title": "Queer Japan (2019)"
   },
   "サブスタンス": {
     "id": 933260,
-    "title": "サブスタンス"
+    "title": "サブスタンス",
+    "letterboxd_english_title": "The Substance (2024)"
   },
   "紅い眼鏡": {
     "id": 30198,
-    "title": "紅い眼鏡"
+    "title": "紅い眼鏡",
+    "letterboxd_english_title": "The Red Spectacles (1987)"
   },
   "結界の寺": {
     "id": null,
@@ -31,11 +34,13 @@
   },
   "血": {
     "id": 592452,
-    "title": "血まみれスケバンチェーンソーRED 前編 ネロの復讐"
+    "title": "血まみれスケバンチェーンソーRED 前編 ネロの復讐",
+    "letterboxd_english_title": "Bloody Chainsaw Girl Returns: Revenge of Nero (2019)"
   },
   "パリピ孔明": {
     "id": 1211650,
-    "title": "パリピ孔明 Road to Summer Sonia"
+    "title": "パリピ孔明 Road to Summer Sonia",
+    "letterboxd_english_title": "Ya Boy Kongming! Road to Summer Sonia (2024)"
   },
   "REVENGE ﾘﾍﾞﾝｼﾞ": {
     "id": 467938,
@@ -55,7 +60,8 @@
   },
   "ロボット・ドリームズ": {
     "id": 838240,
-    "title": "ロボット・ドリームズ"
+    "title": "ロボット・ドリームズ",
+    "letterboxd_english_title": "Robot Dreams (2023)"
   },
   "テルマがゆく": null,
   "ジェイ・ローゼンブラット特集：私はかつて映画作家だった Jay Rosenblatt: I Used To Be a Filmmaker": {
@@ -66,20 +72,24 @@
   },
   "グランド・マスター": {
     "id": 44865,
-    "title": "グランド・マスター"
+    "title": "グランド・マスター",
+    "letterboxd_english_title": "The Grandmaster (2013)"
   },
   "ザ・ゲスイドウズ": {
     "id": 1321769,
-    "title": "ザ・ゲスイドウズ"
+    "title": "ザ・ゲスイドウズ",
+    "letterboxd_english_title": "The Gesuidouz (2024)"
   },
   "ぼくのエリ ２００歳の少女": {
     "id": 13310,
-    "title": "ぼくのエリ 200歳の少女"
+    "title": "ぼくのエリ 200歳の少女",
+    "letterboxd_english_title": "Let the Right One In (2008)"
   },
   "伝説巨神イデオン」一挙上映": null,
   "映画 夜空はいつでも最高密度の青色だ": {
     "id": 438339,
-    "title": "夜空はいつでも最高密度の青色だ"
+    "title": "夜空はいつでも最高密度の青色だ",
+    "letterboxd_english_title": "The Tokyo Night Sky Is Always the Densest Shade of Blue (2017)"
   },
   "怪談 皿屋敷／クトゥルフの呼び声": {
     "id": null,
@@ -89,15 +99,18 @@
   },
   "もず": {
     "id": 593128,
-    "title": "もず"
+    "title": "もず",
+    "letterboxd_english_title": "The Shrikes (1961)"
   },
   "ゴールデンスランバー": {
     "id": 500699,
-    "title": "ゴールデンスランバー"
+    "title": "ゴールデンスランバー",
+    "letterboxd_english_title": "Golden Slumber (2018)"
   },
   "導火線/FLASH POINT": {
     "id": 35854,
-    "title": "導火線 FLASH POINT"
+    "title": "導火線 FLASH POINT",
+    "letterboxd_english_title": "Flash Point (2007)"
   },
   "溶岩の家": {
     "id": null,
@@ -107,15 +120,18 @@
   },
   "美しい星": {
     "id": 449225,
-    "title": "美しい星"
+    "title": "美しい星",
+    "letterboxd_english_title": "A Beautiful Star (2017)"
   },
   "リアル・ペイン～心の旅": {
     "id": 1013850,
-    "title": "リアル・ペイン〜心の旅〜"
+    "title": "リアル・ペイン〜心の旅〜",
+    "letterboxd_english_title": "A Real Pain (2024)"
   },
   "片思い世界": {
     "id": 1101179,
-    "title": "片思い世界"
+    "title": "片思い世界",
+    "letterboxd_english_title": "Unreachable (2025)"
   },
   "わたのまち、応答セヨ": {
     "id": null,
@@ -125,7 +141,8 @@
   },
   "太陽（ティダ）の運命": {
     "id": 1443397,
-    "title": "太陽（ティダ）の運命"
+    "title": "太陽（ティダ）の運命",
+    "letterboxd_english_title": "Tida no unmei (2025)"
   },
   "十八才": {
     "id": null,
@@ -147,31 +164,38 @@
   },
   "無名の人生": {
     "id": 1441453,
-    "title": "無名の人生"
+    "title": "無名の人生",
+    "letterboxd_english_title": "Nameless Life (2025)"
   },
   "黄金の七人": {
     "id": 251837,
-    "title": "黄金の七人 1+6 エロチカ大作戦"
+    "title": "黄金の七人 1+6 エロチカ大作戦",
+    "letterboxd_english_title": "Homo Eroticus (1971)"
   },
   "来し方 行く末": {
     "id": 1154156,
-    "title": "来し方行く末"
+    "title": "来し方行く末",
+    "letterboxd_english_title": "来し方行く末 (2012)"
   },
   "沓掛時次郎": {
     "id": 710793,
-    "title": "沓掛時次郎"
+    "title": "沓掛時次郎",
+    "letterboxd_english_title": "Kutsukake Tokijiro (1929)"
   },
   "クヒオ大佐": {
     "id": 338370,
-    "title": "クヒオ大佐"
+    "title": "クヒオ大佐",
+    "letterboxd_english_title": "The Wonderful World of Captain Kuhio (2009)"
   },
   "走れメロス": {
     "id": 123950,
-    "title": "走れメロス"
+    "title": "走れメロス",
+    "letterboxd_english_title": "Run, Melos! (1992)"
   },
   "ANORA アノーラ": {
     "id": 1064213,
-    "title": "ANORA アノーラ"
+    "title": "ANORA アノーラ",
+    "letterboxd_english_title": "Anora (2024)"
   },
   "詩人たちは": {
     "id": null,
@@ -181,15 +205,18 @@
   },
   "アイアン・ジャイアント": {
     "id": 10386,
-    "title": "アイアン・ジャイアント"
+    "title": "アイアン・ジャイアント",
+    "letterboxd_english_title": "The Iron Giant (1999)"
   },
   "おんどりの鳴く前に": {
     "id": 1002457,
-    "title": "Men of Deeds"
+    "title": "Men of Deeds",
+    "letterboxd_english_title": "Men of Deeds (2022)"
   },
   "じゃりン子チエ": {
     "id": 70927,
-    "title": "じゃりン子チエ 劇場版"
+    "title": "じゃりン子チエ 劇場版",
+    "letterboxd_english_title": "Chie the Brat (1981)"
   },
   "石の上の花": {
     "id": null,
@@ -223,7 +250,8 @@
   },
   "赤毛のアン グリーンゲーブルズへの道": {
     "id": 373394,
-    "title": "赤毛のアン グリーンゲーブルズへの道"
+    "title": "赤毛のアン グリーンゲーブルズへの道",
+    "letterboxd_english_title": "Anne of Green Gables: Road to Green Gables (1992)"
   },
   "ゴールデン・エイティーズ": {
     "id": null,
@@ -239,12 +267,14 @@
   },
   "カリガリ博士": {
     "id": 109133,
-    "title": "怪人カリガリ博士"
+    "title": "怪人カリガリ博士",
+    "letterboxd_english_title": "The Cabinet of Caligari (1962)"
   },
   "STARDUST ZERO［0601ｲﾍﾞﾝﾄ": null,
   "クィア／QUEER": {
     "id": 612415,
-    "title": "Queer Japan"
+    "title": "Queer Japan",
+    "letterboxd_english_title": "Queer Japan (2019)"
   },
   "STARDUST ZERO": {
     "id": null,
@@ -254,11 +284,13 @@
   },
   "恋空": {
     "id": 40713,
-    "title": "恋空"
+    "title": "恋空",
+    "letterboxd_english_title": "Sky of Love (2007)"
   },
   "ボーン・トゥ・フライ": {
     "id": 1012837,
-    "title": "ボーン・トゥ・フライ"
+    "title": "ボーン・トゥ・フライ",
+    "letterboxd_english_title": "Born to Fly (2023)"
   },
   "第34回日プロ大賞授賞式": {
     "id": null,
@@ -280,7 +312,8 @@
   },
   "恋の花咲く 伊豆の踊子": {
     "id": 164105,
-    "title": "恋の花咲く 伊豆の踊子"
+    "title": "恋の花咲く 伊豆の踊子",
+    "letterboxd_english_title": "The Dancing Girl of Izu (1933)"
   },
   "普通の生活』ほか短編7作品": {
     "id": null,
@@ -296,7 +329,8 @@
   },
   "CROSSPOINT クロスポイント": {
     "id": 1297201,
-    "title": "Crosspoint"
+    "title": "Crosspoint",
+    "letterboxd_english_title": "Crosspoint (2024)"
   },
   "ホテル・モンタレー": {
     "id": null,
@@ -306,7 +340,8 @@
   },
   "ガラ": {
     "id": 372756,
-    "title": "ガラスの花と壊す世界"
+    "title": "ガラスの花と壊す世界",
+    "letterboxd_english_title": "Garakowa -Restore the World- (2016)"
   },
   "ドラゴン・ハート 霊界探訪記": {
     "id": null,
@@ -322,15 +357,18 @@
   },
   "続・黄金の七人 ／レインボー作戦": {
     "id": 168536,
-    "title": "続・黄金の七人　レインボー作戦"
+    "title": "続・黄金の七人　レインボー作戦",
+    "letterboxd_english_title": "Seven Golden Men Strike Again (1966)"
   },
   "ら・かんぱねら": {
     "id": 1474275,
-    "title": "ら・かんぱねら"
+    "title": "ら・かんぱねら",
+    "letterboxd_english_title": "La Campanella (2025)"
   },
   "世界でいちばん貧しい大統領 愛と闘争の男、ホセ・ムヒカ": {
     "id": 538620,
-    "title": "世界でいちばん貧しい大統領　愛と闘争の男、ホセ・ムヒカ"
+    "title": "世界でいちばん貧しい大統領　愛と闘争の男、ホセ・ムヒカ",
+    "letterboxd_english_title": "El Pepe: A Supreme Life (2018)"
   },
   "内定代行": {
     "id": null,
@@ -340,7 +378,8 @@
   },
   "トレインスポッティング": {
     "id": 627,
-    "title": "トレインスポッティング"
+    "title": "トレインスポッティング",
+    "letterboxd_english_title": "Trainspotting (1996)"
   },
   "BADBOYS": {
     "id": 75362,
@@ -361,7 +400,8 @@
   "MIRRORLIAR FILMS Season7": null,
   "Flow": {
     "id": 262610,
-    "title": "Flow"
+    "title": "Flow",
+    "letterboxd_english_title": "Flow (1996)"
   },
   "サムサッカー": {
     "id": null,
@@ -377,11 +417,13 @@
   },
   "グレース": {
     "id": 11575,
-    "title": "グレートレース"
+    "title": "グレートレース",
+    "letterboxd_english_title": "The Great Race (1965)"
   },
   "カウントダウン": {
     "id": 457832,
-    "title": "リセット 決死のカウントダウン"
+    "title": "リセット 決死のカウントダウン",
+    "letterboxd_english_title": "Reset (2017)"
   },
   "星より静かに": {
     "id": null,
@@ -391,11 +433,13 @@
   },
   "カップルズ": {
     "id": 54421,
-    "title": "カップルズ"
+    "title": "カップルズ",
+    "letterboxd_english_title": "Mahjong (1996)"
   },
   "超劇場版ケロロ軍曹": {
     "id": 112538,
-    "title": "超劇場版ケロロ軍曹 3 ケロロ対ケロロ 天空大決戦であります！"
+    "title": "超劇場版ケロロ軍曹 3 ケロロ対ケロロ 天空大決戦であります！",
+    "letterboxd_english_title": "Sergeant Keroro The Super Duper Movie 3: Keroro vs. Keroro Great Sky Duel (2008)"
   },
   "デビルズ・バス THE DEVIL'S BATH": {
     "id": null,
@@ -405,7 +449,8 @@
   },
   "折にふれて": {
     "id": 1306455,
-    "title": "折にふれて"
+    "title": "折にふれて",
+    "letterboxd_english_title": "The Midnight Sun (2024)"
   },
   "アンナの出会い": {
     "id": null,
@@ -415,15 +460,18 @@
   },
   "グリーンブック": {
     "id": 490132,
-    "title": "グリーンブック"
+    "title": "グリーンブック",
+    "letterboxd_english_title": "Green Book (2018)"
   },
   "IVE": {
     "id": 952062,
-    "title": "レジェップ・イヴェディッキ 7"
+    "title": "レジェップ・イヴェディッキ 7",
+    "letterboxd_english_title": "Recep Ivedik 7 (2022)"
   },
   "ゴールドフィンガー 巨大金融詐欺事件": {
     "id": 823598,
-    "title": "ゴールドフィンガー 巨大金融詐欺事件"
+    "title": "ゴールドフィンガー 巨大金融詐欺事件",
+    "letterboxd_english_title": "The Goldfinger (2023)"
   },
   "サザンオールスターズ LIVE TOUR 2025「THA": {
     "id": null,
@@ -433,7 +481,8 @@
   },
   "青銅の基督": {
     "id": 199236,
-    "title": "青銅の基督"
+    "title": "青銅の基督",
+    "letterboxd_english_title": "Christ in Bronze (1955)"
   },
   "蒲田モダンことはじめ／母": {
     "id": null,
@@ -455,11 +504,13 @@
   },
   "悪女の季節": {
     "id": 535789,
-    "title": "悪女の季節"
+    "title": "悪女の季節",
+    "letterboxd_english_title": "The Days of Evil Women (1958)"
   },
   "ミステリアス・スキン": {
     "id": 11171,
-    "title": "Mysterious Skin"
+    "title": "Mysterious Skin",
+    "letterboxd_english_title": "Mysterious Skin (2004)"
   },
   "チャージマン研": {
     "id": null,
@@ -469,21 +520,25 @@
   },
   "今日の空が一番好き": {
     "id": 1361156,
-    "title": "今日の空が一番好きとまだ言えない僕は"
+    "title": "今日の空が一番好きとまだ言えない僕は",
+    "letterboxd_english_title": "She Taught Me Serendipity (2024)"
   },
   "ブラックバード、ブラックベリー、私は私": {
     "id": 1114866,
-    "title": "ブラックバード、ブラックベリー、私は私。"
+    "title": "ブラックバード、ブラックベリー、私は私。",
+    "letterboxd_english_title": "Blackbird Blackbird Blackberry (2023)"
   },
   "STARDUST ZERO［0531ｲﾍﾞﾝﾄ": null,
   "トワイライト・ウォリアーズ 決戦！九龍城砦": {
     "id": 923667,
-    "title": "トワイライト・ウォリアーズ 決戦！九龍城砦"
+    "title": "トワイライト・ウォリアーズ 決戦！九龍城砦",
+    "letterboxd_english_title": "Twilight of the Warriors: Walled In (2024)"
   },
   "Ondan Sonra［0601ｲﾍﾞﾝﾄ": null,
   "放浪三昧": {
     "id": 311105,
-    "title": "放浪三昧"
+    "title": "放浪三昧",
+    "letterboxd_english_title": "The Wandering Gambler (1928)"
   },
   "ミュージック・フォー ・ブラック・ピジョン -ジャズが生まれる瞬間": {
     "id": null,
@@ -493,7 +548,8 @@
   },
   "舟を編む": {
     "id": 182827,
-    "title": "舟を編む"
+    "title": "舟を編む",
+    "letterboxd_english_title": "The Great Passage (2013)"
   },
   "よそ者の会": {
     "id": 1447878,
@@ -520,7 +576,8 @@
   },
   "ピンク・フラミンゴ": {
     "id": 692,
-    "title": "ピンク・フラミンゴ"
+    "title": "ピンク・フラミンゴ",
+    "letterboxd_english_title": "Pink Flamingos (1972)"
   },
   "ダーティ・マネー": {
     "id": null,
@@ -536,7 +593,8 @@
   },
   "6時間後に君は死ぬ": {
     "id": 277623,
-    "title": "6時間後に君は死ぬ"
+    "title": "6時間後に君は死ぬ",
+    "letterboxd_english_title": "You'll Die Six Hours Later (2008)"
   },
   "ベルリン・天使の詩 ４Ｋレストア版": {
     "id": null,
@@ -558,7 +616,8 @@
   },
   "海街diary": {
     "id": 315846,
-    "title": "海街diary"
+    "title": "海街diary",
+    "letterboxd_english_title": "Our Little Sister (2015)"
   },
   "IT'S NOT ME イッツ・ノット・ミー": {
     "id": null,
@@ -568,12 +627,14 @@
   },
   "今日の空が一番好き、とまだ言えない僕は": {
     "id": 1361156,
-    "title": "今日の空が一番好きとまだ言えない僕は"
+    "title": "今日の空が一番好きとまだ言えない僕は",
+    "letterboxd_english_title": "She Taught Me Serendipity (2024)"
   },
   "Ondan Sonra［0531ｲﾍﾞﾝﾄ": null,
   "ウィキッド ふたりの魔女": {
     "id": 402431,
-    "title": "ウィキッド ふたりの魔女"
+    "title": "ウィキッド ふたりの魔女",
+    "letterboxd_english_title": "Wicked (2024)"
   },
   "ゴッドマザー～コシノアヤコの生涯": {
     "id": null,
@@ -584,7 +645,8 @@
   },
   "ノスフェラトゥ": {
     "id": 426063,
-    "title": "ノスフェラトゥ"
+    "title": "ノスフェラトゥ",
+    "letterboxd_english_title": "Nosferatu (2024)"
   },
   "ゲッベルス ヒトラーをプロデュースした男": {
     "id": null,
@@ -598,15 +660,18 @@
   },
   "金子差入店": {
     "id": 1339611,
-    "title": "金子差入店"
+    "title": "金子差入店",
+    "letterboxd_english_title": "Kaneko's Commissary (2024)"
   },
   "ルックバック": {
     "id": 1244492,
-    "title": "ルックバック"
+    "title": "ルックバック",
+    "letterboxd_english_title": "Look Back (2024)"
   },
   "骨なし灯籠": {
     "id": 1125897,
-    "title": "Boneless Lantern"
+    "title": "Boneless Lantern",
+    "letterboxd_english_title": "Boneless Lantern (2023)"
   },
   "オステンデ": {
     "id": null,
@@ -616,15 +681,18 @@
   },
   "現代人": {
     "id": 199470,
-    "title": "現代人"
+    "title": "現代人",
+    "letterboxd_english_title": "Modern People (1952)"
   },
   "マインクラフト ザ・ムービー": {
     "id": 950387,
-    "title": "マインクラフト／ザ・ムービー"
+    "title": "マインクラフト／ザ・ムービー",
+    "letterboxd_english_title": "A Minecraft Movie (2025)"
   },
   "好人好日": {
     "id": 665967,
-    "title": "好人好日"
+    "title": "好人好日",
+    "letterboxd_english_title": "A Good Man, A Good Day (1961)"
   },
   "ぼのぼの": {
     "id": 39123,
@@ -633,11 +701,13 @@
   "Ondan Sonra［0530ｲﾍﾞﾝﾄ": null,
   "無名": {
     "id": 1323030,
-    "title": "無名"
+    "title": "無名",
+    "letterboxd_english_title": "無名"
   },
   "ロック、ストック&トゥー・スモーキ": {
     "id": 100,
-    "title": "ロック、ストック&トゥー・スモーキング・バレルズ"
+    "title": "ロック、ストック&トゥー・スモーキング・バレルズ",
+    "letterboxd_english_title": "Lock, Stock and Two Smoking Barrels (1998)"
   },
   "劇場が終わるとき": {
     "id": null,
@@ -647,7 +717,8 @@
   },
   "とうちゃん": {
     "id": 1028269,
-    "title": "欲しがり奈々ちゃん ～ひとくち、ちょうだい～"
+    "title": "欲しがり奈々ちゃん ～ひとくち、ちょうだい～",
+    "letterboxd_english_title": "I Want You, Nana-chan, Give Me a Bite (2021)"
   },
   "デビルズ・バス": {
     "id": null,
@@ -663,7 +734,8 @@
   },
   "インファナル・アフェア": {
     "id": 10775,
-    "title": "インファナル・アフェア"
+    "title": "インファナル・アフェア",
+    "letterboxd_english_title": "Infernal Affairs (2002)"
   },
   "ジョン・バージャーと4つの季節 The Seasons In Quincy: Four Portraits of John Berger": {
     "id": null,
@@ -673,19 +745,23 @@
   },
   "骨": {
     "id": 381902,
-    "title": "西遊記 孫悟空 vs 白骨夫人"
+    "title": "西遊記 孫悟空 vs 白骨夫人",
+    "letterboxd_english_title": "The Monkey King 2 (2016)"
   },
   "三島由紀夫vs東大全共闘 ５０年目の真実": {
     "id": 682428,
-    "title": "三島由紀夫vs東大全共闘 50年目の真実"
+    "title": "三島由紀夫vs東大全共闘 50年目の真実",
+    "letterboxd_english_title": "Mishima: The Last Debate (2020)"
   },
   "MIRRORLIAR FILMS": {
     "id": 1376112,
-    "title": "MIRRORLIAR FILMS Season5"
+    "title": "MIRRORLIAR FILMS Season5",
+    "letterboxd_english_title": "MIRRORLIAR FILMS Season5"
   },
   "トレンケ・ラウケン": {
     "id": 715742,
-    "title": "トレンケ・ラウケン"
+    "title": "トレンケ・ラウケン",
+    "letterboxd_english_title": "Trenque Lauquen (2022)"
   },
   "ベテラン 凶悪犯罪捜査班": {
     "id": null,
@@ -695,7 +771,8 @@
   },
   "ヴァージン・スーサイズ": {
     "id": 1443,
-    "title": "ヴァージン・スーサイズ"
+    "title": "ヴァージン・スーサイズ",
+    "letterboxd_english_title": "The Virgin Suicides (1999)"
   },
   "Ondan Sonra": {
     "id": null,
@@ -705,7 +782,8 @@
   },
   "火の馬": {
     "id": 57212,
-    "title": "戦火の馬"
+    "title": "戦火の馬",
+    "letterboxd_english_title": "War Horse (2011)"
   },
   "オルメイヤーの阿房宮": {
     "id": null,
@@ -715,7 +793,8 @@
   },
   "眠れぬ夜": {
     "id": 11338,
-    "title": "眠れぬ夜のために"
+    "title": "眠れぬ夜のために",
+    "letterboxd_english_title": "Into the Night (1985)"
   },
   "特集上映〉アラン・ギロディ監督特集": {
     "id": null,
@@ -725,23 +804,28 @@
   },
   "VENUS ヴィーナス": {
     "id": 13771,
-    "title": "ヴィーナス"
+    "title": "ヴィーナス",
+    "letterboxd_english_title": "Venus (2006)"
   },
   "天国の日々": {
     "id": 16642,
-    "title": "天国の日々"
+    "title": "天国の日々",
+    "letterboxd_english_title": "Days of Heaven (1978)"
   },
   "教皇選挙": {
     "id": 974576,
-    "title": "教皇選挙"
+    "title": "教皇選挙",
+    "letterboxd_english_title": "Conclave (2024)"
   },
   "けものがいる": {
     "id": 914206,
-    "title": "けものがいる"
+    "title": "けものがいる",
+    "letterboxd_english_title": "The Beast (2023)"
   },
   "NOT BEER": {
     "id": 1137219,
-    "title": "NOT BEER"
+    "title": "NOT BEER",
+    "letterboxd_english_title": "NOT BEER (2022)"
   },
   "キムソジュン": {
     "id": null,
@@ -751,11 +835,13 @@
   },
   "ジャンヌ・ディエルマン ブリュッセル1080、 コメルス河畔通り23番地": {
     "id": 44012,
-    "title": "ジャンヌ・ディエルマン ブリュッセル1080、コメルス河畔通り23番地"
+    "title": "ジャンヌ・ディエルマン ブリュッセル1080、コメルス河畔通り23番地",
+    "letterboxd_english_title": "Jeanne Dielman, 23, quai du Commerce, 1080 Bruxelles (1975)"
   },
   "酔っぱらい天国": {
     "id": 286872,
-    "title": "酔っぱらい天国"
+    "title": "酔っぱらい天国",
+    "letterboxd_english_title": "Drunkard's Paradise (1962)"
   },
   "マリリン・モンロー 私の愛しかた": {
     "id": null,
@@ -777,7 +863,8 @@
   },
   "ベン・ハー": {
     "id": 665,
-    "title": "ベン・ハー"
+    "title": "ベン・ハー",
+    "letterboxd_english_title": "Ben-Hur (1959)"
   },
   "桜の森の満開の下": {
     "id": 108808,
@@ -791,7 +878,8 @@
   },
   "たべっ子どうぶつ": {
     "id": 1329578,
-    "title": "たべっ子どうぶつ THE MOVIE"
+    "title": "たべっ子どうぶつ THE MOVIE",
+    "letterboxd_english_title": "Tabekko Doubutsu: THE MOVIE (2025)"
   },
   "それでも私は Though I’m His Daughter": {
     "id": null,
@@ -801,7 +889,8 @@
   },
   "君の名前で僕を呼んで": {
     "id": 398818,
-    "title": "君の名前で僕を呼んで"
+    "title": "君の名前で僕を呼んで",
+    "letterboxd_english_title": "Call Me by Your Name (2017)"
   },
   "アイルランド映画祭2025＞湖畔": {
     "id": null,
@@ -811,40 +900,49 @@
   },
   "温帯の君へ": {
     "id": 1448773,
-    "title": "温帯の君へ"
+    "title": "温帯の君へ",
+    "letterboxd_english_title": "Temperate (2024)"
   },
   "I Like Movies アイ・ライク・ムービーズ": {
     "id": 980996,
-    "title": "I Like Movies アイ・ライク・ムービーズ"
+    "title": "I Like Movies アイ・ライク・ムービーズ",
+    "letterboxd_english_title": "I Like Movies (2022)"
   },
   "みなに幸あれ": {
     "id": 1136558,
-    "title": "みなに幸あれ"
+    "title": "みなに幸あれ",
+    "letterboxd_english_title": "Best Wishes to All (2023)"
   },
   "熱烈": {
     "id": 34433,
-    "title": "ドラゴンボールZ 燃えつきろ!!熱戦・烈戦・超激戦"
+    "title": "ドラゴンボールZ 燃えつきろ!!熱戦・烈戦・超激戦",
+    "letterboxd_english_title": "Dragon Ball Z: Broly - The Legendary Super Saiyan (1993)"
   },
   "天使たち": {
     "id": 29154,
-    "title": "落ちこぼれの天使たち"
+    "title": "落ちこぼれの天使たち",
+    "letterboxd_english_title": "Stand and Deliver (1988)"
   },
   "REVENGE リベンジ": {
     "id": 467938,
-    "title": "REVENGE リベンジ"
+    "title": "REVENGE リベンジ",
+    "letterboxd_english_title": "Revenge (2017)"
   },
   "お嬢さん": {
     "id": 290098,
-    "title": "お嬢さん"
+    "title": "お嬢さん",
+    "letterboxd_english_title": "The Handmaiden (2016)"
   },
   "STARDUST ZERO［0530ｲﾍﾞﾝﾄ": null,
   "新幹線大爆破": {
     "id": 1276073,
-    "title": "新幹線大爆破"
+    "title": "新幹線大爆破",
+    "letterboxd_english_title": "Bullet Train Explosion (2025)"
   },
   "ミッシング・チャイルド・ビデオテープ": {
     "id": 1341284,
-    "title": "ミッシング・チャイルド・ビデオテープ"
+    "title": "ミッシング・チャイルド・ビデオテープ",
+    "letterboxd_english_title": "Missing Child Videotape (2024)"
   },
   "フェイクアウト": null,
   "アシク・ケリブ": {
@@ -909,7 +1007,8 @@
   },
   "どうすればよかったか": {
     "id": 1188968,
-    "tmdb_title": "どうすればよかったか？"
+    "tmdb_title": "どうすればよかったか？",
+    "letterboxd_english_title": "What Should We Have Done? (2023)"
   },
   "ひと夏のファンタジア": {
     "id": null,
@@ -937,7 +1036,8 @@
   },
   "ノー・アザー・ランド 故郷は他にない": {
     "id": 1232493,
-    "tmdb_title": "ノー・アザー・ランド 故郷は他にない"
+    "tmdb_title": "ノー・アザー・ランド 故郷は他にない",
+    "letterboxd_english_title": "No Other Land (2024)"
   },
   "ミゼリコルディア": {
     "id": null,
@@ -953,7 +1053,8 @@
   },
   "君の忘れ方": {
     "id": 1377524,
-    "tmdb_title": "君の忘れ方"
+    "tmdb_title": "君の忘れ方",
+    "letterboxd_english_title": "How to Forget You (2025)"
   },
   "湖の見知らぬ男": {
     "id": null,
@@ -975,7 +1076,8 @@
   },
   "鹿の国": {
     "id": 1438120,
-    "tmdb_title": "鹿の国"
+    "tmdb_title": "鹿の国",
+    "letterboxd_english_title": "Guardians of the Harvest (2025)"
   },
   "ﾄﾞﾗｺﾞﾝ･ﾊｰﾄ": {
     "id": null,
@@ -1006,17 +1108,20 @@
   "ガール・ウィズ・ニードル": {
     "id": 1232827,
     "tmdb_title": "The Girl with the Needle",
-    "tmdb_original_title": "Pigen med nålen"
+    "tmdb_original_title": "Pigen med nålen",
+    "letterboxd_english_title": "The Girl with the Needle (2024)"
   },
   "パフィンの小さな島": {
     "id": 1086411,
     "tmdb_title": "Puffin Rock and the New Friends",
-    "tmdb_original_title": "Puffin Rock and the New Friends"
+    "tmdb_original_title": "Puffin Rock and the New Friends",
+    "letterboxd_english_title": "Puffin Rock and the New Friends (2023)"
   },
   "Death in Venice": {
     "id": 468998,
     "tmdb_title": "Death in Venice",
-    "tmdb_original_title": "Death in Venice"
+    "tmdb_original_title": "Death in Venice",
+    "letterboxd_english_title": "Death in Venice (1981)"
   },
   "The Tin Drum": {
     "id": null,
@@ -1027,7 +1132,8 @@
   "The Natural History of Destruction": {
     "id": 958000,
     "tmdb_title": "The Natural History of Destruction",
-    "tmdb_original_title": "Die Naturgeschichte der Zerstörung"
+    "tmdb_original_title": "Die Naturgeschichte der Zerstörung",
+    "letterboxd_english_title": "The Natural History of Destruction (2022)"
   },
   "Double Suicide": {
     "id": null,
@@ -1076,7 +1182,8 @@
   "Presence": {
     "id": 1140535,
     "tmdb_title": "Presence",
-    "tmdb_original_title": "Presence"
+    "tmdb_original_title": "Presence",
+    "letterboxd_english_title": "Presence (2024)"
   },
   "かなさんどー": {
     "id": 1292572,
@@ -1130,12 +1237,14 @@
   "女吸血鬼": {
     "id": 295616,
     "tmdb_title": "The Lady Vampire",
-    "tmdb_original_title": "女吸血鬼"
+    "tmdb_original_title": "女吸血鬼",
+    "letterboxd_english_title": "The Lady Vampire (1959)"
   },
   "影法師捕物帖": {
     "id": 399426,
     "tmdb_title": "The Shadow Avenger",
-    "tmdb_original_title": "影法師捕物帖"
+    "tmdb_original_title": "影法師捕物帖",
+    "letterboxd_english_title": "The Shadow Avenger (1959)"
   },
   "雷電／続 雷電": {
     "id": null,
@@ -1147,7 +1256,8 @@
   "女死刑囚の脱獄": {
     "id": 173527,
     "tmdb_title": "Death Row Woman",
-    "tmdb_original_title": "女死刑囚の脱獄"
+    "tmdb_original_title": "女死刑囚の脱獄",
+    "letterboxd_english_title": "Death Row Woman (1960)"
   },
   "高原の駅よさようなら": {
     "id": null,
@@ -1177,7 +1287,8 @@
   "八百万石に挑む男": {
     "id": 415974,
     "tmdb_title": "The Man Who Challenged 8,000,000-Koku",
-    "tmdb_original_title": "八百万石に挑む男"
+    "tmdb_original_title": "八百万石に挑む男",
+    "letterboxd_english_title": "The Man Who Challenged 8,000,000-Koku (1961)"
   },
   "企画展ギャラリートーク": {
     "id": null,
@@ -1202,7 +1313,8 @@
   "新吾二十番勝負 完結篇": {
     "id": 878021,
     "tmdb_title": "20 Duels of Young Shingo - Conclusion",
-    "tmdb_original_title": "新吾二十番勝負 完結篇"
+    "tmdb_original_title": "新吾二十番勝負 完結篇",
+    "letterboxd_english_title": "20 Duels of Young Shingo - Conclusion (1963)"
   },
   "若尾文子映画祭 －大映〈プログラムピクチャー〉の職人監督と": {
     "id": null,
@@ -1232,12 +1344,14 @@
   "サンセット・サンライズ": {
     "id": 1339191,
     "tmdb_title": "Sunset Sunrise",
-    "tmdb_original_title": "サンセット・サンライズ"
+    "tmdb_original_title": "サンセット・サンライズ",
+    "letterboxd_english_title": "Sunset Sunrise (2024)"
   },
   "忍たま乱太郎 ドクタケ忍者隊最強の軍師": {
     "id": 1279788,
     "tmdb_title": "Nintama Rantaro: Invincible Master of the Dokutake Ninja",
-    "tmdb_original_title": "劇場版 忍たま乱太郎 ドクタケ忍者隊最強の軍師"
+    "tmdb_original_title": "劇場版 忍たま乱太郎 ドクタケ忍者隊最強の軍師",
+    "letterboxd_english_title": "Nintama Rantaro: Invincible Master of the Dokutake Ninja (2024)"
   },
   "オールドカー～てんとう虫のプロポーズ": {
     "id": null,
@@ -1255,12 +1369,14 @@
   "うぉっしゅ": {
     "id": 1310778,
     "tmdb_title": "Wash Away",
-    "tmdb_original_title": "うぉっしゅ"
+    "tmdb_original_title": "うぉっしゅ",
+    "letterboxd_english_title": "Wash Away (2024)"
   },
   "侍タイムスリッパー": {
     "id": 1287819,
     "tmdb_title": "A Samurai in Time",
-    "tmdb_original_title": "侍タイムスリッパー"
+    "tmdb_original_title": "侍タイムスリッパー",
+    "letterboxd_english_title": "A Samurai in Time (2023)"
   },
   "渇愛": {
     "id": null,
@@ -1278,7 +1394,8 @@
   "V. MARIA": {
     "id": 1381512,
     "tmdb_title": "V. MARIA",
-    "tmdb_original_title": "V. MARIA"
+    "tmdb_original_title": "V. MARIA",
+    "letterboxd_english_title": "V. MARIA (2025)"
   },
   "ロックの礎を築いた男：レッド・ベリー ビートルズとボブ・ディランの原点": {
     "id": null,
@@ -1296,7 +1413,8 @@
   "噛む家族": {
     "id": 1449987,
     "tmdb_title": "Chewing Family",
-    "tmdb_original_title": "噛む家族"
+    "tmdb_original_title": "噛む家族",
+    "letterboxd_english_title": "Chewing Family (2024)"
   },
   "結婚の報告": {
     "id": null,
@@ -1304,5 +1422,47 @@
     "tmdb_original_title": null,
     "eiga_search_link": "https://eiga.com/search/%E7%B5%90%E5%A9%9A%E3%81%AE%E5%A0%B1%E5%91%8A",
     "gemini_english_title": "Marriage Report"
+  },
+  "嘘をつく男": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E5%98%98%E3%82%92%E3%81%A4%E3%81%8F%E7%94%B7"
+  },
+  "ヨーロッパ横断特急": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%A8%E3%83%BC%E3%83%AD%E3%83%83%E3%83%91%E6%A8%AA%E6%96%AD%E7%89%B9%E6%80%A5"
+  },
+  "不滅の女": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E4%B8%8D%E6%BB%85%E3%81%AE%E5%A5%B3"
+  },
+  "快楽の漸進的横滑り": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E5%BF%AB%E6%A5%BD%E3%81%AE%E6%BC%B8%E9%80%B2%E7%9A%84%E6%A8%AA%E6%BB%91%E3%82%8A"
+  },
+  "エデン、その後": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%82%A8%E3%83%87%E3%83%B3%E3%80%81%E3%81%9D%E3%81%AE%E5%BE%8C"
+  },
+  "囚われの美女": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E5%9B%9A%E3%82%8F%E3%82%8C%E3%81%AE%E7%BE%8E%E5%A5%B3"
   }
 }
