@@ -91,9 +91,7 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           
-          # Add all relevant output files FIRST to stage them.
-          # This converts "unstaged changes" into "staged changes,"
-          # which 'git pull --rebase' can then handle.
+          # Stage the generated files
           git add showtimes.json 
           git add tmdb_cache.json 
           # git add eiga_cache.json # Remove this if you're no longer generating/using eiga_cache.json
@@ -101,17 +99,19 @@ jobs:
           # Check if there are any staged changes (i.e., if the scraper actually changed files)
           if git diff --staged --quiet; then
             echo "No changes to commit."
-          else
-            # Pull the latest changes from the remote before committing and pushing.
-            # The --rebase option ensures a clean, linear history by reapplying
-            # our changes on top of any new remote commits.
-            git pull origin main --rebase
-            
-            # Commit the now staged changes
-            git commit -m "Automated update of showtimes and cache files"
-            # Push the committed changes to the remote repository
-            git push
-            echo "Generated files committed and pushed."
+            exit 0 # Exit successfully if no changes to commit
           fi
+
+          # Commit the staged changes locally first.
+          # This ensures a clean state for 'git pull --rebase' because all changes are now part of a commit.
+          git commit -m "Automated update of showtimes and cache files (local commit)"
+          
+          # Pull the latest changes from the remote, rebasing our local commit on top.
+          # Now that our changes are committed, rebase can safely operate.
+          git pull origin main --rebase
+          
+          # Push the rebased commit to the remote repository.
+          git push
+          echo "Generated files committed and pushed."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
