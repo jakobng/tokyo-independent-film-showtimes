@@ -49,7 +49,7 @@ jobs:
 
           echo "Using ChromeDriver URL: $CHROMEDRIVER_URL"
           wget -O chromedriver_linux64.zip "$CHROMEDRIVER_URL"
-          unzip chromedver_linux64.zip -d ./chromedriver_temp
+          unzip chromedriver_linux64.zip -d ./chromedriver_temp
           
           if [ -f ./chromedriver_temp/chromedriver-linux64/chromedriver ]; then
             sudo mv ./chromedriver_temp/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
