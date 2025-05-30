@@ -49,7 +49,7 @@ jobs:
 
           echo "Using ChromeDriver URL: $CHROMEDRIVER_URL"
           wget -O chromedriver_linux64.zip "$CHROMEDRIVER_URL"
-          unzip chromedriver_linux64.zip -d ./chromedriver_temp
+          unzip chromedver_linux64.zip -d ./chromedriver_temp
           
           if [ -f ./chromedriver_temp/chromedriver-linux64/chromedriver ]; then
             sudo mv ./chromedriver_temp/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
@@ -88,6 +88,10 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          # Pull the latest changes from the remote before attempting to commit and push
+          # This integrates any new commits from 'main' into the workflow's local copy
+          git pull origin main --rebase
           
           # Add all relevant output files
           git add showtimes.json 
