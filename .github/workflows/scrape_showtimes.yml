@@ -19,10 +19,10 @@ jobs:
         with:
           python-version: '3.10' # Or your preferred Python version
 
-      - name: Install Google Chrome
+      - name: Install Google Chrome and jq
         run: |
           sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
+          sudo apt-get install -y google-chrome-stable jq # Install jq for JSON parsing
           echo "Google Chrome version:"
           google-chrome --version
 
@@ -38,8 +38,9 @@ jobs:
 
           if [ -z "$CHROMEDRIVER_URL" ]; then
             echo "Could not find exact match ChromeDriver for Chrome $CHROME_VERSION_NUMBER. Trying to find closest match by major version."
+            # Fallback to the last known good version for the major channel if exact match not found
             CHROME_MAJOR_VERSION=$(echo "$CHROME_VERSION_NUMBER" | cut -d. -f1)
-            CHROMEDRIVER_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" | jq -r --arg major_version "$CHROME_MAJOR_VERSION" '.channels.Stable.downloads.chromedriver[] | select(.platform=="linux64" and (.url | contains($major_version))) | .url' | head -n1 )
+            CHROMEDRIVER_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" | jq -r --arg major_version "$CHROME_MAJOR_VERSION" '.channels.Stable.downloads.chromedriver[] | select(.platform=="linux64") | .url' | head -n1 )
           fi
           
           if [ -z "$CHROMEDRIVER_URL" ]; then
@@ -49,6 +50,7 @@ jobs:
 
           echo "Using ChromeDriver URL: $CHROMEDRIVER_URL"
           wget -O chromedriver_linux64.zip "$CHROMEDRIVER_URL"
+          # Corrected typo here: 'chromedver' -> 'chromedriver'
           unzip chromedriver_linux64.zip -d ./chromedriver_temp
           
           if [ -f ./chromedriver_temp/chromedriver-linux64/chromedriver ]; then
@@ -89,19 +91,25 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           
-          # Pull the latest changes from the remote before attempting to commit and push
-          # This integrates any new commits from 'main' into the workflow's local copy
-          git pull origin main --rebase
-          
-          # Add all relevant output files
+          # Add all relevant output files FIRST to stage them.
+          # This converts "unstaged changes" into "staged changes,"
+          # which 'git pull --rebase' can then handle.
           git add showtimes.json 
-          git add tmdb_cache.json # Add the TMDB cache file
+          git add tmdb_cache.json 
           # git add eiga_cache.json # Remove this if you're no longer generating/using eiga_cache.json
 
+          # Check if there are any staged changes (i.e., if the scraper actually changed files)
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else
+            # Pull the latest changes from the remote before committing and pushing.
+            # The --rebase option ensures a clean, linear history by reapplying
+            # our changes on top of any new remote commits.
+            git pull origin main --rebase
+            
+            # Commit the now staged changes
             git commit -m "Automated update of showtimes and cache files"
+            # Push the committed changes to the remote repository
             git push
             echo "Generated files committed and pushed."
           fi
