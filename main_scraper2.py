@@ -37,6 +37,8 @@ import cinema_rosa_module
 import chupki_module
 import laputa_asagaya_module
 import cine_switch_ginza_module
+import bluestudio_module2
+
 
 # --- Google Gemini API Import ---
 try:
@@ -470,6 +472,8 @@ def run_all_scrapers():
     all_listings += _run_scraper("Ikebukuro Cinema Rosa", lambda:cinema_rosa_module.scrape_cinema_rosa_schedule(web_key="c34cee0e-5a5e-4b99-8978-f04879a82299", cinema_name_override="池袋シネマ・ロサ"))
     print(f"\nCollected a total of {len(all_listings)} showings.")
     all_listings += _run_scraper("Cine Switch Ginza", lambda: cine_switch_ginza_module.scrape_eigaland_schedule(web_key="5c896e66-aaf7-4003-b4ff-1d8c9bf9c0fc", cinema_name_override="シネスイッチ銀座"))
+    all_listings += _run_scraper("Tokyo Art Center - Blue Studio",bluestudio_module2.scrape_bluestudio) 
+
 
     return all_listings
 
