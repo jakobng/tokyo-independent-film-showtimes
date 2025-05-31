@@ -39,32 +39,40 @@ def _parse_timetable(html: str, max_days: int) -> List[Dict[str,str]]:
         print("[Chupki] timetable div not found", file=sys.stderr)
         return []
 
-    # 1) parse the header date-range, e.g. "5月24日(土)～30日(金) ＊28日(水)休映"
+    # 1) parse the header date-range, e.g. "5月31日(土)〜6月7日(土) ＊4日(水)休映"
     hdr = tt.find("h3", class_="timetable__ttl")
     if not hdr:
         print("[Chupki] timetable header not found", file=sys.stderr)
         return []
     txt = hdr.get_text(" ", strip=True)
 
-    # extract start-month, start-day, end-day
-    m = re.search(r"(\d{1,2})月(\d{1,2})日.*?～(\d{1,2})日", txt)
+    m = re.search(r"(\d{1,2})月(\d{1,2})日.*?([～〜])\s*(?:(\d{1,2})月)?(\d{1,2})日", txt)
     if not m:
         print(f"[Chupki] could not parse date range from '{txt}'", file=sys.stderr)
         return []
-    month, start_day, end_day = map(int, m.groups())
 
-    # extract any closed-days (e.g. "＊28日(水)休映")
+    start_month_str, start_day_str, _, end_month_str, end_day_str = m.groups()
+    start_month = int(start_month_str)
+    start_day = int(start_day_str)
+    end_day = int(end_day_str)
+    end_month = int(end_month_str) if end_month_str else start_month
+
     closed = set(int(d) for d in re.findall(r"(\d{1,2})日.*?休映", txt))
 
-    # build the list of actual dates in the range
     year = date.today().year
-    raw_dates = [
-        date(year, month, d)
-        for d in range(start_day, end_day + 1)
-        if d not in closed
-    ]
+    start_date = date(year, start_month, start_day)
+    end_date = date(year, end_month, end_day)
 
-    # filter to [today .. today+max_days]
+    if start_date > end_date:
+        end_date = date(year + 1, end_month, end_day)
+
+    raw_dates = []
+    current_date = start_date
+    while current_date <= end_date:
+        if current_date.day not in closed:
+            raw_dates.append(current_date)
+        current_date += timedelta(days=1)
+
     today = date.today()
     cutoff = today + timedelta(days=max_days)
     dates = [d for d in raw_dates if today <= d < cutoff]
@@ -81,7 +89,12 @@ def _parse_timetable(html: str, max_days: int) -> List[Dict[str,str]]:
         td = row.find("td")
         if not (th and td):
             continue
-        showtime = th.get_text(" ", strip=True)
+
+        # FIX: Clean the showtime to extract only the start time (e.g., "17:10")
+        raw_showtime_text = th.get_text(" ", strip=True)
+        time_match = re.search(r"(\d{1,2}:\d{2})", raw_showtime_text)
+        showtime = time_match.group(1) if time_match else raw_showtime_text
+
         title = td.get_text(" ", strip=True)
         for d in dates:
             results.append({
@@ -101,7 +114,6 @@ def scrape_chupki(max_days: int = 10) -> List[Dict[str,str]]:
     resp = _fetch(BASE_URL)
     if not resp:
         return []
-    # assume UTF-8
     resp.encoding = resp.apparent_encoding or "utf-8"
     return _parse_timetable(resp.text, max_days)
 
