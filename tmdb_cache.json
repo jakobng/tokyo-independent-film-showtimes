@@ -1697,5 +1697,35 @@
     "tmdb_title": "A Big Home",
     "tmdb_original_title": "大きな家",
     "letterboxd_english_title": null
+  },
+  "ナミビアの砂漠": {
+    "id": 1275240,
+    "tmdb_title": "Desert of Namibia",
+    "tmdb_original_title": "ナミビアの砂漠",
+    "letterboxd_english_title": null
+  },
+  "フランシス・ハ": {
+    "id": 121986,
+    "tmdb_title": "Frances Ha",
+    "tmdb_original_title": "Frances Ha",
+    "letterboxd_english_title": null
+  },
+  "14歳の栞": {
+    "id": 825904,
+    "tmdb_title": "Bookmark 14",
+    "tmdb_original_title": "14歳の栞",
+    "letterboxd_english_title": null
+  },
+  "型破りな教室": {
+    "id": 1058694,
+    "tmdb_title": "Radical",
+    "tmdb_original_title": "Radical",
+    "letterboxd_english_title": null
+  },
+  "ぶぶ漬けどうどす": {
+    "id": 1484839,
+    "tmdb_title": "ぶぶ漬けどうどす",
+    "tmdb_original_title": "ぶぶ漬けどうどす",
+    "letterboxd_english_title": null
   }
 }
