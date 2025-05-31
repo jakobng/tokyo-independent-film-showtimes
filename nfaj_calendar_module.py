@@ -1,238 +1,181 @@
-"""nfaj_calendar_module.py — scraper for 国立映画アーカイブ mini‑calendar
-Updated 2025‑05‑31 (film‑screenings‑only variant)
+"""nfaj_calendar_module.py — scraper for 国立映画アーカイブ mini‑calendar (ホーム)
+Updated 2025‑05‑31 — film screenings only; exposes scrape_nfaj_calendar() for the master scraper.
 
-Changes in this revision
-------------------------
-* **Film screenings only** – exhibition rooms, library hours and other
-  non‑screening items are no longer collected.
-* **Skip talks / Q&A** – within the film blocks, list items containing the
-  substring "トーク" (Japanese "talk") or its roman spelling "talk" are ignored.
-  This drops things like ギャラリートーク or stage‑talk announcements while
-  keeping the actual film titles.
-* **API identical** – `get_events()` still returns a list of `Event` objects;
-  each is guaranteed to be a film screening.
+This module scrapes the five‑day mini‑calendar that appears on the NFAJ home
+page (https://www.nfaj.go.jp/).  Only film screenings are extracted; exhibition
+rooms, library hours, and gallery talks are ignored.
+
+Return format (list[dict])::
+    {
+        "cinema_name": "国立映画アーカイブ",
+        "screen": "長瀬記念ホール OZU",
+        "title": "懷古二十五年 草に祈る 他",
+        "date_text": "2025-05-31",
+        "showtime": "14:00",
+        "url": "https://www.nfaj.go.jp/program/…"
+    }
+
+Public API
+----------
+* scrape_nfaj_calendar(days_ahead: int = 7, use_selenium: str = "auto") – main entry
+* get_events(...) – helper used by the CLI smoke‑test
+
+CLI::
+    $ python nfaj_calendar_module.py 5
+    2025‑05‑31 14:00  懷古二十五年 草に祈る 他
+    …
 """
+
 from __future__ import annotations
 
-import datetime as _dt
-import os as _os
-import re as _re
-import time as _time
-from dataclasses import dataclass
-from typing import List, Optional
+import contextlib
+import re
+import sys
+from datetime import datetime, timedelta
+from typing import List, Dict
 
 import requests
-from bs4 import BeautifulSoup, Tag
+from bs4 import BeautifulSoup
 
-__all__ = ["Event", "get_events"]
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Data model
-# ─────────────────────────────────────────────────────────────────────────────
-
-@dataclass(slots=True)
-class Event:
-    date: _dt.date
-    time: str  # "14:00" etc.
-    hall: str  # 長瀬記念ホール OZU / 小ホール …
-    title: str  # Film title only
-    url: str
-
-    def __str__(self) -> str:  # pragma: no cover
-        return f"{self.date:%Y‑%m‑%d} {self.time:<5} {self.hall} {self.title}"
+# Optional selenium imports (only loaded if needed)
+with contextlib.suppress(ImportError):
+    from selenium import webdriver
+    from selenium.webdriver.chrome.options import Options
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Constants & helpers
-# ─────────────────────────────────────────────────────────────────────────────
+CINEMA_NAME = "国立映画アーカイブ"
+HOMEPAGE_URL = "https://www.nfaj.go.jp/"
 
-_CAL_URL = "https://www.nfaj.go.jp/"
-_SKIP_TITLE_PAT = _re.compile(r"トーク|talk", _re.I)
-_TIME_PAT = _re.compile(r"\d{1,2}:\d{2}")
-
-try:
-    from selenium import webdriver  # type: ignore
-    from selenium.webdriver.chrome.options import Options  # type: ignore
-    from selenium.webdriver.common.by import By  # type: ignore
-    from selenium.webdriver.support.ui import WebDriverWait  # type: ignore
-    from selenium.webdriver.support import expected_conditions as EC  # type: ignore
-
-    _SELENIUM_AVAILABLE = True
-except ModuleNotFoundError:  # pragma: no cover
-    _SELENIUM_AVAILABLE = False
+HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko)"
+        " Chrome/124.0.0.0 Safari/537.36"
+    )
+}
 
 
-def _guess_year(month: int, today: _dt.date) -> int:
-    """Return the most plausible calendar year for *month* relative to *today*."""
-    if today.month == 12 and month == 1:
-        return today.year + 1
-    if today.month == 1 and month == 12:
-        return today.year - 1
-    return today.year
+def _fetch_homepage_html(use_selenium: str = "auto") -> str:
+    """Return raw HTML of the homepage, optionally via Selenium.
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Core extractors (HTML → List[Event])
-# ─────────────────────────────────────────────────────────────────────────────
-
-
-def _extract_events(html: str, days_ahead: int, *, today: _dt.date) -> List[Event]:
-    """Parse the homepage HTML (with all tab panels present) and return only
-    *film screening* events within *days_ahead* days.
+    If *use_selenium* is "auto" we first try requests; if the resulting markup
+    only contains **one** tab panel we retry with Selenium.
     """
-    soup = BeautifulSoup(html, "lxml")
-    cal_sec: Optional[Tag] = soup.find("section", id="calendar")
-    if not cal_sec:
-        return []
+    if use_selenium == "never":
+        return requests.get(HOMEPAGE_URL, headers=HEADERS, timeout=10).text
 
-    # Map panel id → absolute date
-    id_to_date: dict[str, _dt.date] = {}
-    for btn in cal_sec.select(".tab_list button"):
-        pid = btn.get("aria-controls")
-        span = btn.find("span")
-        if not (pid and span):
-            continue
-        try:
-            month, day = map(int, span.get_text(strip=True).split("/"))
-        except ValueError:
-            continue
-        id_to_date[pid] = _dt.date(_guess_year(month, today), month, day)
+    if use_selenium == "always":
+        return _selenium_get_html()
 
-    horizon = today + _dt.timedelta(days=days_ahead)
-    events: list[Event] = []
-
-    for panel in cal_sec.select("div[role='tabpanel']"):
-        pid = panel.get("id")
-        date = id_to_date.get(pid)
-        if not date or date > horizon:
-            continue
-
-        # Skip full closure days
-        if panel.find(class_="close_day"):
-            continue
-
-        # Extract film screenings only
-        for film_div in panel.select("div.film"):
-            hall = film_div.find("h2").get_text(" ", strip=True)
-            # Skip休映 (no screenings)
-            h3 = film_div.find("h3")
-            if h3 and h3.get_text(strip=True) == "休映":
-                continue
-
-            for li in film_div.select("ul li"):
-                # Time
-                time_tag = li.find("time")
-                if not time_tag:
-                    continue
-                time_txt = time_tag["datetime"]
-
-                # Title
-                a_tag = li.find("a")
-                if not a_tag:
-                    continue
-                title = a_tag.get_text(" ", strip=True)
-                if _SKIP_TITLE_PAT.search(title):
-                    # Ignore gallery talks, stage talks, etc.
-                    continue
-                url = a_tag["href"]
-
-                events.append(Event(date, time_txt, hall, title, url))
-
-    return sorted(events, key=lambda e: (e.date, e.time))
+    # auto mode – try requests first
+    html = requests.get(HOMEPAGE_URL, headers=HEADERS, timeout=10).text
+    if html.count("class=\"tabpanel") > 1:
+        return html
+    # Fallback
+    return _selenium_get_html()
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Selenium helper (unchanged)
-# ─────────────────────────────────────────────────────────────────────────────
-
-def _fetch_with_selenium(timeout: int) -> str:
-    if not _SELENIUM_AVAILABLE:
-        raise RuntimeError("selenium or a webdriver is not installed")
-
+def _selenium_get_html() -> str:
+    """Retrieve page via headless Chrome and return the full DOM after clicking tabs."""
     opts = Options()
     opts.add_argument("--headless=new")
-    opts.add_argument("--no-sandbox")
-    opts.add_argument("--disable-dev-shm-usage")
-
+    opts.add_argument("--disable-gpu")
     driver = webdriver.Chrome(options=opts)
-    driver.set_page_load_timeout(timeout)
 
     try:
-        driver.get(_CAL_URL)
-        wait = WebDriverWait(driver, timeout)
-        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "section#calendar .tab_list button")))
+        driver.get(HOMEPAGE_URL)
+        driver.implicitly_wait(3)
 
-        # Iterate through date tabs to force JS to render panels
-        for btn in driver.find_elements(By.CSS_SELECTOR, "section#calendar .tab_list button"):
-            pid = btn.get_attribute("aria-controls")
-            if not pid:
-                continue
-            driver.execute_script("arguments[0].click();", btn)
-            try:
-                wait.until(EC.attribute_contains((By.ID, pid), "class", "on"))
-            except Exception:
-                pass
-            _time.sleep(0.15)
+        buttons = driver.find_elements("css selector", "#calendar .tab_list button")
+        for btn in buttons:
+            btn.click()
+            driver.implicitly_wait(1)  # wait a moment for panel swap
 
         html = driver.page_source
     finally:
         driver.quit()
+
     return html
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Public API
-# ─────────────────────────────────────────────────────────────────────────────
+def _parse_events(html: str, days_ahead: int = 7) -> List[Dict]:
+    """Extract film screenings from the combined HTML."""
+    soup = BeautifulSoup(html, "html.parser")
+    today = datetime.now().date()
 
-def get_events(
-    days_ahead: int = 7,
-    *,
-    timeout: int = 30,
-    use_selenium: bool | None = None,
-) -> List[Event]:
-    """Return film screenings within *days_ahead* days.  See docstring for
-    behaviour of *use_selenium* (True / False / None→auto).
-    """
-    today = _dt.date.today()
-    auto_mode = use_selenium is None
+    events: List[Dict] = []
+    # Match each button to its tabpanel by ID
+    for btn in soup.select("#calendar .tab_list button")[: days_ahead]:
+        date_str = btn.get_text(strip=True).split("(")[0]  # e.g. "5/31"
+        month, day = map(int, date_str.split("/"))
 
-    # Forced or env‑var Selenium path
-    if use_selenium or (_os.getenv("NFAJ_USE_SELENIUM") == "1"):
-        html = _fetch_with_selenium(timeout)
-        return _extract_events(html, days_ahead, today=today)
+        year = today.year
+        if month < today.month - 6:  # Handle year rollover in Dec/Jan
+            year += 1
+        full_date = datetime(year, month, day).date()
 
-    # Try plain HTTP first
-    html = requests.get(_CAL_URL, timeout=timeout).text
-    events = _extract_events(html, days_ahead, today=today)
+        panel_id = btn["aria-controls"]
+        panel = soup.select_one(f"#{panel_id}")
 
-    # Fallback to browser if we only captured ≤1 date (likely first tab only)
-    if auto_mode and len({e.date for e in events}) <= 1 and _SELENIUM_AVAILABLE:
-        html = _fetch_with_selenium(timeout)
-        events = _extract_events(html, days_ahead, today=today)
+        if not panel or panel.find(class_="close_day"):
+            continue  # Skip closure days
 
+        for film_div in panel.select("div.film"):
+            screen = film_div.find("h2").get_text(strip=True)
+            if film_div.find(text=re.compile("休映")):
+                continue
+
+            for li in film_div.select("ul > li"):
+                # Skip talks/Q&A
+                title_link = li.find("a")
+                if not title_link:
+                    continue
+                title_text = title_link.get_text(strip=True)
+                if re.search(r"トーク|talk", title_text, re.I):
+                    continue
+
+                time_tag = li.find("time")
+                showtime = time_tag["datetime"] if time_tag else ""
+
+                events.append(
+                    {
+                        "cinema_name": CINEMA_NAME,
+                        "screen": screen,
+                        "title": title_text,
+                        "date_text": full_date.isoformat(),
+                        "showtime": showtime,
+                        "url": title_link["href"],
+                    }
+                )
     return events
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# CLI helper
-# ─────────────────────────────────────────────────────────────────────────────
-
-def _main(argv: list[str] | None = None) -> None:  # pragma: no cover
-    import sys
-    from itertools import islice
-
-    args = argv or sys.argv
-    try:
-        n = int(args[1])
-    except (IndexError, ValueError):
-        n = 7
-    use_sel = "--selenium" in args
-
-    evs = get_events(n, use_selenium=use_sel)
-    print(f"Found {len(evs)} film screenings across {len({e.date for e in evs})} days. First 20:\n")
-    for ev in islice(evs, 20):
-        print(ev)
+def get_events(days_ahead: int = 7, use_selenium: str = "auto") -> List[Dict]:
+    """Return list of film screenings up to *days_ahead* days ahead."""
+    html = _fetch_homepage_html(use_selenium=use_selenium)
+    return _parse_events(html, days_ahead=days_ahead)
 
 
-if __name__ == "__main__":  # pragma: no cover
-    _main()
+# ---------------------------------------------------------------------------
+# Public entry point expected by main_scraperX.py
+# ---------------------------------------------------------------------------
+
+def scrape_nfaj_calendar() -> List[Dict]:  # Name expected by main_scraper2.py
+    """Wrapper with default horizon of 5 days for compatibility."""
+    return get_events(days_ahead=5, use_selenium="auto")
+
+
+# ---------------------------------------------------------------------------
+# CLI helper (for quick testing)
+# ---------------------------------------------------------------------------
+
+def main(argv=None):
+    argv = argv or sys.argv[1:]
+    days = int(argv[0]) if argv else 5
+    rows = get_events(days_ahead=days, use_selenium="auto")
+    print(f"Found {len(rows)} film screenings. First 20:\n")
+    for row in rows[:20]:
+        print(f"{row['date_text']} {row['showtime']:>5}  {row['title']}")
+
+
+if __name__ == "__main__":
+    main()
