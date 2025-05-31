@@ -1526,5 +1526,96 @@
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
     "eiga_search_link": "https://eiga.com/search/%E4%B8%8A%E6%98%A0%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88"
+  },
+  "メトロポリス 完全復元版": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%A1%E3%83%88%E3%83%AD%E3%83%9D%E3%83%AA%E3%82%B9%20%E5%AE%8C%E5%85%A8%E5%BE%A9%E5%85%83%E7%89%88"
+  },
+  "狂気の愛 リストア版": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E7%8B%82%E6%B0%97%E3%81%AE%E6%84%9B%20%E3%83%AA%E3%82%B9%E3%83%88%E3%82%A2%E7%89%88%EF%BC%88%E7%AC%AC1%E9%83%A8%2B%E7%AC%AC2%E9%83%A8%EF%BC%89"
+  },
+  "Smoke": {
+    "id": 10149,
+    "tmdb_title": "Smoke",
+    "tmdb_original_title": "Smoke",
+    "letterboxd_english_title": null
+  },
+  "Bagdad Cafe": {
+    "id": 868774,
+    "tmdb_title": "Bagdad Cafe",
+    "tmdb_original_title": "Bagdad Cafe",
+    "letterboxd_english_title": null
+  },
+  "Night on Earth": {
+    "id": 339,
+    "tmdb_title": "Night on Earth",
+    "tmdb_original_title": "Night on Earth",
+    "letterboxd_english_title": null
+  },
+  "雪の花－ともに在りて": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E9%9B%AA%E3%81%AE%E8%8A%B1%EF%BC%8D%E3%81%A8%E3%82%82%E3%81%AB%E5%9C%A8%E3%82%8A%E3%81%A6%EF%BC%8D"
+  },
+  "小学校～それは小さな社会": {
+    "id": 1186850,
+    "tmdb_title": "The Making of a Japanese",
+    "tmdb_original_title": "小学校～それは小さな社会～",
+    "letterboxd_english_title": null
+  },
+  "アプレンティス： ドナルド・トランプの創り方": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%82%A2%E3%83%97%E3%83%AC%E3%83%B3%E3%83%86%E3%82%A3%E3%82%B9%EF%BC%9A%20%E3%83%89%E3%83%8A%E3%83%AB%E3%83%89%E3%83%BB%E3%83%88%E3%83%A9%E3%83%B3%E3%83%97%E3%81%AE%E5%89%B5%E3%82%8A%E6%96%B9"
+  },
+  "ザ・ルーム・ネクスト・ドア": {
+    "id": 1088514,
+    "tmdb_title": "The Room Next Door",
+    "tmdb_original_title": "La habitación de al lado",
+    "letterboxd_english_title": null
+  },
+  "早乙女カナコの場合は": {
+    "id": 1403864,
+    "tmdb_title": "As For Me",
+    "tmdb_original_title": "早乙女カナコの場合は",
+    "letterboxd_english_title": null
+  },
+  "バッドランズ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%83%90%E3%83%83%E3%83%89%E3%83%A9%E3%83%B3%E3%82%BA"
+  },
+  "稲森寿世 上映イベント": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E7%A8%B2%E6%A3%AE%E5%AF%BF%E4%B8%96%E3%80%80%E4%B8%8A%E6%98%A0%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88"
+  },
+  "ジャン・ギャバン特集": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%82%B8%E3%83%A3%E3%83%B3%E3%83%BB%E3%82%AE%E3%83%A3%E3%83%90%E3%83%B3%E7%89%B9%E9%9B%86"
+  },
+  "永遠の待ち人": {
+    "id": 1307302,
+    "tmdb_title": "The Waiting Woman",
+    "tmdb_original_title": "永遠の待ち人",
+    "letterboxd_english_title": null
   }
 }
