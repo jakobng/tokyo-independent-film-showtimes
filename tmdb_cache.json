@@ -1629,5 +1629,73 @@
     "tmdb_title": "Immortal Love",
     "tmdb_original_title": "永遠の人",
     "letterboxd_english_title": null
+  },
+  "地獄": {
+    "id": 261932,
+    "tmdb_title": "The Inferno",
+    "tmdb_original_title": "地獄",
+    "letterboxd_english_title": null
+  },
+  "私刑": {
+    "id": 406934,
+    "tmdb_title": "Rinchi",
+    "tmdb_original_title": "私刑",
+    "letterboxd_english_title": null
+  },
+  "旗本退屈男 謎の珊瑚屋敷": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E6%97%97%E6%9C%AC%E9%80%80%E5%B1%88%E7%94%B7%20%E8%AC%8E%E3%81%AE%E7%8F%8A%E7%91%9A%E5%B1%8B%E6%95%B7"
+  },
+  "旗本喧嘩鷹": {
+    "id": 367844,
+    "tmdb_title": "Samurai Hawk",
+    "tmdb_original_title": "旗本喧嘩鷹",
+    "letterboxd_english_title": null
+  },
+  "悲しみはいつも母に": {
+    "id": 365400,
+    "tmdb_title": "Kanashimi wa itsumo haha ni",
+    "tmdb_original_title": "悲しみはいつも母に",
+    "letterboxd_english_title": null
+  },
+  "まぼろし天狗": {
+    "id": 396220,
+    "tmdb_title": "The Phantom Goblin",
+    "tmdb_original_title": "まぼろし天狗",
+    "letterboxd_english_title": null
+  },
+  "みんな笑え": {
+    "id": 1435088,
+    "tmdb_title": "Minna warae",
+    "tmdb_original_title": "みんな笑え",
+    "letterboxd_english_title": null
+  },
+  "美晴に傘を": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E7%BE%8E%E6%99%B4%E3%81%AB%E5%82%98%E3%82%92"
+  },
+  "ファーストキス 1ST KISS": {
+    "id": 1328862,
+    "tmdb_title": "1st Kiss",
+    "tmdb_original_title": "ファーストキス 1ST KISS",
+    "letterboxd_english_title": null
+  },
+  "花束": {
+    "id": 1414209,
+    "tmdb_title": "Hanataba",
+    "tmdb_original_title": "花束",
+    "letterboxd_english_title": null
+  },
+  "大きな家": {
+    "id": 1395731,
+    "tmdb_title": "A Big Home",
+    "tmdb_original_title": "大きな家",
+    "letterboxd_english_title": null
   }
 }
