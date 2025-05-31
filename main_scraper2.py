@@ -33,7 +33,6 @@ import nfaj_calendar_module    as nfaj_module
 import human_yurakucho_module
 import waseda_shochiku_module
 import k2_cinema_module
-import bacchus_calendar_module
 import cinema_rosa_module
 import chupki_module
 import laputa_asagaya_module
@@ -466,7 +465,6 @@ def run_all_scrapers():
     all_listings += _run_scraper("Shimotakaido Cinema",shimotakaido_module.scrape_shimotakaido)
     all_listings += _run_scraper("National Film Archive of Japan", nfaj_module.scrape_nfaj_calendar)
     all_listings += _run_scraper("K2 Cinema", k2_cinema_module.scrape_k2_cinema)
-    all_listings += _run_scraper("Theater Bacchus",bacchus_calendar_module.scrape_bacchus_calendar)
     all_listings += _run_scraper("Laputa Asagaya",laputa_asagaya_module.scrape_laputa_asagaya_selenium)
     all_listings += _run_scraper("Chupki",chupki_module.scrape_chupki)
     all_listings += _run_scraper("Ikebukuro Cinema Rosa", lambda:cinema_rosa_module.scrape_cinema_rosa_schedule(web_key="c34cee0e-5a5e-4b99-8978-f04879a82299", cinema_name_override="池袋シネマ・ロサ"))
