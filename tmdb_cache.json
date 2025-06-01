@@ -1727,5 +1727,43 @@
     "tmdb_title": "ぶぶ漬けどうどす",
     "tmdb_original_title": "ぶぶ漬けどうどす",
     "letterboxd_english_title": null
+  },
+  "DROP CINEMA FESTIVAL": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/DROP%20CINEMA%20FESTIVAL%20vol.39"
+  },
+  "囚人ディリ": {
+    "id": 587030,
+    "tmdb_title": "Kaithi",
+    "tmdb_original_title": "கைதி",
+    "letterboxd_english_title": null
+  },
+  "名もなき者／A COMPLETE UNKNOWN": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E5%90%8D%E3%82%82%E3%81%AA%E3%81%8D%E8%80%85%EF%BC%8FA%20COMPLETE%20UNKNOWN"
+  },
+  "インサイド・ルーウィン・デイヴィス 名もなき男の歌": {
+    "id": 86829,
+    "tmdb_title": "Inside Llewyn Davis",
+    "tmdb_original_title": "Inside Llewyn Davis",
+    "letterboxd_english_title": null
+  },
+  "紀州の暴れん坊": {
+    "id": 491496,
+    "tmdb_title": "The Warrior from Kishu",
+    "tmdb_original_title": "紀州の暴れん坊",
+    "letterboxd_english_title": null
+  },
+  "稲妻峠の決斗": {
+    "id": 491502,
+    "tmdb_title": "Showdown at Lightning Pass",
+    "tmdb_original_title": "稲妻峠の決斗",
+    "letterboxd_english_title": null
   }
 }
