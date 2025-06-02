@@ -1765,5 +1765,24 @@
     "tmdb_title": "Showdown at Lightning Pass",
     "tmdb_original_title": "稲妻峠の決斗",
     "letterboxd_english_title": null
+  },
+  "ウディ・ガスリー わが心のふるさと": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%82%A6%E3%83%87%E3%82%A3%E3%83%BB%E3%82%AC%E3%82%B9%E3%83%AA%E3%83%BC%20%E3%82%8F%E3%81%8C%E5%BF%83%E3%81%AE%E3%81%B5%E3%82%8B%E3%81%95%E3%81%A8"
+  },
+  "男の嵐": {
+    "id": 1442505,
+    "tmdb_title": "Otoko no arashi",
+    "tmdb_original_title": "男の嵐",
+    "letterboxd_english_title": null
+  },
+  "亡霊怪猫屋敷": {
+    "id": 100463,
+    "tmdb_title": "Black Cat Mansion",
+    "tmdb_original_title": "亡霊怪猫屋敷",
+    "letterboxd_english_title": null
   }
 }
