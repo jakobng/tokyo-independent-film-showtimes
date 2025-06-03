@@ -1,6 +1,6 @@
 """
 shimotakaido_module.py — scraper for Shimotakaido Cinema (下高井戸シネマ)
-Last updated: 2025-05-28
+Last updated: 2025-06-03
 
 Returns a list of dicts with keys:
     cinema, date_text (YYYY-MM-DD), screen, title, showtime
@@ -24,7 +24,8 @@ from bs4 import BeautifulSoup
 # ---------------------------------------------------------------------------
 
 CINEMA_NAME = "下高井戸シネマ"
-URL = "http://shimotakaidocinema.com/schedule/schedule.html"
+# FIX: Use https to avoid connection timeouts
+URL = "https://shimotakaidocinema.com/schedule/schedule.html"
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
