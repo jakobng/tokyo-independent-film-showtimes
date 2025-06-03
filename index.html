@@ -251,7 +251,7 @@
                 "シネスイッチ銀座": "Chuo-ku 中央区",
                 "シネマブルースタジオ": "Adachi-ku 足立区"
             };
-             const cinemaCategories = [
+              const cinemaCategories = [
                 { name: "SHINJUKU-KU 新宿区", cinemas: [ "K's Cinema (ケイズシネマ)", "シネマート新宿", "新宿シネマカリテ", "新宿武蔵野館", "テアトル新宿", "早稲田松竹" ] },
                 { name: "SHIBUYA-KU 渋谷区", cinemas: [ "シアターギルド代官山", "YEBISU GARDEN CINEMA", "シアター・イメージフォーラム", "シネクイント渋谷", "ユーロスペース", "ヒューマントラストシネマ渋谷" ] }
             ];
@@ -398,7 +398,7 @@
                             return { originalName: nameInJson, displaySortName: pdName.toLowerCase() };
                         }).sort((a, b) => a.displaySortName.localeCompare(b.displaySortName));
                     if (cinemasInThisCategory.length > 0) {
-                         categoryBlock.appendChild(categoryHeader);
+                        categoryBlock.appendChild(categoryHeader);
                         cinemasInThisCategory.forEach(cinemaObj => {
                             categorizedCinemaNames.add(cinemaObj.originalName);
                             cardContainer.appendChild(createCinemaCard(cinemaObj.originalName, false));
@@ -434,16 +434,12 @@
                 if (window.location.hash !== newHash) {
                     history.pushState({ cinema: cinemaName }, cinemaName, newHash);
                 }
-                // UI update is handled by handleLocationChange, which will be triggered
-                // by popstate if back is used, or we call it directly after pushState.
-                // For direct click, let's make handleLocationChange update the view.
                 handleLocationChange(); 
             }
 
             backButton.addEventListener('click', () => {
-                // Push a state representing the main selection view
                 history.pushState({ cinema: null }, "", window.location.pathname + window.location.search); // Clean URL (remove hash)
-                handleLocationChange(); // Let handleLocationChange manage the UI update
+                handleLocationChange(); 
             });
             
             function renderShowtimesForCinema(showings, cinemaNameInJson) {
@@ -525,39 +521,55 @@
                     dateDiv.appendChild(dateTitle);
                     const ul = document.createElement('ul'); ul.className = 'showtimes-list';
                     byDate[dateStr].sort((a, b) => (a.showtime || '').localeCompare(b.showtime || ''));
+                    
                     byDate[dateStr].forEach(showing => {
                         const li = document.createElement('li');
-                        const originalScrapedTitle = showing.movie_title || showing.title || 'Unknown Title';
+
+                        // *** MODIFICATION START ***
+                        // Correctly identify the primary title, looking for Japanese first.
+                        const originalScrapedTitle = showing.title_ja || showing.movie_title || showing.title || showing.title_en || 'Unknown Title';
+
+                        // Determine the best available English title from all possible sources.
+                        let bestEnglishTitle = null;
+                        if (showing.letterboxd_english_title && isProbablyNotJapanese(showing.letterboxd_english_title)) {
+                            bestEnglishTitle = showing.letterboxd_english_title;
+                        } else if (showing.tmdb_display_title && isProbablyNotJapanese(showing.tmdb_display_title)) {
+                            bestEnglishTitle = showing.tmdb_display_title;
+                        } else if (showing.title_en && isProbablyNotJapanese(showing.title_en)) {
+                            bestEnglishTitle = showing.title_en.replace(/【.*?】/g, '').trim(); // Clean prefixes
+                        } else if (showing.gemini_english_title && showing.gemini_english_title.toUpperCase() !== 'NO_TITLE_FOUND' && isProbablyNotJapanese(showing.gemini_english_title)) {
+                            bestEnglishTitle = showing.gemini_english_title;
+                        }
+
+                        // Avoid showing the same title twice if the primary title is already in English.
+                        if (bestEnglishTitle && bestEnglishTitle.toLowerCase() === originalScrapedTitle.toLowerCase()) {
+                            bestEnglishTitle = null;
+                        }
+
                         const letterboxdLink = showing.letterboxd_link;
-                        const letterboxdEnglishTitle = showing.letterboxd_english_title;
-                        const displayTitleFromTMDB = showing.tmdb_display_title;
-                        const geminiEnglishTitle = showing.gemini_english_title;
                         const eigaSearchLink = showing.eiga_search_link;
-                        let titleDisplayHtml = ''; let accompanyingEnglishTitleSpan = '';
-                        let titleAttributeText = originalScrapedTitle;
+                        let titleDisplayHtml = '';
+                        let accompanyingEnglishTitleSpan = '';
+
+                        if (bestEnglishTitle) {
+                            accompanyingEnglishTitleSpan = ` <span class="gemini-english-title">(${bestEnglishTitle})</span>`;
+                        }
+
                         if (letterboxdLink) {
-                            let chosenEnglishTitle = null; let chosenEnglishClass = '';
-                            if (letterboxdEnglishTitle && letterboxdEnglishTitle.trim() !== "" && letterboxdEnglishTitle.toLowerCase() !== originalScrapedTitle.toLowerCase() && isProbablyNotJapanese(letterboxdEnglishTitle)) {
-                                chosenEnglishTitle = letterboxdEnglishTitle; chosenEnglishClass = 'lb-english-title'; titleAttributeText = letterboxdEnglishTitle;
-                            } else if (displayTitleFromTMDB && displayTitleFromTMDB.trim() !== "" && displayTitleFromTMDB.toLowerCase() !== originalScrapedTitle.toLowerCase() && isProbablyNotJapanese(displayTitleFromTMDB)) {
-                                chosenEnglishTitle = displayTitleFromTMDB; chosenEnglishClass = 'tmdb-english-title'; titleAttributeText = displayTitleFromTMDB;
-                            }
-                            if (chosenEnglishTitle) { accompanyingEnglishTitleSpan = ` <span class="${chosenEnglishClass}">(${chosenEnglishTitle})</span>`; }
+                            const titleAttributeText = bestEnglishTitle || originalScrapedTitle;
                             titleDisplayHtml = `<a href="${letterboxdLink}" target="_blank" rel="noopener noreferrer" class="showtime-title" title="View '${titleAttributeText}' on Letterboxd">${originalScrapedTitle}</a>${accompanyingEnglishTitleSpan}`;
                         } else if (eigaSearchLink) {
-                            if (geminiEnglishTitle && geminiEnglishTitle.trim() !== "" && geminiEnglishTitle.toUpperCase() !== 'NO_TITLE_FOUND' && geminiEnglishTitle.toLowerCase() !== originalScrapedTitle.toLowerCase() && isProbablyNotJapanese(geminiEnglishTitle)) {
-                                accompanyingEnglishTitleSpan = ` <span class="gemini-english-title">(${geminiEnglishTitle})</span>`; titleAttributeText = geminiEnglishTitle;
-                            }
-                            titleDisplayHtml = `<a href="${eigaSearchLink}" target="_blank" rel="noopener noreferrer" class="showtime-title" title="Search '${originalScrapedTitle}' ${titleAttributeText !== originalScrapedTitle ? '(Eng: ' + titleAttributeText + ')' : ''} on Eiga.com">${originalScrapedTitle}</a>${accompanyingEnglishTitleSpan}<span class="eiga-link-indicator">(Eiga.com)</span>`;
+                            titleDisplayHtml = `<a href="${eigaSearchLink}" target="_blank" rel="noopener noreferrer" class="showtime-title" title="Search '${originalScrapedTitle}' on Eiga.com">${originalScrapedTitle}</a>${accompanyingEnglishTitleSpan}<span class="eiga-link-indicator">(Eiga.com)</span>`;
                         } else {
-                            titleDisplayHtml = `<span class="showtime-title">${originalScrapedTitle}</span>`;
-                            if (geminiEnglishTitle && geminiEnglishTitle.trim() !== "" && geminiEnglishTitle.toUpperCase() !== 'NO_TITLE_FOUND' && geminiEnglishTitle.toLowerCase() !== originalScrapedTitle.toLowerCase() && isProbablyNotJapanese(geminiEnglishTitle)) {
-                                titleDisplayHtml += ` <span class="gemini-english-title">(${geminiEnglishTitle})</span>`;
-                            }
+                            titleDisplayHtml = `<span class="showtime-title">${originalScrapedTitle}</span>${accompanyingEnglishTitleSpan}`;
                         }
+                        
                         li.innerHTML = `<span class="showtime-time">${showing.showtime || 'N/A'}</span> <span class="showtime-title-container">${titleDisplayHtml}</span>`;
+                        // *** MODIFICATION END ***
+                        
                         ul.appendChild(li);
                     });
+                    
                     dateDiv.appendChild(ul);
                     cinemaSectionDiv.appendChild(dateDiv);
                 }
