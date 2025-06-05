@@ -2096,5 +2096,44 @@
     "tmdb_title": "Petals and Memories",
     "tmdb_original_title": "花まんま",
     "letterboxd_english_title": null
+  },
+  "骨を掘る男": {
+    "id": 1336502,
+    "tmdb_title": "Close to the Bone",
+    "tmdb_original_title": "骨を掘る男",
+    "letterboxd_english_title": null
+  },
+  "時をかける少女": {
+    "id": 54770,
+    "tmdb_title": "Time Traveller: The Girl Who Leapt Through Time",
+    "tmdb_original_title": "時をかける少女",
+    "letterboxd_english_title": null
+  },
+  "幻魔大戦": {
+    "id": 42076,
+    "tmdb_title": "Harmagedon",
+    "tmdb_original_title": "幻魔大戦",
+    "letterboxd_english_title": null
+  },
+  "Playground/校庭": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/Playground/%E6%A0%A1%E5%BA%AD"
+  },
+  "Brotherブラザー 富都（プドゥ）のふたり": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/Brother%E3%83%96%E3%83%A9%E3%82%B6%E3%83%BC%20%E5%AF%8C%E9%83%BD%EF%BC%88%E3%83%97%E3%83%89%E3%82%A5%EF%BC%89%E3%81%AE%E3%81%B5%E3%81%9F%E3%82%8A"
+  },
+  "河合宏樹監督 特集上映 -記録映像の可能性": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E6%B2%B3%E5%90%88%E5%AE%8F%E6%A8%B9%E7%9B%A3%E7%9D%A3%20%E7%89%B9%E9%9B%86%E4%B8%8A%E6%98%A0%20-%E8%A8%98%E9%8C%B2%E6%98%A0%E5%83%8F%E3%81%AE%E5%8F%AF%E8%83%BD%E6%80%A7-"
   }
 }
