@@ -2319,5 +2319,36 @@
     "tmdb_title": "Love Song from Hiroshima",
     "tmdb_original_title": "惑星ラブソング",
     "letterboxd_english_title": null
+  },
+  "きっと、うまくいく": {
+    "id": 20453,
+    "tmdb_title": "3 Idiots",
+    "tmdb_original_title": "3 Idiots",
+    "letterboxd_english_title": null
+  },
+  "番場の忠太郎": {
+    "id": 391702,
+    "tmdb_title": "Chutaro of Banba",
+    "tmdb_original_title": "番場の忠太郎",
+    "letterboxd_english_title": null
+  },
+  "人形佐七捕物帖 大江戸の丑満刻": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E4%BA%BA%E5%BD%A2%E4%BD%90%E4%B8%83%E6%8D%95%E7%89%A9%E5%B8%96%20%E5%A4%A7%E6%B1%9F%E6%88%B8%E3%81%AE%E4%B8%91%E6%BA%80%E5%88%BB"
+  },
+  "憲兵と幽霊": {
+    "id": 355611,
+    "tmdb_title": "Ghost in the Regiment",
+    "tmdb_original_title": "憲兵と幽霊",
+    "letterboxd_english_title": null
+  },
+  "晩春": {
+    "id": 20530,
+    "tmdb_title": "Late Spring",
+    "tmdb_original_title": "晩春",
+    "letterboxd_english_title": null
   }
 }
