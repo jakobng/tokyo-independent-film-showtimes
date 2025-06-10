@@ -2350,5 +2350,25 @@
     "tmdb_title": "Late Spring",
     "tmdb_original_title": "晩春",
     "letterboxd_english_title": null
+  },
+  "新篇 丹下左膳 隻眼の巻": {
+    "id": 1151088,
+    "tmdb_title": "Shinpen Tange Sazen: Sekigan no maki",
+    "tmdb_original_title": "新篇 丹下左膳 隻眼の巻",
+    "letterboxd_english_title": null
+  },
+  "エノケンのとび助冒險旅行": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E3%82%A8%E3%83%8E%E3%82%B1%E3%83%B3%E3%81%AE%E3%81%A8%E3%81%B3%E5%8A%A9%E5%86%92%E9%9A%AA%E6%97%85%E8%A1%8C"
+  },
+  "青ヶ島の子供たち 女教師の記録": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "eiga_search_link": "https://eiga.com/search/%E9%9D%92%E3%83%B6%E5%B3%B6%E3%81%AE%E5%AD%90%E4%BE%9B%E3%81%9F%E3%81%A1%20%E5%A5%B3%E6%95%99%E5%B8%AB%E3%81%AE%E8%A8%98%E9%8C%B2"
   }
 }
