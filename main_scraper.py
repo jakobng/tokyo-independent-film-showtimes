@@ -422,7 +422,7 @@ def _run_scraper(label: str, func):
         traceback.print_exc(file=sys.stderr)
         return []
 
-def run_all_scrapers():https://github.com/jakobng/tokyo-independent-film-showtimes/blob/main/main_scraper.py
+def run_all_scrapers():
     print("Starting all scrapers…")
     all_listings = []
 
