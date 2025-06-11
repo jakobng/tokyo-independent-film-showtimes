@@ -422,7 +422,7 @@ def _run_scraper(label: str, func):
         traceback.print_exc(file=sys.stderr)
         return []
 
-def run_all_scrapers():
+def run_all_scrapers():https://github.com/jakobng/tokyo-independent-film-showtimes/blob/main/main_scraper.py
     print("Starting all scrapers…")
     all_listings = []
 
@@ -442,7 +442,7 @@ def run_all_scrapers():
     all_listings += _run_scraper("Cine Quinto Shibuya", cine_quinto_module.scrape_cinequinto_shibuya)
     all_listings += _run_scraper("YEBISU GARDEN CINEMA", yebisu_garden_module.scrape_ygc)
     all_listings += _run_scraper("Theatre Guild Daikanyama", theatreguild_daikanyama_module.scrape_theatreguild_daikanyama)
-    all_listings += _run_scraper("Bunkamura", bunkamura_module.scrape_bunkamura)  # ← NEW
+    all_listings += _run_scraper("Bunkamura", bunkamura_shibuya_module.scrape_bunkamura)  # ← NEW
 
     # West-side / neighbourhood independents
     all_listings += _run_scraper("Meguro Cinema", meguro_cinema_module.scrape_meguro_cinema)
