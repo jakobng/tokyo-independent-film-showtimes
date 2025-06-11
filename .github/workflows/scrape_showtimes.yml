@@ -76,7 +76,7 @@ jobs:
           # but individual cinema scrapers might still use it. Keep it if unsure.
 
       - name: Run scraper script
-        run: python main_scraper2.py
+        run: python main_scraper.py
         env:
           # IMPORTANT: Add your TMDB_API_KEY as a secret in your GitHub repository
           # Go to your repository > Settings > Secrets and variables > Actions > New repository secret
