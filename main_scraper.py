@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# main_scraper.py
+# main_scraper3.py
 
 import json
 import sys
@@ -37,6 +37,7 @@ import chupki_module
 import laputa_asagaya_module
 import cine_switch_ginza_module
 import bluestudio_module2
+import bunkamura_shibuya_module
 
 # --- Google Gemini API Import ---
 try:
@@ -424,6 +425,8 @@ def _run_scraper(label: str, func):
 def run_all_scrapers():
     print("Starting all scrapers…")
     all_listings = []
+
+    # Central / Shinjuku cluster
     all_listings += _run_scraper("Cinemart Shinjuku", cinemart_shinjuku_module.scrape_cinemart_shinjuku)
     all_listings += _run_scraper("Eurospace", eurospace_module.scrape_eurospace)
     all_listings += _run_scraper("Theatre Image Forum", image_forum_module.scrape_image_forum)
@@ -433,25 +436,45 @@ def run_all_scrapers():
     all_listings += _run_scraper("Stranger", stranger_module.scrape_stranger)
     all_listings += _run_scraper("Cinema Qualite", cinema_qualite_module.scrape_cinema_qualite)
     all_listings += _run_scraper("Theatre Shinjuku", theatre_shinjuku_module.scrape_theatre_shinjuku)
+
+    # Shibuya / Ebisu / Daikanyama cluster
     all_listings += _run_scraper("Human Trust Cinema Shibuya", human_shibuya_module.scrape_human_shibuya)
     all_listings += _run_scraper("Cine Quinto Shibuya", cine_quinto_module.scrape_cinequinto_shibuya)
     all_listings += _run_scraper("YEBISU GARDEN CINEMA", yebisu_garden_module.scrape_ygc)
     all_listings += _run_scraper("Theatre Guild Daikanyama", theatreguild_daikanyama_module.scrape_theatreguild_daikanyama)
+    all_listings += _run_scraper("Bunkamura", bunkamura_module.scrape_bunkamura)  # ← NEW
+
+    # West-side / neighbourhood independents
     all_listings += _run_scraper("Meguro Cinema", meguro_cinema_module.scrape_meguro_cinema)
     all_listings += _run_scraper("Pole-Pole Higashi-Nakano", polepole_module.scrape_polepole)
     all_listings += _run_scraper("Human Trust Cinema Yurakucho", human_yurakucho_module.scrape_human_yurakucho)
-    all_listings += _run_scraper("Waseda Shochiku",waseda_shochiku_module.scrape_waseda_shochiku)
-    all_listings += _run_scraper("Shimotakaido Cinema",shimotakaido_module.scrape_shimotakaido)
+    all_listings += _run_scraper("Waseda Shochiku", waseda_shochiku_module.scrape_waseda_shochiku)
+    all_listings += _run_scraper("Shimotakaido Cinema", shimotakaido_module.scrape_shimotakaido)
     all_listings += _run_scraper("National Film Archive of Japan", nfaj_module.scrape_nfaj_calendar)
     all_listings += _run_scraper("K2 Cinema", k2_cinema_module.scrape_k2_cinema)
-    all_listings += _run_scraper("Laputa Asagaya",laputa_asagaya_module.scrape_laputa_asagaya_selenium)
-    all_listings += _run_scraper("Chupki",chupki_module.scrape_chupki)
-    all_listings += _run_scraper("Ikebukuro Cinema Rosa", lambda:cinema_rosa_module.scrape_cinema_rosa_schedule(web_key="c34cee0e-5a5e-4b99-8978-f04879a82299", cinema_name_override="池袋シネマ・ロサ"))
-    print(f"\nCollected a total of {len(all_listings)} showings.")
-    all_listings += _run_scraper("Cine Switch Ginza", lambda: cine_switch_ginza_module.scrape_eigaland_schedule(web_key="5c896e66-aaf7-4003-b4ff-1d8c9bf9c0fc", cinema_name_override="シネスイッチ銀座"))
-    all_listings += _run_scraper("Tokyo Art Center - Blue Studio",bluestudio_module2.scrape_bluestudio) 
+    all_listings += _run_scraper("Laputa Asagaya", laputa_asagaya_module.scrape_laputa_asagaya_selenium)
+    all_listings += _run_scraper("Chupki", chupki_module.scrape_chupki)
 
+    # Ikebukuro / Ginza / Tokyo Art Center
+    all_listings += _run_scraper(
+        "Ikebukuro Cinema Rosa",
+        lambda: cinema_rosa_module.scrape_cinema_rosa_schedule(
+            web_key="c34cee0e-5a5e-4b99-8978-f04879a82299",
+            cinema_name_override="池袋シネマ・ロサ",
+        ),
+    )
+    all_listings += _run_scraper(
+        "Cine Switch Ginza",
+        lambda: cine_switch_ginza_module.scrape_eigaland_schedule(
+            web_key="5c896e66-aaf7-4003-b4ff-1d8c9bf9c0fc",
+            cinema_name_override="シネスイッチ銀座",
+        ),
+    )
+    all_listings += _run_scraper("Tokyo Art Center - Blue Studio", bluestudio_module2.scrape_bluestudio)
+
+    print(f"\nCollected a total of {len(all_listings)} showings.")
     return all_listings
+
 
 def save_to_json(data, filename="showtimes.json"):
     try:

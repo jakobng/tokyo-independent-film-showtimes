@@ -1,12 +1,12 @@
 """
 shimotakaido_module.py — scraper for Shimotakaido Cinema (下高井戸シネマ)
-Last updated: 2025-06-03
+Last updated: 2025-06-11
 
 Returns a list of dicts with keys:
     cinema, date_text (YYYY-MM-DD), screen, title, showtime
 
 Designed to mirror the structure used by the other cinema modules so it can be
-plugged straight into `main_scraper3.py`.
+plugged straight into main_scraper3.py.
 """
 
 from __future__ import annotations
@@ -24,7 +24,6 @@ from bs4 import BeautifulSoup
 # ---------------------------------------------------------------------------
 
 CINEMA_NAME = "下高井戸シネマ"
-# FIX: Use https to avoid connection timeouts
 URL = "https://shimotakaidocinema.com/schedule/schedule.html"
 HEADERS = {
     "User-Agent": (
@@ -46,7 +45,7 @@ def scrape_shimotakaido() -> List[Dict[str, str]]:
     Scrape the weekly schedule for Shimotakaido Cinema.
 
     Returns:
-        List of dict rows with keys: cinema, date_text (ISO YYYY-MM-DD), screen,
+        List of dict rows with keys: cinema, date_text (YYYY-MM-DD), screen,
         title, showtime (HH:MM). Only includes showings within the next 10 days.
     """
     try:
@@ -104,13 +103,21 @@ def scrape_shimotakaido() -> List[Dict[str, str]]:
             if not a:
                 continue
             text = a.get_text(separator=" ", strip=True)
-            tm = re.search(r"(\d{1,2}:\d{2})", text)
+            
+            # --- START: BUG FIX ---
+            # Capture hour and minute separately to format the time correctly.
+            tm = re.search(r"(\d{1,2}):(\d{2})", text)
             if not tm:
                 continue
-            showtime = tm.group(1)
+            
+            hour, minute = tm.groups()
+            showtime = f"{int(hour):02d}:{minute}" # Pad hour with zero for correct sorting
+            # --- END: BUG FIX ---
+            
             title = text[:tm.start()].strip()
             if not title or title == "/":
                 continue
+
             # Expand over each date in range
             current = start
             while current <= end:

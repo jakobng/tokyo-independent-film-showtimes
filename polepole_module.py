@@ -52,7 +52,10 @@ WINDOW_END: dt.date = TODAY + dt.timedelta(days=6)
 # Helpers
 # ---------------------------------------------------------------------------
 _DATE_PAT = re.compile(r"(?<![\d])(?P<m>\d{1,2})/(?:|0)(?P<d>\d{1,2})|(?P<m2>\d{1,2})月(?P<d2>\d{1,2})日")
-_TIME_PAT = re.compile(r"\b\d{1,2}:\d{2}\b")
+# --- START: BUG FIX ---
+# Modified regex to capture hour and minute separately for zero-padding.
+_TIME_PAT = re.compile(r"\b(\d{1,2}):(\d{2})\b")
+# --- END: BUG FIX ---
 
 
 def _iso_date(month: int, day: int, *, ref: dt.date | None = None) -> str:
@@ -107,12 +110,18 @@ def _parse_jorudan(soup: BeautifulSoup) -> List[Dict]:
         date_matches = list(_DATE_PAT.finditer(blob))
         if not date_matches:
             continue
+        
+        # --- START: BUG FIX ---
+        # Find all time matches and format them correctly to HH:MM.
+        time_matches = _TIME_PAT.finditer(blob)
+        times = [f"{int(m.group(1)):02d}:{m.group(2)}" for m in time_matches]
+        if not times:
+            continue
+        # --- END: BUG FIX ---
+
         dates_iso = [_iso_date(int(m.group("m") or m.group("m2") or 0),
                                int(m.group("d") or m.group("d2") or 0))
                      for m in date_matches]
-        times = _TIME_PAT.findall(blob)
-        if not times:
-            continue
 
         per_day = max(1, len(times) // len(dates_iso))
         matrix = [times[i:i+per_day] for i in range(0, len(times), per_day)]
@@ -149,14 +158,19 @@ def _parse_eiga(soup: BeautifulSoup) -> List[Dict]:
                 month = int(dm.group("m") or dm.group("m2"))
                 day = int(dm.group("d") or dm.group("d2"))
                 iso = _iso_date(month, day)
-                for t in _TIME_PAT.findall(blob):
+                # --- START: BUG FIX ---
+                # Iterate through matches and format them correctly.
+                for t_match in _TIME_PAT.finditer(blob):
+                    hour, minute = t_match.groups()
+                    showtime = f"{int(hour):02d}:{minute}"
                     rows.append({
                         "cinema": CINEMA_NAME,
                         "date_text": iso,
                         "screen": SCREEN_NAME,
                         "title": title,
-                        "showtime": t,
+                        "showtime": showtime,
                     })
+                # --- END: BUG FIX ---
     return rows
 
 # ---------------------------------------------------------------------------
@@ -188,6 +202,7 @@ def scrape_polepole() -> List[Dict]:
     rows = _parse_jorudan(soup) if soup else []
 
     if not rows:
+        print(f"[{CINEMA_NAME}] Jorudan scrape failed or yielded no results, trying eiga.com fallback.", file=sys.stderr)
         soup = _fetch(EIGA_URL)
         rows = _parse_eiga(soup) if soup else []
 
@@ -196,7 +211,7 @@ def scrape_polepole() -> List[Dict]:
     rows = _deduplicate(rows)
 
     rows.sort(key=lambda r: (r["date_text"], r["showtime"], r["title"]))
-    print(f"[polepole] Collected {len(rows)} showings (next 7 days).")
+    print(f"[{CINEMA_NAME}] Collected {len(rows)} showings (next 7 days).")
     return rows
 
 # ---------------------------------------------------------------------------
