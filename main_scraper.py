@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-# main_scraper3.py
+# main_scraper.py
 
-import this_is_not_a_real_library
 import json
 import sys
 import traceback
@@ -10,10 +9,9 @@ import requests
 import time
 import os
 import urllib.parse
-from bs4 import BeautifulSoup # <<< --- ADDED THIS IMPORT
+from bs4 import BeautifulSoup
 
 # --- All cinema scraper modules ---
-# (ENSURE ALL YOUR MODULES ARE LISTED HERE AND ACCESSIBLE)
 import cinemart_shinjuku_module
 import eurospace_module
 import image_forum_module
@@ -40,7 +38,6 @@ import laputa_asagaya_module
 import cine_switch_ginza_module
 import bluestudio_module2
 
-
 # --- Google Gemini API Import ---
 try:
     import google.generativeai as genai
@@ -62,36 +59,32 @@ TMDB_API_KEY = 'da2b1bc852355f12a86dd5e7ec48a1ee' # Replace with your actual key
 TMDB_API_BASE_URL = 'https://api.themoviedb.org/3'
 TMDB_CACHE_FILE = "tmdb_cache.json"
 LETTERBOXD_TMDB_BASE_URL = "https://letterboxd.com/tmdb/"
-GEMINI_API_KEY = 'AIzaSyBN94-OYBGsA3gtQGed3Xgyq60XtjxS9NI' # <<< --- PASTE YOUR KEY HERE
+# --- IMPORTANT ---
+# Replace this placeholder with your actual, valid Gemini API Key
+GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY_HERE' 
+# ---
 GEMINI_MODEL_NAME = 'gemini-1.5-flash'
 gemini_model = None
 EIGA_SEARCH_BASE_URL = "https://eiga.com/search/"
 REQUEST_HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 }
-# API Call Delays (in seconds)
 TMDB_SEARCH_DELAY = 0.3
 TMDB_DETAILS_DELAY = 0.3
 TMDB_ALT_TITLES_DELAY = 0.3
 GEMINI_DELAY = 1.0
-LETTERBOXD_SCRAPE_DELAY = 0.5 # <<< --- ADDED THIS
+LETTERBOXD_SCRAPE_DELAY = 0.5
 
 # --- Helper Functions ---
 def python_is_predominantly_latin(text):
-    if not text:
-        return False
-    if not re.search(r'[a-zA-Z]', text):
-        return False
+    if not text: return False
+    if not re.search(r'[a-zA-Z]', text): return False
     japanese_chars = re.findall(r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]', text)
     latin_chars = re.findall(r'[a-zA-Z]', text)
-    if not japanese_chars:
-        return True
+    if not japanese_chars: return True
     if latin_chars:
-        if len(latin_chars) > len(japanese_chars) * 2:
-            return True
-        # Consider 'japanese_chars_count' was a typo and meant 'len(japanese_chars)'
-        if len(japanese_chars) <= 2 and len(latin_chars) > len(japanese_chars):
-            return True
+        if len(latin_chars) > len(japanese_chars) * 2: return True
+        if len(japanese_chars) <= 2 and len(latin_chars) > len(japanese_chars): return True
         return False
     return False
 
@@ -118,13 +111,11 @@ def clean_title_for_search(title):
     cleaned_title = re.sub(r'[\[\(（【][^\]\)）】]*[\]\)）】]$', '', cleaned_title).strip()
     suffixes_to_remove = [
         r'★トークショー付き', r'35mmフィルム上映', r'4Kレストア5\.1chヴァージョン',r'4Kデジタルリマスター版',
-        r'4Kレストア版', r'４Kレーザー上映', r'４K版', r'４K', r'4K',
-        r'（字幕版）', r'（字幕）', r'（吹替版）', r'（吹替）',
-        r'\s*THE MOVIE$', r'\[受賞感謝上映］', r'★上映後トーク付', r'トークイベント付き',
-        r'vol\.\s*\d+', r'［[^］]+(?:ｲﾍﾞﾝﾄ|イベント)］', r'ライブ音響上映', r'特別音響上映',
-        r'字幕付き上映', r'デジタルリマスター版', r'【完成披露試写会】', r'Blu-ray発売記念上映',
-        r'公開記念舞台挨拶', r'上映後舞台挨拶', r'初日舞台挨拶', r'２日目舞台挨拶',
-        r'トークショー', r'一挙上映',
+        r'4Kレストア版', r'４Kレーザー上映', r'４K版', r'４K', r'4K', r'（字幕版）', r'（字幕）', 
+        r'（吹替版）', r'（吹替）', r'\s*THE MOVIE$', r'\[受賞感謝上映］', r'★上映後トーク付', 
+        r'トークイベント付き', r'vol\.\s*\d+', r'［[^］]+(?:ｲﾍﾞﾝﾄ|イベント)］', r'ライブ音響上映', 
+        r'特別音響上映', r'字幕付き上映', r'デジタルリマスター版', r'【完成披露試写会】', r'Blu-ray発売記念上映',
+        r'公開記念舞台挨拶', r'上映後舞台挨拶', r'初日舞台挨拶', r'２日目舞台挨拶', r'トークショー', r'一挙上映',
     ]
     for suffix_pattern in suffixes_to_remove:
         cleaned_title = re.sub(suffix_pattern, '', cleaned_title, flags=re.IGNORECASE).strip()
@@ -149,9 +140,7 @@ def get_tmdb_film_details(search_title, api_key, session, year=None):
     search_url = f"{TMDB_API_BASE_URL}/search/movie"
     print(f"Searching TMDB (JA) for: '{search_title}' (Year: {year or 'Any'})")
     
-    tmdb_id = None
-    id_found_search_title = None
-    id_found_search_original = None
+    tmdb_id, id_found_search_title, id_found_search_original = None, None, None
 
     try:
         response = session.get(search_url, params=search_params, headers=REQUEST_HEADERS, timeout=10)
@@ -204,8 +193,7 @@ def get_tmdb_film_details(search_title, api_key, session, year=None):
         tmdb_api_original_title = api_en_original_title_from_details if api_en_original_title_from_details else tmdb_api_original_title
 
         if chosen_display_title and not python_is_predominantly_latin(chosen_display_title):
-            if tmdb_api_original_title and python_is_predominantly_latin(tmdb_api_original_title) and \
-               tmdb_api_original_title.lower() != chosen_display_title.lower():
+            if tmdb_api_original_title and python_is_predominantly_latin(tmdb_api_original_title) and tmdb_api_original_title.lower() != chosen_display_title.lower():
                 print(f"TMDB en-US title ('{chosen_display_title}') non-Latin. Preferring original_title ('{tmdb_api_original_title}').")
                 chosen_display_title = tmdb_api_original_title
         
@@ -242,14 +230,9 @@ def get_tmdb_film_details(search_title, api_key, session, year=None):
         print(f"Error fetching EN details/alternatives for ID {tmdb_id}: {e}. Using JA search titles as fallback.", file=sys.stderr)
         return {"id": tmdb_id, "tmdb_title": id_found_search_title, "tmdb_original_title": id_found_search_original, "details_fetch_error": True}
 
-# --- NEW: Letterboxd Title Scraping Function ---
+# --- Letterboxd Title Scraping Function ---
 def scrape_letterboxd_title(letterboxd_url, session):
-    """
-    Scrapes the film title from a Letterboxd film page.
-    Prioritizes the og:title meta tag.
-    """
-    if not letterboxd_url:
-        return None
+    if not letterboxd_url: return None
     print(f"Scraping Letterboxd page: {letterboxd_url}")
     try:
         response = session.get(letterboxd_url, headers=REQUEST_HEADERS, timeout=15)
@@ -278,8 +261,12 @@ def get_gemini_english_title(cleaned_film_title, original_title_for_context, ses
     global gemini_model
     if not gemini_model: return None
     if not cleaned_film_title and not original_title_for_context: return None
+    
     title_to_use_for_prompt = original_title_for_context or cleaned_film_title
     year_info = f" (believed to be released around {year})" if year else ""
+    
+    # --- CORRECTED PROMPT ---
+    # The prompt is now short and does not include any external file content.
     prompt = (
         f"What is the most common or official English title for the Japanese film titled: '{title_to_use_for_prompt}'{year_info}?\n"
         "If there are multiple English titles, provide the most widely recognized one.\n"
@@ -287,6 +274,8 @@ def get_gemini_english_title(cleaned_film_title, original_title_for_context, ses
         "If the film is not Japanese, or if you absolutely cannot determine any English title or a reasonable translation that could be a film title, return the exact phrase 'NO_TITLE_FOUND'.\n"
         "Respond with ONLY the English title/translation OR 'NO_TITLE_FOUND'."
     )
+    # --- END CORRECTION ---
+
     try:
         response = gemini_model.generate_content(prompt)
         english_title = response.text.strip()
@@ -319,7 +308,7 @@ def enrich_listings_with_tmdb_links(all_listings, cache_data, session, tmdb_api_
         listing.update({'letterboxd_link': None, 'tmdb_display_title': None,
                         'gemini_english_title': None, 'eiga_search_link': None,
                         'tmdb_original_title': None,
-                        'letterboxd_english_title': None}) # <<< --- ADDED NEW FIELD HERE
+                        'letterboxd_english_title': None})
         original_title = (listing.get('title') or listing.get('movie_title') or "").strip()
         year_match = re.search(r'\b(19[7-9]\d|20[0-2]\d)\b', original_title)
         year_for_context = year_match.group(1) if year_match else None
@@ -354,20 +343,16 @@ def enrich_listings_with_tmdb_links(all_listings, cache_data, session, tmdb_api_
             needs_full_processing = True
             print(f"--- Incomplete cache for '{cleaned_title}' (no TMDB ID, missing Eiga link). Re-evaluating. ---")
         elif cached_entry.get("id") and "letterboxd_english_title" not in cached_entry and not cached_entry.get("api_error"):
-            # We have TMDB ID, but no Letterboxd title. We might not need full TMDB re-fetch.
-            needs_letterboxd_scrape_only = True # Trigger Letterboxd scrape specifically
+            needs_letterboxd_scrape_only = True
             print(f"--- Cache entry for '{cleaned_title}' has TMDB ID but missing Letterboxd title. Will attempt scrape. ---")
-
 
         if needs_full_processing or needs_letterboxd_scrape_only:
             processed_or_fetched_count += 1
             
             if needs_letterboxd_scrape_only and isinstance(cached_entry, dict):
-                # Start with existing cache if we only need to add LB title
                 current_cache_data_to_write = cached_entry.copy()
-            else: # Full processing or re-processing from scratch for this title
+            else: 
                 current_cache_data_to_write = {"id": None, "tmdb_title": None, "tmdb_original_title": None, "letterboxd_english_title": None}
-                # Fetch TMDB details only if it's a full processing need
                 tmdb_result = get_tmdb_film_details(cleaned_title, tmdb_api_key_param, session, year_for_context)
                 
                 if tmdb_result is None:
@@ -376,25 +361,19 @@ def enrich_listings_with_tmdb_links(all_listings, cache_data, session, tmdb_api_
                 elif tmdb_result.get("id"):
                     print(f"TMDB success for '{cleaned_title}'. ID: {tmdb_result['id']}, Display Title: {tmdb_result.get('tmdb_title')}")
                     current_cache_data_to_write.update(tmdb_result)
-                else: # No TMDB ID found
+                else: 
                     current_cache_data_to_write.update(tmdb_result)
 
-            # --- Letterboxd scraping part ---
-            # Attempt if we have a TMDB ID AND (it's a full process OR we specifically need LB title)
-            # AND letterboxd_english_title is not already populated (e.g. from a partial cache hit)
             if current_cache_data_to_write.get("id") and "letterboxd_english_title" not in current_cache_data_to_write:
                 lb_url = f"{LETTERBOXD_TMDB_BASE_URL}{current_cache_data_to_write['id']}"
                 lb_eng_title = scrape_letterboxd_title(lb_url, session)
                 time.sleep(LETTERBOXD_SCRAPE_DELAY)
                 if lb_eng_title:
                     current_cache_data_to_write["letterboxd_english_title"] = lb_eng_title
-                # else: field remains None or absent, will be saved as such if key existed
 
-            # Fallbacks (Eiga & Gemini) only if no TMDB ID or TMDB error,
-            # and only if it was a full processing run (not just LB scrape)
             if needs_full_processing and (current_cache_data_to_write.get("id") is None or current_cache_data_to_write.get("api_error")):
                 print(f"No TMDB ID for '{cleaned_title}' (or API error). Adding Eiga link and trying Gemini.")
-                if "eiga_search_link" not in current_cache_data_to_write: # Check if it somehow got there
+                if "eiga_search_link" not in current_cache_data_to_write:
                     current_cache_data_to_write["eiga_search_link"] = get_eiga_search_link(original_title)
                 
                 if "gemini_english_title" not in current_cache_data_to_write:
@@ -408,17 +387,14 @@ def enrich_listings_with_tmdb_links(all_listings, cache_data, session, tmdb_api_
             cache_data[cleaned_title] = current_cache_data_to_write
             save_json_cache(cache_data, TMDB_CACHE_FILE, "TMDB/Extended Cache")
             cached_entry = current_cache_data_to_write
-        # else: All data present in cache for this title.
 
-        # Populate listing_obj from the (potentially updated) cached_entry
         if isinstance(cached_entry, dict):
             if cached_entry.get("id"):
                 listing_obj['letterboxd_link'] = f"{LETTERBOXD_TMDB_BASE_URL}{cached_entry['id']}"
                 listing_obj['tmdb_display_title'] = cached_entry.get('tmdb_title') or cached_entry.get('title')
                 listing_obj['tmdb_original_title'] = cached_entry.get('tmdb_original_title')
-                listing_obj['letterboxd_english_title'] = cached_entry.get('letterboxd_english_title') # <<< --- POPULATE NEW FIELD
+                listing_obj['letterboxd_english_title'] = cached_entry.get('letterboxd_english_title')
             
-            # Populate fallbacks if no TMDB ID / Letterboxd link
             if not listing_obj.get('letterboxd_link'):
                 if cached_entry.get("eiga_search_link"):
                     listing_obj['eiga_search_link'] = cached_entry.get("eiga_search_link")
@@ -475,7 +451,6 @@ def run_all_scrapers():
     all_listings += _run_scraper("Cine Switch Ginza", lambda: cine_switch_ginza_module.scrape_eigaland_schedule(web_key="5c896e66-aaf7-4003-b4ff-1d8c9bf9c0fc", cinema_name_override="シネスイッチ銀座"))
     all_listings += _run_scraper("Tokyo Art Center - Blue Studio",bluestudio_module2.scrape_bluestudio) 
 
-
     return all_listings
 
 def save_to_json(data, filename="showtimes.json"):
@@ -485,7 +460,10 @@ def save_to_json(data, filename="showtimes.json"):
     except Exception as e: print(f"⚠️ Failed to save {filename}: {e}", file=sys.stderr)
 
 if __name__ == "__main__":
-    if genai and GEMINI_API_KEY and GEMINI_API_KEY != 'YOUR_GEMINI_API_KEY' and GEMINI_API_KEY != 'AIzaSyBN94-OYBGsA3gtQGed3Xgyq60XtjxS9NI': # Second part of condition for your placeholder
+    # Remove the intentional error for the final version
+    # import this_is_not_a_real_library 
+    
+    if genai and GEMINI_API_KEY and 'YOUR_GEMINI_API_KEY' not in GEMINI_API_KEY:
         try:
             genai.configure(api_key=GEMINI_API_KEY)
             gemini_model = genai.GenerativeModel(GEMINI_MODEL_NAME)
@@ -493,12 +471,11 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"Could not initialize Gemini model: {e}", file=sys.stderr)
             gemini_model = None
-    elif genai and (GEMINI_API_KEY == 'YOUR_GEMINI_API_KEY' or GEMINI_API_KEY == 'AIzaSyBN94-OYBGsA3gtQGed3Xgyq60XtjxS9NI'):
+    elif 'YOUR_GEMINI_API_KEY' in GEMINI_API_KEY:
          print("--- WARNING: Gemini API KEY IS A PLACEHOLDER. Gemini functionality will be limited. ---")
-         gemini_model = None # Ensure it's None if using placeholder
+         gemini_model = None
     elif genai: print("--- WARNING: Gemini API KEY IS MISSING. ---")
     else: print("--- WARNING: google-generativeai library not found. ---")
-
 
     tmdb_extended_cache = load_json_cache(TMDB_CACHE_FILE, "TMDB/Extended Cache")
     external_api_session = requests.Session()
