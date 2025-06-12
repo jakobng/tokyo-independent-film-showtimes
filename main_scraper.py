@@ -66,7 +66,6 @@ GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY_HERE'
 # ---
 GEMINI_MODEL_NAME = 'gemini-1.5-flash'
 gemini_model = None
-EIGA_SEARCH_BASE_URL = "https://eiga.com/search/"
 REQUEST_HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 }
@@ -296,18 +295,13 @@ def get_gemini_english_title(cleaned_film_title, original_title_for_context, ses
         print(f"Error querying Gemini for '{title_to_use_for_prompt}': {e}", file=sys.stderr)
         return None
 
-# --- Eiga.com Search Link Function ---
-def get_eiga_search_link(original_film_title):
-    if not original_film_title: return None
-    return f"{EIGA_SEARCH_BASE_URL}{urllib.parse.quote(original_film_title)}"
-
 # --- Main Enrichment Function ---
 def enrich_listings_with_tmdb_links(all_listings, cache_data, session, tmdb_api_key_param):
     if not all_listings: return []
     items_to_process_details = []
     for listing in all_listings:
         listing.update({'letterboxd_link': None, 'tmdb_display_title': None,
-                        'gemini_english_title': None, 'eiga_search_link': None,
+                        'gemini_english_title': None,
                         'tmdb_original_title': None,
                         'letterboxd_english_title': None})
         original_title = (listing.get('title') or listing.get('movie_title') or "").strip()
@@ -340,9 +334,9 @@ def enrich_listings_with_tmdb_links(all_listings, cache_data, session, tmdb_api_
             needs_full_processing = True
             log_msg = f"--- Cache entry for '{cleaned_title}' is invalid/missing. Re-fetching. ---" if cleaned_title in cache_data else f"--- Processing new title: '{cleaned_title}' (Original: '{original_title}') ---"
             print(log_msg)
-        elif cached_entry.get("id") is None and not cached_entry.get("api_error") and "eiga_search_link" not in cached_entry:
+        elif cached_entry.get("id") is None and not cached_entry.get("api_error"):
             needs_full_processing = True
-            print(f"--- Incomplete cache for '{cleaned_title}' (no TMDB ID, missing Eiga link). Re-evaluating. ---")
+            print(f"--- Incomplete cache for '{cleaned_title}' (no TMDB ID). Re-evaluating. ---")
         elif cached_entry.get("id") and "letterboxd_english_title" not in cached_entry and not cached_entry.get("api_error"):
             needs_letterboxd_scrape_only = True
             print(f"--- Cache entry for '{cleaned_title}' has TMDB ID but missing Letterboxd title. Will attempt scrape. ---")
@@ -373,10 +367,8 @@ def enrich_listings_with_tmdb_links(all_listings, cache_data, session, tmdb_api_
                     current_cache_data_to_write["letterboxd_english_title"] = lb_eng_title
 
             if needs_full_processing and (current_cache_data_to_write.get("id") is None or current_cache_data_to_write.get("api_error")):
-                print(f"No TMDB ID for '{cleaned_title}' (or API error). Adding Eiga link and trying Gemini.")
-                if "eiga_search_link" not in current_cache_data_to_write:
-                    current_cache_data_to_write["eiga_search_link"] = get_eiga_search_link(original_title)
-                
+                print(f"No TMDB ID for '{cleaned_title}' (or API error). Trying Gemini.")
+
                 if "gemini_english_title" not in current_cache_data_to_write:
                     gemini_title = get_gemini_english_title(cleaned_title, original_title, session, year_for_context)
                     time.sleep(GEMINI_DELAY)
@@ -397,8 +389,6 @@ def enrich_listings_with_tmdb_links(all_listings, cache_data, session, tmdb_api_
                 listing_obj['letterboxd_english_title'] = cached_entry.get('letterboxd_english_title')
             
             if not listing_obj.get('letterboxd_link'):
-                if cached_entry.get("eiga_search_link"):
-                    listing_obj['eiga_search_link'] = cached_entry.get("eiga_search_link")
                 if cached_entry.get("gemini_english_title"):
                     listing_obj['gemini_english_title'] = cached_entry.get("gemini_english_title")
         else:
