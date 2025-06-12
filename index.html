@@ -156,7 +156,6 @@
             font-style: normal; color: var(--medium-text); margin-left: 8px;
             opacity: 1; font-size: 0.9em; font-weight: 400;
         }
-        .eiga-link-indicator { font-size: 0.8em; color: var(--medium-text); margin-left: 5px; font-weight: 400; }
         .hidden { display: none !important; }
         #loading-message-text {
             color: var(--dark-text); font-weight: 500; text-align: center;
@@ -217,13 +216,15 @@
                 "国立映画アーカイブ": "https://www.nfaj.go.jp/",
                 "池袋シネマ・ロサ": "https://www.cinemarosa.net/",
                 "シネスイッチ銀座": "https://cineswitch.com/",
-                "シネマブルースタジオ": "https://www.art-center.jp/tokyo/bluestudio/schedule.html"
+                "シネマブルースタジオ": "https://www.art-center.jp/tokyo/bluestudio/schedule.html",
+                "Bunkamura": "https://www.bunkamura.co.jp/cinema/"
             };
             const preferredJapaneseDisplayNames = {
                 "Chupki": "チュプキ・タバタ", "K's Cinema (ケイズシネマ)": "ケイズシネマ",
                 "Stranger (ストレンジャー)": "ストレンジャー", "YEBISU GARDEN CINEMA": "恵比寿ガーデンシネマ",
                 "K2 Cinema": "K2シネマ", "Theater Bacchus": "シアターバッカス高円寺",
-                "シネスイッチ銀座": "シネスイッチ銀座"
+                "シネスイッチ銀座": "シネスイッチ銀座",
+                "Bunkamura": "ル・シネマ 渋谷宮下"
             };
             const cinemaEnglishNames = {
                 "Chupki": "Chupki Tabata", "K's Cinema (ケイズシネマ)": "K's Cinema",
@@ -239,7 +240,8 @@
                 "ラピュタ阿佐ヶ谷": "Laputa Asagaya", "下高井戸シネマ": "Shimotakaido Cinema",
                 "国立映画アーカイブ": "National Film Archive of Japan", "池袋シネマ・ロサ": "Ikebukuro Cinema Rosa",
                 "シネスイッチ銀座": "Cine Switch Ginza",
-                "シネマブルースタジオ" : "Cinema Blue Studio"
+                "シネマブルースタジオ" : "Cinema Blue Studio",
+                "Bunkamura": "Bunkamura Le Cinéma"
             };
             const cinemaLocations = {
                 "Stranger (ストレンジャー)": "Sumida-ku 墨田区", "新文芸坐": "Toshima-ku 豊島区",
@@ -253,7 +255,7 @@
             };
               const cinemaCategories = [
                 { name: "SHINJUKU-KU 新宿区", cinemas: [ "K's Cinema (ケイズシネマ)", "シネマート新宿", "新宿シネマカリテ", "新宿武蔵野館", "テアトル新宿", "早稲田松竹" ] },
-                { name: "SHIBUYA-KU 渋谷区", cinemas: [ "シアターギルド代官山", "YEBISU GARDEN CINEMA", "シアター・イメージフォーラム", "シネクイント渋谷", "ユーロスペース", "ヒューマントラストシネマ渋谷" ] }
+                { name: "SHIBUYA-KU 渋谷区", cinemas: [ "シアターギルド代官山", "YEBISU GARDEN CINEMA", "シアター・イメージフォーラム", "シネクイント渋谷", "ユーロスペース", "ヒューマントラストシネマ渋谷", "Bunkamura" ] }
             ];
 
             function isProbablyNotJapanese(text) {
@@ -547,7 +549,6 @@
                         }
 
                         const letterboxdLink = showing.letterboxd_link;
-                        const eigaSearchLink = showing.eiga_search_link;
                         let titleDisplayHtml = '';
                         let accompanyingEnglishTitleSpan = '';
 
@@ -558,8 +559,6 @@
                         if (letterboxdLink) {
                             const titleAttributeText = bestEnglishTitle || originalScrapedTitle;
                             titleDisplayHtml = `<a href="${letterboxdLink}" target="_blank" rel="noopener noreferrer" class="showtime-title" title="View '${titleAttributeText}' on Letterboxd">${originalScrapedTitle}</a>${accompanyingEnglishTitleSpan}`;
-                        } else if (eigaSearchLink) {
-                            titleDisplayHtml = `<a href="${eigaSearchLink}" target="_blank" rel="noopener noreferrer" class="showtime-title" title="Search '${originalScrapedTitle}' on Eiga.com">${originalScrapedTitle}</a>${accompanyingEnglishTitleSpan}<span class="eiga-link-indicator">(Eiga.com)</span>`;
                         } else {
                             titleDisplayHtml = `<span class="showtime-title">${originalScrapedTitle}</span>${accompanyingEnglishTitleSpan}`;
                         }
