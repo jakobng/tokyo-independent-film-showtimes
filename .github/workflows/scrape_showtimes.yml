@@ -50,7 +50,6 @@ jobs:
 
           echo "Using ChromeDriver URL: $CHROMEDRIVER_URL"
           wget -O chromedriver_linux64.zip "$CHROMEDRIVER_URL"
-          # Corrected typo here: 'chromedver' -> 'chromedriver'
           unzip chromedriver_linux64.zip -d ./chromedriver_temp
           
           if [ -f ./chromedriver_temp/chromedriver-linux64/chromedriver ]; then
@@ -70,21 +69,26 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt 
-          # Ensure 'requests' is in requirements.txt for TMDB API calls.
-          # 'BeautifulSoup4' might not be strictly needed by main_scraper2.py anymore if Eiga.com HTML parsing is gone,
-          # but individual cinema scrapers might still use it. Keep it if unsure.
+          # Force upgrade of the Gemini library to fix latency issues
+          pip install --upgrade google-generativeai
+          pip install -r requirements.txt
+
+      # ADDED: Caching step to persist the tmdb_cache.json file between runs
+      - name: Cache TMDB data
+        uses: actions/cache@v4
+        with:
+          path: tmdb_cache.json
+          key: ${{ runner.os }}-tmdb-cache-${{ hashFiles('**/main_scraper.py') }}
+          restore-keys: |
+            ${{ runner.os }}-tmdb-cache-
 
       - name: Run scraper script
         run: python main_scraper.py
         env:
-          # IMPORTANT: Add your TMDB_API_KEY as a secret in your GitHub repository
-          # Go to your repository > Settings > Secrets and variables > Actions > New repository secret
-          # Name the secret TMDB_API_KEY and paste your key as the value.
-          # The Python script is set up to read this environment variable if TMDB_API_KEY constant is not hardcoded
-          # OR ensure the key is hardcoded in main_scraper2.py as you requested earlier.
-          # If hardcoded, this env var here isn't strictly needed by the script, but it's good practice for future.
-          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }} 
+          # IMPORTANT: Your TMDB_API_KEY and GEMINI_API_KEY must be configured as secrets
+          # in your repository's Settings > Secrets and variables > Actions
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
       - name: Commit and push generated files
         run: |
@@ -94,24 +98,20 @@ jobs:
           # Stage the generated files
           git add showtimes.json 
           git add tmdb_cache.json 
-          # git add eiga_cache.json # Remove this if you're no longer generating/using eiga_cache.json
 
-          # Check if there are any staged changes (i.e., if the scraper actually changed files)
+          # Check if there are any staged changes
           if git diff --staged --quiet; then
             echo "No changes to commit."
             exit 0 # Exit successfully if no changes to commit
           fi
 
-          # Commit the staged changes locally first.
-          # This ensures a clean state for 'git pull --rebase' because all changes are now part of a commit.
-          git commit -m "Automated update of showtimes and cache files (local commit)"
+          # Commit the staged changes locally
+          git commit -m "Automated update of showtimes and cache files"
           
-          # Pull the latest changes from the remote, rebasing our local commit on top.
-          # Now that our changes are committed, rebase can safely operate.
+          # Pull latest changes from the remote before pushing
           git pull origin main --rebase
           
-          # Push the rebased commit to the remote repository.
+          # Push the rebased commit to the remote repository
           git push
-          echo "Generated files committed and pushed."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
