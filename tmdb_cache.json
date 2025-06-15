@@ -429,7 +429,7 @@
     "id": null,
     "tmdb_title": null,
     "tmdb_original_title": null,
-    "eiga_search_link": "https://eiga.com/search/%E6%98%9F%E3%82%88%E3%82%8A%E9%9D%99%E3%81%8B%E3%81%AB"
+    "letterboxd_english_title": null
   },
   "カップルズ": {
     "id": 54421,
@@ -2712,6 +2712,48 @@
     "id": null,
     "tmdb_title": null,
     "tmdb_original_title": null,
+    "letterboxd_english_title": null
+  },
+  "SALAAR サラール": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null
+  },
+  "敵": {
+    "id": 1361934,
+    "tmdb_title": "Teki Cometh",
+    "tmdb_original_title": "敵",
+    "letterboxd_english_title": null
+  },
+  "桐島、部活やめるってよ": {
+    "id": 175041,
+    "tmdb_title": "The Kirishima Thing",
+    "tmdb_original_title": "桐島、部活やめるってよ",
+    "letterboxd_english_title": null
+  },
+  "Samurai Rebellion": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null
+  },
+  "Harakiri": {
+    "id": 174958,
+    "tmdb_title": "Harakiri",
+    "tmdb_original_title": "Harakiri",
+    "letterboxd_english_title": null
+  },
+  "金語樓のむすめ物語": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null
+  },
+  "カメラを止めるな": {
+    "id": 513434,
+    "tmdb_title": "One Cut of the Dead",
+    "tmdb_original_title": "カメラを止めるな！",
     "letterboxd_english_title": null
   }
 }
