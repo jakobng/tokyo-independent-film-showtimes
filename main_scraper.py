@@ -60,9 +60,7 @@ TMDB_API_KEY = 'da2b1bc852355f12a86dd5e7ec48a1ee' # Replace with your actual key
 TMDB_API_BASE_URL = 'https://api.themoviedb.org/3'
 TMDB_CACHE_FILE = "tmdb_cache.json"
 LETTERBOXD_TMDB_BASE_URL = "https://letterboxd.com/tmdb/"
-# --- IMPORTANT ---
-# Replace this placeholder with your actual, valid Gemini API Key
-GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY_HERE' 
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 # ---
 GEMINI_MODEL_NAME = 'gemini-1.5-flash'
 gemini_model = None
