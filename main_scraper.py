@@ -265,8 +265,6 @@ def get_gemini_english_title(cleaned_film_title, original_title_for_context, ses
     title_to_use_for_prompt = original_title_for_context or cleaned_film_title
     year_info = f" (believed to be released around {year})" if year else ""
     
-    # --- CORRECTED PROMPT ---
-    # The prompt is now short and does not include any external file content.
     prompt = (
         f"What is the most common or official English title for the Japanese film titled: '{title_to_use_for_prompt}'{year_info}?\n"
         "If there are multiple English titles, provide the most widely recognized one.\n"
@@ -274,10 +272,19 @@ def get_gemini_english_title(cleaned_film_title, original_title_for_context, ses
         "If the film is not Japanese, or if you absolutely cannot determine any English title or a reasonable translation that could be a film title, return the exact phrase 'NO_TITLE_FOUND'.\n"
         "Respond with ONLY the English title/translation OR 'NO_TITLE_FOUND'."
     )
-    # --- END CORRECTION ---
 
     try:
+        # --- START: Debugging and timing code ---
+        print(f"DEBUG: Calling Gemini API for title: '{title_to_use_for_prompt}'...")
+        start_time = time.time()
+
         response = gemini_model.generate_content(prompt)
+        
+        end_time = time.time()
+        duration = end_time - start_time
+        print(f"DEBUG: Gemini API call finished. Duration: {duration:.2f} seconds.")
+        # --- END: Debugging and timing code ---
+
         english_title = response.text.strip()
         english_title = re.sub(r"^(English Title:|Title:|Translation:)\s*", "", english_title, flags=re.IGNORECASE).strip()
         english_title = english_title.replace('"', '').replace("'", "")
@@ -294,7 +301,7 @@ def get_gemini_english_title(cleaned_film_title, original_title_for_context, ses
     except Exception as e:
         print(f"Error querying Gemini for '{title_to_use_for_prompt}': {e}", file=sys.stderr)
         return None
-
+        
 # --- Main Enrichment Function ---
 def enrich_listings_with_tmdb_links(all_listings, cache_data, session, tmdb_api_key_param):
     if not all_listings: return []
@@ -334,7 +341,8 @@ def enrich_listings_with_tmdb_links(all_listings, cache_data, session, tmdb_api_
             needs_full_processing = True
             log_msg = f"--- Cache entry for '{cleaned_title}' is invalid/missing. Re-fetching. ---" if cleaned_title in cache_data else f"--- Processing new title: '{cleaned_title}' (Original: '{original_title}') ---"
             print(log_msg)
-        elif cached_entry.get("id") is None and not cached_entry.get("api_error"):
+        # This logic now checks for the 'processed_without_id' flag to prevent reprocessing.
+        elif cached_entry.get("id") is None and not cached_entry.get("api_error") and not cached_entry.get("processed_without_id"):
             needs_full_processing = True
             print(f"--- Incomplete cache for '{cleaned_title}' (no TMDB ID). Re-evaluating. ---")
         elif cached_entry.get("id") and "letterboxd_english_title" not in cached_entry and not cached_entry.get("api_error"):
@@ -376,6 +384,9 @@ def enrich_listings_with_tmdb_links(all_listings, cache_data, session, tmdb_api_
                         current_cache_data_to_write["gemini_english_title"] = gemini_title
                     else:
                         print(f"Gemini did not provide a usable English title for '{cleaned_title}'.")
+                
+                # Add the flag to prevent this entry from being re-processed tomorrow.
+                current_cache_data_to_write["processed_without_id"] = True
             
             cache_data[cleaned_title] = current_cache_data_to_write
             save_json_cache(cache_data, TMDB_CACHE_FILE, "TMDB/Extended Cache")
