@@ -2846,5 +2846,39 @@
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
     "processed_without_id": true
+  },
+  "パーマネント野ばら": {
+    "id": 141902,
+    "tmdb_title": "Permanent Nobara",
+    "tmdb_original_title": "パーマネント野ばら",
+    "letterboxd_english_title": null
+  },
+  "セプテンバー5": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "September 5",
+    "processed_without_id": true
+  },
+  "TATAMI": {
+    "id": 1084066,
+    "tmdb_title": "Tatami",
+    "tmdb_original_title": "Tatami",
+    "letterboxd_english_title": null
+  },
+  "怪談かさねが渕［怪談累が渕 改題": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "人形佐七捕物帖 妖艶六死美人": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
   }
 }
