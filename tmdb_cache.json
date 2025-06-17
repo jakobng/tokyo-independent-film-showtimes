@@ -1607,7 +1607,9 @@
     "id": null,
     "tmdb_title": null,
     "tmdb_original_title": null,
-    "letterboxd_english_title": null
+    "letterboxd_english_title": null,
+    "gemini_english_title": "Badlands",
+    "processed_without_id": true
   },
   "稲森寿世 上映イベント": {
     "id": null,
@@ -2879,6 +2881,49 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "ルノワール": {
+    "id": 1392527,
+    "tmdb_title": "Renoir",
+    "tmdb_original_title": "ルノワール",
+    "letterboxd_english_title": null
+  },
+  "秘顔": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "Secret Face",
+    "processed_without_id": true
+  },
+  "日本一の岡っ引／伊太八縞": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "エノケンの譽れの土俵入": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "當り矢金八捕物帖千里の虎": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "ハッピー☆エンド": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "Happy☆End",
     "processed_without_id": true
   }
 }
