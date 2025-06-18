@@ -31,7 +31,7 @@ from selenium.common.exceptions import TimeoutException
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-CINEMA_NAME = "Bunkamuraル・シネマ 渋谷宮下"
+CINEMA_NAME = "Bunkamura"
 URL = "https://www.bunkamura.co.jp/pickup/movie.html"
 
 INITIAL_LOAD_TIMEOUT = 30   # seconds – wait for first article to appear
