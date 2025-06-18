@@ -62,7 +62,7 @@ TMDB_CACHE_FILE = "tmdb_cache.json"
 LETTERBOXD_TMDB_BASE_URL = "https://letterboxd.com/tmdb/"
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 # ---
-GEMINI_MODEL_NAME = 'gemini-2.5-flash-lite-preview-06-17'
+GEMINI_MODEL_NAME = 'gemini-2.0-flash-lite-001'
 gemini_model = None
 REQUEST_HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
