@@ -3117,5 +3117,117 @@
     "letterboxd_english_title": null,
     "gemini_english_title": "Happy☆End",
     "processed_without_id": true
+  },
+  "スワロウテイル": {
+    "id": 8426,
+    "tmdb_title": "Swallowtail Butterfly",
+    "tmdb_original_title": "スワロウテイル",
+    "letterboxd_english_title": null
+  },
+  "PiCNiC": {
+    "id": 40886,
+    "tmdb_title": "Picnic",
+    "tmdb_original_title": "PiCNiC",
+    "letterboxd_english_title": null
+  },
+  "リリイ・シュシュのすべて": {
+    "id": 16664,
+    "tmdb_title": "All About Lily Chou-Chou",
+    "tmdb_original_title": "リリイ・シュシュのすべて",
+    "letterboxd_english_title": null
+  },
+  "Love Letter リマスター": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "Love Letter (4K Remaster)",
+    "processed_without_id": true
+  },
+  "籠の中の乙女": {
+    "id": 38810,
+    "tmdb_title": "Dogtooth",
+    "tmdb_original_title": "Κυνόδοντας",
+    "letterboxd_english_title": null
+  },
+  "アルプス": {
+    "id": 265189,
+    "tmdb_title": "Force Majeure",
+    "tmdb_original_title": "Turist",
+    "letterboxd_english_title": null
+  },
+  "アッテンバーグ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "Attenberg",
+    "processed_without_id": true
+  },
+  "キネッタ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "光る川": {
+    "id": 1285479,
+    "tmdb_title": "River Returns",
+    "tmdb_original_title": "光る川",
+    "letterboxd_english_title": null
+  },
+  "ローマ法王になる日まで": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "Until the Day I Become Pope",
+    "processed_without_id": true
+  },
+  "HERE 時を越えて": {
+    "id": 940139,
+    "tmdb_title": "Here",
+    "tmdb_original_title": "Here",
+    "letterboxd_english_title": null
+  },
+  "エミリア・ペレス": {
+    "id": 974950,
+    "tmdb_title": "Emilia Pérez",
+    "tmdb_original_title": "Emilia Pérez",
+    "letterboxd_english_title": null
+  },
+  "ファレル・ウィリアムス： ピース・バイ・ピース": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "アメリカ黒人映画傑作選 作品日替り": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "ç¶ãç¢éå«æç©å¸ åéã®è": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "おさな妻": {
+    "id": 597221,
+    "tmdb_title": "Juvenile Wife",
+    "tmdb_original_title": "おさな妻",
+    "letterboxd_english_title": null
+  },
+  "高校生心中 純愛": {
+    "id": 1145513,
+    "tmdb_title": "Love for Eternity",
+    "tmdb_original_title": "高校生心中 純愛",
+    "letterboxd_english_title": null
   }
 }
