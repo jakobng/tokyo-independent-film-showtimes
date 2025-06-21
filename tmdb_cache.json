@@ -1859,7 +1859,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "eiga_search_link": "https://eiga.com/search/%E3%80%90%E5%AE%8C%E6%88%90%E6%8A%AB%E9%9C%B2%E3%80%912025%E5%B9%B47%E6%9C%885%E6%97%A5%E5%8D%88%E5%89%8D4%E6%99%8218%E5%88%86"
+    "processed_without_id": true
   },
   "年少日記": {
     "id": 957863,
@@ -3118,6 +3118,55 @@
     "gemini_english_title": "Happy☆End",
     "processed_without_id": true
   },
+  "平田敏夫の珠玉のアニメーション『ボビーに首ったけ』『グリム童話 金の鳥": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "吉田大八の技巧 虚構と現実の狭間で": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "odessa Midnight Movies 伊藤蒼AN": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "莉の対": {
+    "id": 1171843,
+    "tmdb_title": "Rei",
+    "tmdb_original_title": "莉の対",
+    "letterboxd_english_title": null
+  },
+  "Ryosuke Yamada LIVE TOUR 2025 RED ライブ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "Ryosuke Yamada LIVE TOUR 2025 RED",
+    "processed_without_id": true
+  },
+  "JUNK WORLD［0706舞台挨拶": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "俺たちのオカルティック特集『夏の音』『宮田バスターズ大長編版』『国岡ツアーズ埼玉編": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
   "ラフレトークライブ2025": {
     "id": null,
     "tmdb_title": null,
@@ -3198,7 +3247,21 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Golden Crazy Era: Silent 4K Restoration",
+    "gemini_english_title": "Golden Crazy Days: Silent 4K Restoration",
+    "processed_without_id": true
+  },
+  "Solaris": {
+    "id": 2103,
+    "tmdb_title": "Solaris",
+    "tmdb_original_title": "Solaris",
+    "letterboxd_english_title": null
+  },
+  "The Pier + I Love You, I Love You": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "The Pier + I Love You, I Love You",
     "processed_without_id": true
   },
   "光る川": {
@@ -3246,7 +3309,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Ninja Scroll",
+    "gemini_english_title": "Tale of a Thousand Tigers",
     "processed_without_id": true
   },
   "ã³ã¡ããããï¼ç¡å®¿ä¾": {
@@ -3254,6 +3317,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
+    "gemini_english_title": "Come, Come, Everybody",
     "processed_without_id": true
   },
   "æªç°è« çãã¦ããå°å¹³æ": {
@@ -3261,7 +3325,23 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Strange Tales of Horrifying Monsters, Mr. Heikichi",
+    "gemini_english_title": "Odd Tales of Birth: Heikichis Strange Affair",
+    "processed_without_id": true
+  },
+  "ãããç ç¾©åå¼": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "Cherry Blossoms and Samurai",
+    "processed_without_id": true
+  },
+  "ç·ã®åµ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "Boys Nest",
     "processed_without_id": true
   },
   "おさな妻": {
