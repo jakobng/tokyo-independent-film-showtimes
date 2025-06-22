@@ -3132,6 +3132,20 @@
     "letterboxd_english_title": null,
     "processed_without_id": true
   },
+  "夢一族 ザ・らいばる": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "The Dream Family: The Rivals",
+    "processed_without_id": true
+  },
+  "劇場版 少女☆歌劇 レヴュースタァライト": {
+    "id": 645440,
+    "tmdb_title": "Revue Starlight: The Movie",
+    "tmdb_original_title": "劇場版 少女☆歌劇 レヴュースタァライト",
+    "letterboxd_english_title": null
+  },
   "odessa Midnight Movies 伊藤蒼AN": {
     "id": null,
     "tmdb_title": null,
@@ -3150,7 +3164,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Ryosuke Yamada LIVE TOUR 2025 RED",
+    "gemini_english_title": "Ryosuke Yamada LIVE TOUR 2025 RED LIVE",
     "processed_without_id": true
   },
   "JUNK WORLD［0706舞台挨拶": {
@@ -3247,7 +3261,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Golden Crazy Days: Silent 4K Restoration",
+    "gemini_english_title": "Golden Crazy Era: Silent 4K Restoration",
     "processed_without_id": true
   },
   "Solaris": {
@@ -3261,8 +3275,20 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "The Pier + I Love You, I Love You",
     "processed_without_id": true
+  },
+  "Kin-dza-dza": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "The Adventures of Baron Munchausen": {
+    "id": 14506,
+    "tmdb_title": "The Adventures of Baron Munchausen",
+    "tmdb_original_title": "The Adventures of Baron Munchausen",
+    "letterboxd_english_title": null
   },
   "光る川": {
     "id": 1285479,
@@ -3304,20 +3330,11 @@
     "letterboxd_english_title": null,
     "processed_without_id": true
   },
-  "ç¶ãç¢éå«æç©å¸ åéã®è": {
-    "id": null,
-    "tmdb_title": null,
-    "tmdb_original_title": null,
-    "letterboxd_english_title": null,
-    "gemini_english_title": "Tale of a Thousand Tigers",
-    "processed_without_id": true
-  },
   "ã³ã¡ããããï¼ç¡å®¿ä¾": {
     "id": null,
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Come, Come, Everybody",
     "processed_without_id": true
   },
   "æªç°è« çãã¦ããå°å¹³æ": {
@@ -3325,7 +3342,6 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Odd Tales of Birth: Heikichis Strange Affair",
     "processed_without_id": true
   },
   "ãããç ç¾©åå¼": {
@@ -3333,7 +3349,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Cherry Blossoms and Samurai",
+    "gemini_english_title": "Cherry Blossoms and Japanese Brothers",
     "processed_without_id": true
   },
   "ç·ã®åµ": {
@@ -3341,7 +3357,22 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Boys Nest",
+    "gemini_english_title": "Boys School",
+    "processed_without_id": true
+  },
+  "å½±æ³å¸«æç©å": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "ã²ã°ããä¸ã®å¯¾æ±º": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "Higan no Shirahama Kessen",
     "processed_without_id": true
   },
   "おさな妻": {
