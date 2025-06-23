@@ -3137,7 +3137,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "The Dream Family: The Rivals",
+    "gemini_english_title": "The Dream Clan: The Rivals",
     "processed_without_id": true
   },
   "劇場版 少女☆歌劇 レヴュースタァライト": {
@@ -3159,14 +3159,6 @@
     "tmdb_original_title": "莉の対",
     "letterboxd_english_title": null
   },
-  "Ryosuke Yamada LIVE TOUR 2025 RED ライブ": {
-    "id": null,
-    "tmdb_title": null,
-    "tmdb_original_title": null,
-    "letterboxd_english_title": null,
-    "gemini_english_title": "Ryosuke Yamada LIVE TOUR 2025 RED LIVE",
-    "processed_without_id": true
-  },
   "JUNK WORLD［0706舞台挨拶": {
     "id": null,
     "tmdb_title": null,
@@ -3186,6 +3178,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
+    "gemini_english_title": "Laflle Talk Live 2025",
     "processed_without_id": true
   },
   "ブリジット・ジョーンズの日記 レストア": {
@@ -3247,7 +3240,6 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Kineta",
     "processed_without_id": true
   },
   "ひめゆり": {
@@ -3261,7 +3253,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Golden Crazy Era: Silent 4K Restoration",
+    "gemini_english_title": "Golden Age of Madness: Silent 4K Restoration",
     "processed_without_id": true
   },
   "Solaris": {
@@ -3301,7 +3293,6 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Until the Day I Become Pope",
     "processed_without_id": true
   },
   "HERE 時を越えて": {
@@ -3335,6 +3326,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
+    "gemini_english_title": "Comet-san: Homeless",
     "processed_without_id": true
   },
   "æªç°è« çãã¦ããå°å¹³æ": {
@@ -3342,6 +3334,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
+    "gemini_english_title": "Strange Tale of Flatlife",
     "processed_without_id": true
   },
   "ãããç ç¾©åå¼": {
@@ -3349,7 +3342,6 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Cherry Blossoms and Japanese Brothers",
     "processed_without_id": true
   },
   "ç·ã®åµ": {
@@ -3357,7 +3349,6 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Boys School",
     "processed_without_id": true
   },
   "å½±æ³å¸«æç©å": {
@@ -3372,7 +3363,30 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Higan no Shirahama Kessen",
+    "gemini_english_title": "Hibanagan No Taiketsu",
+    "processed_without_id": true
+  },
+  "ç¾é¢¨é¬¼å§«è¡éï¼»é¬¼å§«ããã æ¹é¡ç­ç¸®çï¼½": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "å¥³æ­»ååã®è±ç": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "Female Prisoner Scorpion: Jailhouse 41",
+    "processed_without_id": true
+  },
+  "å°ç": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "Inferno",
     "processed_without_id": true
   },
   "おさな妻": {
@@ -3386,5 +3400,13 @@
     "tmdb_title": "Love for Eternity",
     "tmdb_original_title": "高校生心中 純愛",
     "letterboxd_english_title": null
+  },
+  "プラットホーム": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "Platform",
+    "processed_without_id": true
   }
 }
