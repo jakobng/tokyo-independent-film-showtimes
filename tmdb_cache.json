@@ -3137,7 +3137,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "The Dream Clan: The Rivals",
+    "gemini_english_title": "The Dream Family: The Rivals",
     "processed_without_id": true
   },
   "劇場版 少女☆歌劇 レヴュースタァライト": {
@@ -3145,6 +3145,13 @@
     "tmdb_title": "Revue Starlight: The Movie",
     "tmdb_original_title": "劇場版 少女☆歌劇 レヴュースタァライト",
     "letterboxd_english_title": null
+  },
+  "ロード・オブ・ザ・リング 三部作 SEE": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
   },
   "odessa Midnight Movies 伊藤蒼AN": {
     "id": null,
@@ -3178,7 +3185,6 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Laflle Talk Live 2025",
     "processed_without_id": true
   },
   "ブリジット・ジョーンズの日記 レストア": {
@@ -3256,6 +3262,28 @@
     "gemini_english_title": "Golden Age of Madness: Silent 4K Restoration",
     "processed_without_id": true
   },
+  "アスファルト・シティ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "Asphalt City",
+    "processed_without_id": true
+  },
+  "フォーチュンクッキー": {
+    "id": 1452497,
+    "tmdb_title": "フォーチュンクッキー",
+    "tmdb_original_title": "フォーチュンクッキー",
+    "letterboxd_english_title": null
+  },
+  "それいけ！アンパンマン チャポンの ヒー": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "Lets Go! Anpanman: Chapons Happy Birthday",
+    "processed_without_id": true
+  },
   "Solaris": {
     "id": 2103,
     "tmdb_title": "Solaris",
@@ -3267,6 +3295,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
+    "gemini_english_title": "The Pier",
     "processed_without_id": true
   },
   "Kin-dza-dza": {
@@ -3293,6 +3322,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
+    "gemini_english_title": "Until the Day I Become Pope",
     "processed_without_id": true
   },
   "HERE 時を越えて": {
@@ -3326,7 +3356,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Comet-san: Homeless",
+    "gemini_english_title": "Kometto-san: Mujuku-hen",
     "processed_without_id": true
   },
   "æªç°è« çãã¦ããå°å¹³æ": {
@@ -3334,7 +3364,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Strange Tale of Flatlife",
+    "gemini_english_title": "Strange Tales of Life and Death of Heizo Komura",
     "processed_without_id": true
   },
   "ãããç ç¾©åå¼": {
@@ -3342,6 +3372,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
+    "gemini_english_title": "Brotherhood of the Yakuza",
     "processed_without_id": true
   },
   "ç·ã®åµ": {
@@ -3363,7 +3394,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Hibanagan No Taiketsu",
+    "gemini_english_title": "Higan Versus Higan",
     "processed_without_id": true
   },
   "ç¾é¢¨é¬¼å§«è¡éï¼»é¬¼å§«ããã æ¹é¡ç­ç¸®çï¼½": {
@@ -3378,7 +3409,6 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Female Prisoner Scorpion: Jailhouse 41",
     "processed_without_id": true
   },
   "å°ç": {
@@ -3387,6 +3417,27 @@
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
     "gemini_english_title": "Inferno",
+    "processed_without_id": true
+  },
+  "ç´å·ã®æ´ããå": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "ææ¬å§å©é·¹": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "ææ¬éå±ç· è¬ã®ççå±æ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
     "processed_without_id": true
   },
   "おさな妻": {
