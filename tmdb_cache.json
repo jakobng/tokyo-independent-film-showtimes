@@ -3123,6 +3123,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
+    "gemini_english_title": "Body Parts",
     "processed_without_id": true
   },
   "かたつむりのメモワール": {
@@ -3193,7 +3194,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Thelma Goes Forth!",
+    "gemini_english_title": "93-Year-Olds Kind Revenge",
     "processed_without_id": true
   },
   "ＹＯＵＮＧ＆ＦＩＮＥ★舞台挨拶付き上映": {
@@ -3222,6 +3223,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
+    "gemini_english_title": "The Dream Family: The Rivals",
     "processed_without_id": true
   },
   "劇場版 少女☆歌劇 レヴュースタァライト": {
@@ -3277,26 +3279,28 @@
     "tmdb_original_title": "神探大戰",
     "letterboxd_english_title": null
   },
-  "あの娘は知らない": {
-    "id": 1009642,
-    "tmdb_title": "Leave in Summer",
-    "tmdb_original_title": "あの娘は知らない",
+  "暗戦 デッドエンド": {
+    "id": 2463,
+    "tmdb_title": "Running Out of Time",
+    "tmdb_original_title": "暗戰",
     "letterboxd_english_title": null
   },
-  "走り来る人々": {
+  "デッドエンド 暗戦リターンズ": {
     "id": null,
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
     "processed_without_id": true
   },
-  "蜘蛛の巣": {
-    "id": 446807,
-    "tmdb_title": "The Girl in the Spider's Web",
-    "tmdb_original_title": "The Girl in the Spider's Web",
-    "letterboxd_english_title": null
-  },
   "明日になれば他人": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "Tomorrow Becomes Strangers",
+    "processed_without_id": true
+  },
+  "走り来る人々": {
     "id": null,
     "tmdb_title": null,
     "tmdb_original_title": null,
@@ -3307,6 +3311,18 @@
     "id": 89484,
     "tmdb_title": "Home from the Hill",
     "tmdb_original_title": "Home from the Hill",
+    "letterboxd_english_title": null
+  },
+  "あの娘は知らない": {
+    "id": 1009642,
+    "tmdb_title": "Leave in Summer",
+    "tmdb_original_title": "あの娘は知らない",
+    "letterboxd_english_title": null
+  },
+  "蜘蛛の巣": {
+    "id": 446807,
+    "tmdb_title": "The Girl in the Spider's Web",
+    "tmdb_original_title": "The Girl in the Spider's Web",
     "letterboxd_english_title": null
   },
   "ボヴァリー夫人": {
@@ -3326,7 +3342,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Fortune Cookie ★ After Screening Talk Event",
+    "gemini_english_title": "Fortune Cookie★Post-Screening Talk Event",
     "processed_without_id": true
   },
   "ハイテンション ★上映後": {
@@ -3334,6 +3350,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
+    "gemini_english_title": "High Tension (4K) ★ After Screening Talk Event",
     "processed_without_id": true
   },
   "リライト★上映後": {
@@ -3377,6 +3394,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
+    "gemini_english_title": "Basara: The Movie",
     "processed_without_id": true
   },
   "それいけ！アンパンマン チャポンの ヒー": {
@@ -3384,7 +3402,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Anpanman and the Heap of Cheer",
+    "gemini_english_title": "Lets Go! Anpanman: Chappon and the Hero",
     "processed_without_id": true
   },
   "還暦高校生［0629舞台挨拶": {
@@ -3406,13 +3424,6 @@
     "tmdb_title": "Sham",
     "tmdb_original_title": "でっちあげ ～殺人教師と呼ばれた男",
     "letterboxd_english_title": null
-  },
-  "俺たちのオカルティック特集『夏の音』『宮田バスターズ大長編版』『国岡ツアーズ埼玉編": {
-    "id": null,
-    "tmdb_title": null,
-    "tmdb_original_title": null,
-    "letterboxd_english_title": null,
-    "processed_without_id": true
   },
   "ラフレトークライブ2025": {
     "id": null,
@@ -3498,6 +3509,30 @@
     "letterboxd_english_title": null,
     "processed_without_id": true
   },
+  "青い珊瑚礁": {
+    "id": 5689,
+    "tmdb_title": "The Blue Lagoon",
+    "tmdb_original_title": "The Blue Lagoon",
+    "letterboxd_english_title": null
+  },
+  "海辺のポーリーヌ": {
+    "id": 10293,
+    "tmdb_title": "Pauline at the Beach",
+    "tmdb_original_title": "Pauline à la plage",
+    "letterboxd_english_title": null
+  },
+  "恋のエチュード": {
+    "id": 42513,
+    "tmdb_title": "Two English Girls",
+    "tmdb_original_title": "Les Deux Anglaises et le Continent",
+    "letterboxd_english_title": null
+  },
+  "MORE／モア": {
+    "id": 21323,
+    "tmdb_title": "More",
+    "tmdb_original_title": "More",
+    "letterboxd_english_title": null
+  },
   "ひめゆり": {
     "id": 266226,
     "tmdb_title": "Himeyuri",
@@ -3509,7 +3544,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Golden Age of Madness: Silent 4K Restoration",
+    "gemini_english_title": "Golden Crazy Age: Silent 4K Restoration",
     "processed_without_id": true
   },
   "Solaris": {
@@ -3530,7 +3565,6 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Kin-dza-dza!",
     "processed_without_id": true
   },
   "The Adventures of Baron Munchausen": {
@@ -3545,12 +3579,25 @@
     "tmdb_original_title": "光る川",
     "letterboxd_english_title": null
   },
+  "旅するローマ教皇": {
+    "id": 1004682,
+    "tmdb_title": "In Viaggio: The Travels of Pope Francis",
+    "tmdb_original_title": "In viaggio",
+    "letterboxd_english_title": null
+  },
   "ローマ法王になる日まで": {
     "id": null,
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Until the Day I Become Pope",
+    "gemini_english_title": "The Popes Bed",
+    "processed_without_id": true
+  },
+  "ドマーニ！愛のことづて": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
     "processed_without_id": true
   },
   "HERE 時を越えて": {
@@ -3580,21 +3627,6 @@
     "letterboxd_english_title": null,
     "processed_without_id": true
   },
-  "ãããç ç¾©åå¼": {
-    "id": null,
-    "tmdb_title": null,
-    "tmdb_original_title": null,
-    "letterboxd_english_title": null,
-    "gemini_english_title": "Cherry Blossoms and Japanese Brothers",
-    "processed_without_id": true
-  },
-  "ç·ã®åµ": {
-    "id": null,
-    "tmdb_title": null,
-    "tmdb_original_title": null,
-    "letterboxd_english_title": null,
-    "processed_without_id": true
-  },
   "å½±æ³å¸«æç©å": {
     "id": null,
     "tmdb_title": null,
@@ -3607,7 +3639,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Higanbana no Kessen (The Battle of the Equinox Flower)",
+    "gemini_english_title": "The Sunflowers Pledge",
     "processed_without_id": true
   },
   "ç¾é¢¨é¬¼å§«è¡éï¼»é¬¼å§«ããã æ¹é¡ç­ç¸®çï¼½": {
@@ -3638,6 +3670,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
+    "gemini_english_title": "Rhapsody in August",
     "processed_without_id": true
   },
   "ææ¬å§å©é·¹": {
@@ -3665,6 +3698,12 @@
     "id": 1145513,
     "tmdb_title": "Love for Eternity",
     "tmdb_original_title": "高校生心中 純愛",
+    "letterboxd_english_title": null
+  },
+  "樹氷悲歌": {
+    "id": 1145567,
+    "tmdb_title": "Snow Country Elegy",
+    "tmdb_original_title": "樹氷悲歌",
     "letterboxd_english_title": null
   },
   "プラットホーム": {
