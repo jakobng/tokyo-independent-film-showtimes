@@ -1,325 +1,227 @@
-import datetime as _dt
+from __future__ import annotations
+
+"""
+Scraper for ヒューマントラストシネマ渋谷
+----------------------------------------------------------------
+* Fetches the theatre’s public JSON schedule feed (https://ttcg.jp/data/human_shibuya.js)
+* Follows each movie’s detail page once to pull richer metadata.
+* Emits a list[dict] in the standard schema.
+---
+v3 Final:
+* Handles multiple copyright symbol variations (© and ©︎) for year extraction.
+* Correctly handles missing detail pages for special events.
+"""
+
+import datetime as dt
 import json
-from typing import List, Dict, Any
+import re
+import sys
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
 import requests
-import traceback
+from bs4 import BeautifulSoup
 
-# --- Constants ---
-BASE_URL = "https://ttcg.jp"
-# IMPORTANT: Verify this theatre code.
-# Common patterns suggest it might be "human_trust_cinema_shibuya".
-# For now, using the one from your uploaded file.
-THEATRE_CODE = "human_shibuya" 
-# If the above THEATRE_CODE is incorrect, the SCHEDULE_DATA_URL will also be incorrect.
-# A likely correct URL might be: f"{BASE_URL}/data/human_trust_cinema_shibuya.js"
-SCHEDULE_DATA_URL = f"{BASE_URL}/data/{THEATRE_CODE}.js" 
-CINEMA_NAME = "ヒューマントラストシネマ渋谷"
-PURCHASABLE_DATA_URL = f"{BASE_URL}/data/purchasable.js"
+# ─────────────────────────── Constants ────────────────────────────
+BASE_URL            = "https://ttcg.jp"
+THEATER_CODE        = "human_shibuya"
+CINEMA_NAME         = "ヒューマントラストシネマ渋谷"
+SCHEDULE_URL        = f"{BASE_URL}/data/{THEATER_CODE}.js"
+PURCHASABLE_URL     = f"{BASE_URL}/data/purchasable.js"
+DETAIL_URL_TEMPLATE = f"{BASE_URL}/{THEATER_CODE}/movie/{{movie_id}}.html"
 
-__all__ = ["scrape_human_shibuya"]
+# single shared session with JP headers & theatre referer => avoids 403
+SESSION = requests.Session()
+SESSION.headers.update(
+    {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/125.0 Safari/537.36"
+        ),
+        "Accept-Language": "ja,en;q=0.8",
+        "Referer": f"{BASE_URL}/{THEATER_CODE}/",
+    }
+)
 
-# --- Helper Functions ---
+# ─────────────────────── Helper functions ─────────────────────────
 
-def _fetch_json_data(url: str) -> Any:
-    """Fetches data from a URL and parses it as JSON."""
-    content = "" 
+def _get(url: str) -> requests.Response:
+    """HTTP GET that forces UTF‑8 decoding (site always UTF‑8)."""
+    resp = SESSION.get(url, timeout=20)
+    resp.raise_for_status()
+    resp.encoding = "utf-8"
+    return resp
+
+
+def _clean_json_js_like(text: str) -> Any:
+    text = text.strip().rstrip(";")
+    if text.startswith(("var", "let", "const")) and "=" in text:
+        text = text.split("=", 1)[1].strip()
+    if text.startswith("(") and text.endswith(")"):
+        text = text[1:-1]
+    return json.loads(text)
+
+
+def _fetch_json(url: str) -> Optional[Any]:
     try:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
-        request_url = f"{url}?t={_dt.datetime.now().timestamp()}" # Cache-busting
-        print(f"Fetching: {request_url}")
-        response = requests.get(request_url, timeout=15, headers=headers)
-        response.raise_for_status()
-        content = response.text.strip()
-
-        if not content:
-            print(f"Warning: Fetched empty content from {url}")
-            return None
-        
-        original_content_for_debug = content 
-
-        if content.endswith(';'):
-            content = content[:-1].strip()
-        
-        if '=' in content: 
-            parts = content.split('=', 1)
-            if len(parts) > 1:
-                potential_json = parts[1].strip()
-                if (potential_json.startswith('{') and potential_json.endswith('}')) or \
-                   (potential_json.startswith('[') and potential_json.endswith(']')):
-                    content = potential_json
-        
-        if '(' in content and content.endswith(')'): # More general JSONP/function wrapper
-            first_paren = content.find('(')
-            if first_paren != -1:
-                potential_json_in_paren = content[first_paren+1:-1].strip()
-                if (potential_json_in_paren.startswith('{') and potential_json_in_paren.endswith('}')) or \
-                   (potential_json_in_paren.startswith('[') and potential_json_in_paren.endswith(']')):
-                    content = potential_json_in_paren
-            
-        return json.loads(content)
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching URL {url} for {CINEMA_NAME}: {e}")
-    except json.JSONDecodeError as e:
-        print(f"Error decoding JSON from {url} for {CINEMA_NAME}: {e}")
-        print(f"Attempted to parse (up to 500 chars): {content[:500]}...")
-        print(f"Original fetched content for this URL (up to 500 chars): {original_content_for_debug[:500]}...")
-    return None
-
-def _format_time(hour_str: Any, minute_str: Any) -> str:
-    """Formats hour and minute strings/numbers into HH:MM format."""
-    return f"{str(hour_str).zfill(2)}:{str(minute_str).zfill(2)}"
-
-def _get_availability_status_and_url(time_info: Dict, theatre_purchasable: bool) -> (str, str | None):
-    """Determines human-readable status and purchase URL."""
-    available_code = time_info.get('available')
-    url = time_info.get('url') 
-
-    status_text = "情報なし"
-    can_purchase_online_now = False
-
-    if theatre_purchasable:
-        if available_code == 0: status_text, can_purchase_online_now = "オンライン購入可", True
-        elif available_code == 1: status_text = "窓口販売"
-        elif available_code == 2: status_text, can_purchase_online_now = "オンライン残席わずか", True
-        elif available_code == 4: status_text = "窓口残席わずか"
-        elif available_code == 5: status_text = "満席"
-        else: status_text = "販売期間外／終了"
-    else:
-        if available_code == 5: status_text = "満席"
-        elif available_code in [0, 1, 2, 4]: status_text = "劇場窓口にてご確認ください"
-        else: status_text = "販売期間外／終了"
-
-    purchase_url = url if can_purchase_online_now and url and str(url).startswith("http") else None
-    return status_text, purchase_url
-
-def _get_screen_display_name(json_screen_name: str) -> str:
-    """
-    Cleans up screen names, e.g., removes "(座席券)".
-    Assumes Human Trust Shibuya screen names from JSON are mostly usable.
-    """
-    if "(座席券)" in json_screen_name: # From your provided module
-        return json_screen_name.replace("(座席券)", "").strip()
-    # Add other general or Human Trust specific cleanups if needed
-    return json_screen_name.strip()
+        return _clean_json_js_like(_get(url).text)
+    except Exception as e:
+        print(f"[ERROR] Fetch JSON {url}: {e}", file=sys.stderr)
+        return None
 
 
-# --- Main Scraper Function ---
+def _zfill(num: Any) -> str:
+    return str(num).zfill(2)
+
+
+def _fmt_hm(h: Any, m: Any) -> str:
+    return f"{_zfill(h)}:{_zfill(m)}" if h is not None and m is not None else ""
+
+
+def _normalize_screen_name(raw: str) -> str:
+    return raw.translate(str.maketrans("１２３４", "1234"))
+
+# ──────────────────── Detail-page scraping (cached) ───────────────
+_detail_cache: Dict[str, Dict] = {}
+
+
+def _scrape_detail_page(movie_id: str) -> Dict[str, Optional[str]]:
+    if movie_id in _detail_cache:
+        return _detail_cache[movie_id]
+
+    url = DETAIL_URL_TEMPLATE.format(movie_id=movie_id)
+    try:
+        soup = BeautifulSoup(_get(url).text, "html.parser")
+    except Exception as e:
+        print(f"[WARN] detail page {url}: {e}", file=sys.stderr)
+        _detail_cache[movie_id] = {}
+        return {}
+
+    jp_title = en_title = None
+    h2 = soup.select_one("h2.movie-title")
+    if h2:
+        jp_title = h2.get_text("|", strip=True).split("|", 1)[0]
+        sub = h2.select_one("span.sub")
+        en_title = sub.get_text(strip=True) if sub else None
+
+    runtime_min = country = None
+    label = soup.select_one("p.schedule-nowShowing-label")
+    if label:
+        bs = label.select("b")
+        for b in bs:
+            txt = b.get_text(strip=True)
+            if "分" in txt and txt[:-1].isdigit():
+                runtime_min = txt[:-1]
+        if bs:
+            potential_country = bs[-1].get_text(strip=True)
+            if "分" not in potential_country:
+                country = potential_country
+
+    director = None
+    for dt_tag in soup.select("dl.movie-staff dt"):
+        if "監督" in dt_tag.text:
+            dd = dt_tag.find_next_sibling("dd")
+            if dd:
+                director = dd.get_text(" ", strip=True).lstrip("：:")
+            break
+
+    year = None
+    # --- V3 CHANGE: Updated regex to handle © and ©︎ ---
+    copyright_regex = re.compile(r"©︎?\s*(\d{4})")
+    
+    # Prioritized search
+    copyright_tag = soup.select_one("p.title-copyright")
+    if copyright_tag and (m := copyright_regex.search(copyright_tag.text)):
+        year = m.group(1)
+    # Fallback to searching the whole page
+    elif (m := copyright_regex.search(soup.get_text(" ", strip=True))):
+        year = m.group(1)
+
+    synopsis_parts = [p.get_text(" ", strip=True) for p in soup.select("div.mod-imageText-a-text p, div.mod-field p")]
+    synopsis = "\n".join(synopsis_parts) or None
+
+    info = {
+        "movie_title": jp_title,
+        "movie_title_en": en_title,
+        "director": director,
+        "year": year,
+        "country": country,
+        "runtime_min": runtime_min,
+        "synopsis": synopsis,
+        "detail_page_url": url,
+    }
+    _detail_cache[movie_id] = info
+    return info
+
+# ─────────────────────── Main scraping ───────────────────────────
 
 def scrape_human_shibuya(max_days: int = 7) -> List[Dict]:
-    """
-    Scrapes movie showings for Human Trust Cinema Shibuya for up to max_days.
-    """
-    fetched_schedule_data_wrapper = _fetch_json_data(SCHEDULE_DATA_URL)
-    purchasable_info = _fetch_json_data(PURCHASABLE_DATA_URL)
-
-    actual_schedule_data = None
-    if isinstance(fetched_schedule_data_wrapper, list):
-        if len(fetched_schedule_data_wrapper) > 0 and isinstance(fetched_schedule_data_wrapper[0], dict):
-            actual_schedule_data = fetched_schedule_data_wrapper[0]
-        elif fetched_schedule_data_wrapper: 
-            for item in fetched_schedule_data_wrapper: 
-                if isinstance(item, dict) and 'dates' in item and 'movies' in item:
-                    actual_schedule_data = item
-                    break
-    elif isinstance(fetched_schedule_data_wrapper, dict):
-        actual_schedule_data = fetched_schedule_data_wrapper
-    
-    if not actual_schedule_data:
-        print(f"Failed to extract actual schedule data for {CINEMA_NAME}. Wrapper type: {type(fetched_schedule_data_wrapper)}. Data (first 200 chars): {str(fetched_schedule_data_wrapper)[:200]}")
-    if not purchasable_info:
-        print(f"Failed to fetch or parse purchasable data for {CINEMA_NAME}.")
-
-    if not actual_schedule_data or not purchasable_info:
-        print(f"Aborting scrape for {CINEMA_NAME} due to missing critical data.")
+    schedule_js = _fetch_json(SCHEDULE_URL)
+    purchasable_js = _fetch_json(PURCHASABLE_URL)
+    if not schedule_js or not purchasable_js:
         return []
 
-    is_theatre_purchasable = purchasable_info.get(THEATRE_CODE, False)
-    all_showings: List[Dict] = []
-    
-    dates_data = actual_schedule_data.get('dates', [])
-    if not dates_data:
-        print(f"No 'dates' array found in schedule data for {CINEMA_NAME}.")
-        return []
-        
-    dates_to_process = dates_data[:max_days] if max_days is not None and max_days > 0 else dates_data
+    if isinstance(schedule_js, list):
+        schedule_js = next((x for x in schedule_js if isinstance(x, dict)), {})
 
-    movies_map = actual_schedule_data.get('movies', {})
-    screens_map = actual_schedule_data.get('screens', {})
+    dates = schedule_js.get("dates", [])[:max_days]
+    movies_map = schedule_js.get("movies", {})
+    screens = schedule_js.get("screens", {})
+    purchasable_flag = bool(purchasable_js.get(THEATER_CODE))
 
-    for date_obj in dates_to_process:
-        try:
-            raw_year = str(date_obj['date_year'])
-            raw_month = str(date_obj['date_month'])
-            raw_day = str(date_obj['date_day'])
-            
-            display_month = raw_month.zfill(2)
-            display_day = raw_day.zfill(2)
-            current_date_iso_str = f"{raw_year}-{display_month}-{display_day}"
-            
-            movie_ids_for_date = date_obj.get('movie', [])
+    result: List[Dict] = []
 
-            for movie_id_key_any_type in movie_ids_for_date:
-                movie_id_key = str(movie_id_key_any_type)
-                movie_data_for_id_list_or_dict = movies_map.get(movie_id_key) 
-                
-                processed_movie_details = None
-                if isinstance(movie_data_for_id_list_or_dict, list):
-                    if movie_data_for_id_list_or_dict and isinstance(movie_data_for_id_list_or_dict[0], dict):
-                        processed_movie_details = movie_data_for_id_list_or_dict[0] 
-                elif isinstance(movie_data_for_id_list_or_dict, dict):
-                    processed_movie_details = movie_data_for_id_list_or_dict
-                
-                if not processed_movie_details:
-                    print(f"Warning: No movie details found for movie_id '{movie_id_key}' in movies_map for {CINEMA_NAME}.")
-                    continue
+    for d in dates:
+        y, m, day = map(str, (d["date_year"], d["date_month"], d["date_day"]))
+        iso_date = f"{y}-{_zfill(m)}-{_zfill(day)}"
+        for mid in map(str, d.get("movie", [])):
+            key = f"{mid}-{y}-{m}-{day}"
+            for scr in screens.get(key, []):
+                screen_name = _normalize_screen_name(scr.get("name", "スクリーン"))
+                for t in scr.get("time", []):
+                    sh, sm = t.get("start_time_hour"), t.get("start_time_minute")
+                    if sh is None or sm is None:
+                        continue
+                    showtime = _fmt_hm(sh, sm)
+                    p_url = t.get("url") if purchasable_flag and str(t.get("url", "")).startswith("http") else None
 
-                # --- Updated Title Logic (same as for Theatre Shinjuku) ---
-                title_from_name_field = processed_movie_details.get('name')
-                title_from_cname_field = processed_movie_details.get('cname')
-                title_from_short_field = processed_movie_details.get('title_short')
-                title_from_title_field = processed_movie_details.get('title')
+                    meta = _scrape_detail_page(mid)
+                    if not meta.get("movie_title"):
+                        mv = movies_map.get(mid)
+                        if isinstance(mv, list):
+                            mv = mv[0] if mv else {}
+                        if isinstance(mv, dict):
+                            meta["movie_title"] = mv.get("name") or mv.get("cname") or mv.get("title")
 
-                final_movie_title = title_from_name_field \
-                                     or title_from_cname_field \
-                                     or title_from_short_field \
-                                     or title_from_title_field \
-                                     or 'タイトル不明' 
-                
-                if not final_movie_title.strip(): # Ensure not just whitespace
-                    final_movie_title = 'タイトル不明'
-
-                # Debug print if title remains "タイトル不明"
-                if final_movie_title == 'タイトル不明' and not (title_from_name_field or title_from_cname_field or title_from_short_field or title_from_title_field) :
-                    print(f"\nDEBUG ({CINEMA_NAME}): Movie ID {movie_id_key} (Date: {current_date_iso_str}) defaulted to 'タイトル不明'.")
-                    print(f"       Available fields for this movie object (movies_map['{movie_id_key}']):")
-                    for k, v_detail in processed_movie_details.items():
-                        print(f"         - {k}: {str(v_detail)[:150]}") 
-                # --- End of Updated Title Logic ---
-
-                image_path = processed_movie_details.get('image_path')
-                movie_image_url = None
-                if image_path:
-                    if str(image_path).startswith('http'): movie_image_url = image_path
-                    elif str(image_path).startswith('/'): movie_image_url = f"{BASE_URL}{image_path}"
-                    else: movie_image_url = f"{BASE_URL}/{image_path}"
-
-                remarks_html = processed_movie_details.get('remarks_pc', '')
-                
-                duration_label_data = processed_movie_details.get('label_text_type_a', [])
-                duration_label = ""
-                if isinstance(duration_label_data, list) and duration_label_data:
-                    duration_label = str(duration_label_data[0])
-                elif isinstance(duration_label_data, str):
-                    duration_label = duration_label_data
-
-                screen_schedules_for_movie_date = None
-                keys_tried_for_screen_map = []
-                key_formats_to_try_for_screen_map = [
-                    f"{movie_id_key}-{raw_year}-{raw_month}-{raw_day}",
-                    f"{movie_id_key}-{raw_year}-{display_month}-{display_day}",
-                    f"{movie_id_key}-{raw_year}{display_month}{display_day}"
-                ]
-                for key_attempt in key_formats_to_try_for_screen_map:
-                    keys_tried_for_screen_map.append(key_attempt)
-                    screen_schedules_for_movie_date = screens_map.get(key_attempt)
-                    if screen_schedules_for_movie_date:
-                        break
-                
-                if not screen_schedules_for_movie_date:
-                    continue
-
-                for screen_info in screen_schedules_for_movie_date:
-                    if not isinstance(screen_info, dict): continue
-                    
-                    # Prefer 'screen_name_short', then 'name' as in your original human_shibuya_module
-                    raw_screen_name = screen_info.get('screen_name_short') or screen_info.get('name', 'スクリーン情報なし')
-                    screen_display_name = _get_screen_display_name(raw_screen_name) # Pass movie_title if needed by function
-                    
-                    for time_info in screen_info.get('time', []):
-                        if not isinstance(time_info, dict): continue
-
-                        start_hour = time_info.get('start_time_hour')
-                        start_minute = time_info.get('start_time_minute')
-                        
-                        if start_hour is None or start_minute is None: continue 
-
-                        showtime_str = _format_time(start_hour, start_minute)
-                        
-                        end_hour = time_info.get('end_time_hour')
-                        end_minute = time_info.get('end_time_minute')
-                        end_time_str = _format_time(end_hour, end_minute) if end_hour is not None and end_minute is not None else None
-                        
-                        status_text, purchase_url = _get_availability_status_and_url(time_info, is_theatre_purchasable)
-
-                        showing_info = {
+                    result.append(
+                        {
                             "cinema_name": CINEMA_NAME,
-                            "movie_title": final_movie_title,
-                            "date_text": current_date_iso_str,
-                            "showtime": showtime_str,
-                            "end_time": end_time_str,
-                            "screen_name": screen_display_name,
-                            "availability_status": status_text,
-                            "purchase_url": purchase_url,
-                            "movie_image_url": movie_image_url,
-                            "duration_label": duration_label,
-                            "remarks_html": remarks_html.strip() if isinstance(remarks_html, str) else ""
+                            "movie_title": meta.get("movie_title"),
+                            "date_text": iso_date,
+                            "showtime": showtime,
+                            "director": meta.get("director"),
+                            "year": meta.get("year"),
+                            "country": meta.get("country"),
+                            "runtime_min": meta.get("runtime_min"),
+                            "synopsis": meta.get("synopsis"),
+                            "detail_page_url": meta.get("detail_page_url"),
+                            "movie_title_en": meta.get("movie_title_en"),
+                            "screen_name": screen_name,
+                            "purchase_url": p_url,
                         }
-                        all_showings.append(showing_info)
-        except Exception as e:
-            print(f"Error processing date object {date_obj} for {CINEMA_NAME}: {e}")
-            traceback.print_exc() 
-            continue
-            
-    unique_showings_dict = {}
-    for s_item in all_showings:
-        key = (s_item["cinema_name"], s_item["movie_title"], s_item["date_text"], s_item["showtime"], s_item["screen_name"])
-        if key not in unique_showings_dict:
-            unique_showings_dict[key] = s_item
-            
-    return list(unique_showings_dict.values())
+                    )
 
-# --- Main Execution (for testing this module directly) ---
+    unique = [dict(t) for t in {tuple(sorted(d.items())) for d in result}]
+    return sorted(unique, key=lambda x: (x["date_text"], x["showtime"], x.get("movie_title") or ""))
+
+
 if __name__ == "__main__":
-    print(f"INFO: Scraping {CINEMA_NAME} (code: {THEATRE_CODE}) for up to 7 days...")
-    print(f"     Using schedule URL: {SCHEDULE_DATA_URL}")
-    showings = scrape_human_shibuya(max_days=7)
-    
-    print(f"\nCollected {len(showings)} showings for {CINEMA_NAME}.")
-    
-    if showings:
-        print(f"\n--- First 2 Showings Collected for {CINEMA_NAME} (Example) ---")
-        for i, showing in enumerate(showings[:2]):
-            print(f"Showing {i+1}:")
-            for key, value in showing.items():
-                print(f"  {key}: {value}")
-            print("-" * 10)
+    shows = scrape_human_shibuya()
 
-        unknown_title_count = 0
-        known_title_examples = []
-        for showing_item in showings:
-            if showing_item["movie_title"] == "タイトル不明":
-                unknown_title_count += 1
-            elif len(known_title_examples) < 3 and showing_item["movie_title"] != "タイトル不明":
-                 known_title_examples.append(showing_item)
-        
-        print(f"\n--- Title Summary for {CINEMA_NAME} ---")
-        print(f"Number of showings with 'タイトル不明': {unknown_title_count} out of {len(showings)}")
-        if known_title_examples:
-            print("Examples of showings with specific titles found:")
-            for i, ex_showing in enumerate(known_title_examples):
-                print(f"  Example {i+1} - Title: {ex_showing['movie_title']}")
-        else:
-            print("No showings with specific titles (other than 'タイトル不明') were found by this scraper for {CINEMA_NAME}.")
-        
-        # output_filename = f"{THEATRE_CODE}_showtimes_output.json"
-        # try:
-        #     with open(output_filename, 'w', encoding='utf-8') as f:
-        #         json.dump(showings, f, ensure_ascii=False, indent=2)
-        #     print(f"\nFull results saved to {output_filename}")
-        # except Exception as e:
-        #     print(f"Error saving to JSON file: {e}")
+    json_text = json.dumps(shows, ensure_ascii=False, indent=2)
 
-    else:
-        print(f"No showings collected for {CINEMA_NAME}, or an error occurred during scraping.")
+    out_path = Path(__file__).with_suffix(".json")
+    out_path.write_text(json_text, encoding="utf-8-sig")
+
+    print(f"✓ Saved {len(shows)} showings → {out_path}")

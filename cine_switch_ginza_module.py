@@ -1,312 +1,276 @@
 """
-cine_switch_ginza_module.py - Scraper for Cine Switch Ginza (Eigaland platform)
-Adapted from cinema_rosa_module.py, assuming the same site structure.
-USING SELENIUM.
+cine_switch_ginza_module.py - Final Corrected Scraper (Refactored for controlled execution)
+This version separates the scraping logic from the file saving, allowing it to be
+called from a master script without creating its own files. Contains all necessary helper functions.
 """
 
 from __future__ import annotations
-
 import datetime as dt
+import json
 import re
 import sys
-import time
-import traceback
-from typing import Dict, List, Optional, Set
+import unicodedata
+from typing import Dict, List, Optional
+from urllib.parse import urljoin
 
+import requests
+from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options as ChromeOptions
-from webdriver_manager.chrome import ChromeDriverManager # Ensure this is installed: pip install webdriver-manager
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
+# [FIX] Added to handle SSL handshake issues with the target server
+from urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
+
+
 # --- Constants ---
-BASE_URL = "https://schedule.eigaland.com/schedule?webKey={web_key}"
-# Updated for Cine Switch Ginza
-CINEMA_NAME_FALLBACK = "シネスイッチ銀座"
+CSG_BASE_URL = "https://cineswitch.com"
+CSG_DETAIL_PAGES = [urljoin(CSG_BASE_URL, "/movie_now"), urljoin(CSG_BASE_URL, "/movie_soon")]
+EIGALAND_BASE_URL = "https://schedule.eigaland.com/schedule?webKey=5c896e66-aaf7-4003-b4ff-1d8c9bf9c0fc"
+CINEMA_NAME = "シネスイッチ銀座"
+DEFAULT_SELENIUM_TIMEOUT = 20
+DAYS_TO_SCRAPE = 7
 
-# Selectors (assuming they are identical to Cinema Rosa based on user input)
+# --- Eigaland Selectors ---
 DATE_CALENDAR_AREA_SELECTOR_CSS = "div.calendar-head.component"
-DATE_ITEM_SELECTOR_CSS = "div.calendar-head.component .calender-head-item" # Note: "calender" might be a typo in original site
+DATE_ITEM_SELECTOR_CSS = ".calender-head-item"
 DATE_VALUE_IN_ITEM_SELECTOR_CSS = "p.date"
-
-MOVIE_ITEM_BLOCK_SELECTOR_CSS = "div.movie-schedule-body > div.movie-schedule-item"
+MOVIE_ITEM_BLOCK_SELECTOR_CSS = "div.movie-schedule-item"
 MOVIE_TITLE_IN_ITEM_BLOCK_SELECTOR_CSS = "span[style*='font-weight: 700']"
-
-SHOWTIME_TABLE_ROWS_SELECTOR_CSS = "table.schedule-table tbody tr"
+SHOWTIME_TABLE_ROWS_SELECTOR_CSS = ".schedule-table tr"
 SCREEN_IN_TABLE_ROW_SELECTOR_CSS = "td.place span.name"
 SLOT_CELL_SELECTOR_CSS = "td.slot"
-START_TIME_IN_SLOT_SELECTOR_CSS = "h2" # This targets the <h2> tag containing the start time
+START_TIME_IN_SLOT_SELECTOR_CSS = "h2"
 
-DEFAULT_SELENIUM_TIMEOUT = 20  # seconds
-DAYS_TO_SCRAPE = 7 # Number of days forward to scrape from the current date available on site
 
-# Update __all__ if the function name changes significantly or if there are multiple public functions
-__all__ = ["scrape_eigaland_schedule"]
+# --- Helper Functions (Previously omitted, now included) ---
+
+def _clean_title_for_matching(title: str) -> str:
+    """Cleans a movie title for reliable matching between different sources."""
+    if not title: return ""
+    normalized_title = unicodedata.normalize('NFKC', title)
+    return normalized_title.lower().strip().replace(" ", "").replace("　", "")
+
+def get_movie_details_from_cineswitch() -> Dict[str, Dict]:
+    """Scrapes cineswitch.com for movie details."""
+    print("--- [Cine Switch] Fetching Movie Details from cineswitch.com ---", file=sys.stderr)
+    details_cache: Dict[str, Dict] = {}
+
+    for page in CSG_DETAIL_PAGES:
+        try:
+            # [FIX] Added verify=False to bypass SSL handshake errors
+            response = requests.get(page, timeout=15, verify=False)
+            response.raise_for_status()
+            soup = BeautifulSoup(response.content, "html.parser")
+            movie_links = soup.select("article.poster_wrap div.p_img a")
+
+            for link in movie_links:
+                detail_url = urljoin(CSG_BASE_URL, link.get("href", ""))
+                if not detail_url: continue
+                try:
+                    # [FIX] Added verify=False to bypass SSL handshake errors
+                    detail_resp = requests.get(detail_url, timeout=15, verify=False)
+                    detail_resp.raise_for_status()
+                    detail_soup = BeautifulSoup(detail_resp.content, "html.parser")
+
+                    details: Dict[str, any] = {"detail_page_url": detail_url}
+                    title_tag = detail_soup.select_one(".movie_title h1")
+                    if not title_tag: continue
+
+                    title_jp = title_tag.text.strip()
+                    cleaned_title = _clean_title_for_matching(title_jp)
+                    details["movie_title"] = title_jp
+                    details["movie_title_en"] = detail_soup.select_one(".movie_title p").text.strip() if detail_soup.select_one(".movie_title p") else ""
+                    details["year"] = "N/A" # Not available on page
+                    details["director"] = None
+                    details["country"] = None
+                    details["runtime_min"] = 0
+                    details["synopsis"] = detail_soup.select_one(".movie_commentary p").get_text(separator="\n").strip() if detail_soup.select_one(".movie_commentary p") else ""
+
+                    if info_table := detail_soup.select_one(".production_info table"):
+                        for row in info_table.find_all("tr"):
+                            cells = row.find_all("td")
+                            if len(cells) == 2:
+                                key, value = cells[0].text.strip(), cells[1].text.strip()
+                                if "監督" in key: details["director"] = value
+                                elif "制作国" in key: details["country"] = value
+                    
+                    if screening_info_div := detail_soup.find("div", class_="screenig_info"):
+                        for info in screening_info_div.find_all("div", class_="info"):
+                            if info.find("span", string="上映時間"):
+                                runtime_tag = info.find("div", class_="info_data")
+                                if runtime_tag:
+                                    if runtime_match := re.search(r'\d+', runtime_tag.text):
+                                        details["runtime_min"] = int(runtime_match.group(0))
+
+                    details_cache[cleaned_title] = details
+                except requests.RequestException as e:
+                    print(f"  ERROR [Cine Switch]: Could not fetch detail page {detail_url}: {e}", file=sys.stderr)
+        except requests.RequestException as e:
+            print(f"ERROR [Cine Switch]: Could not fetch list page {page}: {e}", file=sys.stderr)
+    return details_cache
 
 def _get_current_year() -> int:
-    """Gets the current year."""
     return dt.date.today().year
 
-def _parse_date_from_eigaland(date_str: str, current_year_for_schedule: int) -> Optional[dt.date]:
-    """
-    Parses a date string like "MM/DD" from Eigaland into a datetime.date object.
-    Handles year rollovers if the month appears to be in the past relative to today.
-    """
+def _parse_date_from_eigaland(date_str: str, current_year: int) -> Optional[dt.date]:
     match = re.match(r"(\d{1,2})/(\d{1,2})", date_str)
     if match:
         month, day = map(int, match.groups())
         try:
-            parsed_dt_obj = dt.date(current_year_for_schedule, month, day)
-            today = dt.date.today()
-            # Heuristic for year rollover: if the parsed month is much earlier than today's month
-            # (e.g., scraping in Jan for a Dec date), assume it's next year.
-            if parsed_dt_obj.month < today.month and (today.month - parsed_dt_obj.month) > 6: # More than 6 months apart
-                 if current_year_for_schedule == today.year: # Only increment if current year is this year
-                    # This could happen if scraping at the very end of Dec for early Jan of next year,
-                    # or if scraping in early Jan for late Dec of previous year (less likely with this logic)
-                    # A more robust solution might involve checking the day of the week if available.
-                    parsed_dt_obj = dt.date(current_year_for_schedule + 1, month, day)
-            return parsed_dt_obj
+            return dt.date(current_year, month, day)
         except ValueError:
-            # Invalid date (e.g., Feb 30)
             return None
     return None
 
 def _init_selenium_driver() -> webdriver.Chrome:
     """Initializes and returns a Selenium Chrome WebDriver instance."""
     chrome_options = ChromeOptions()
-    RUN_HEADLESS_SELENIUM = True # Set to False for debugging to see the browser
-    if RUN_HEADLESS_SELENIUM:
-        chrome_options.add_argument("--headless=new") # Recommended headless mode
-    chrome_options.add_argument("--no-sandbox") # Common for server environments
-    chrome_options.add_argument("--disable-dev-shm-usage") # Overcomes limited resource problems
-    chrome_options.add_argument("--window-size=1366,800") # Standard window size
-    # Set user agent to mimic a real browser
+    chrome_options.add_argument("--headless=new")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--window-size=1366,800")
     chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-    chrome_options.add_argument('--lang=ja-JP') # Set language to Japanese
+    chrome_options.add_argument('--lang=ja-JP')
     chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'ja,en-US,en'})
+    chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
     try:
-        # Use webdriver-manager to automatically handle ChromeDriver
         service = ChromeService(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=chrome_options)
+        return webdriver.Chrome(service=service, options=chrome_options)
     except Exception as e:
-        print(f"Error initializing WebDriver with webdriver-manager: {e}", file=sys.stderr)
-        print("Please ensure Chrome is installed and webdriver-manager can download the driver.", file=sys.stderr)
+        print(f"ERROR: Could not initialize WebDriver: {e}", file=sys.stderr)
         raise
-    
-    driver.set_page_load_timeout(DEFAULT_SELENIUM_TIMEOUT * 2) # Generous page load timeout
-    return driver
 
-def scrape_eigaland_schedule(web_key: str, cinema_name_override: Optional[str] = None) -> List[Dict[str, str]]:
-    """
-    Scrapes movie schedule information from an Eigaland platform cinema page.
-
-    Args:
-        web_key: The specific web key for the cinema on Eigaland.
-        cinema_name_override: Optional. If provided, this name will be used for the cinema.
-                              Otherwise, it tries to scrape it or uses CINEMA_NAME_FALLBACK.
-
-    Returns:
-        A list of dictionaries, where each dictionary represents a single showtime
-        with keys: "cinema", "date_text", "screen", "title", "showtime".
-    """
-    results: List[Dict[str, str]] = []
-    url = BASE_URL.format(web_key=web_key)
+def scrape_eigaland_schedule() -> List[Dict]:
+    """Scrapes movie showtimes from the Eigaland platform page."""
+    print("--- [Cine Switch] Fetching Showtimes from Eigaland ---", file=sys.stderr)
+    showtimes: List[Dict] = []
+    url = EIGALAND_BASE_URL
     driver: Optional[webdriver.Chrome] = None
-    # Use override or fallback. Will try to scrape actual name later.
-    actual_cinema_name = cinema_name_override or CINEMA_NAME_FALLBACK
 
     try:
         driver = _init_selenium_driver()
-        print(f"Navigating to {url} with Selenium for {actual_cinema_name}", file=sys.stderr)
         driver.get(url)
-        
-        # Wait for the main date calendar area to be visible
         WebDriverWait(driver, DEFAULT_SELENIUM_TIMEOUT).until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, DATE_CALENDAR_AREA_SELECTOR_CSS))
         )
-        print("Main date calendar area loaded and visible.", file=sys.stderr)
-        time.sleep(3) # Allow dynamic content to settle after initial load
-
-        # Try to scrape the cinema name from the H1 tag
-        try:
-            # This selector might need adjustment if the H1 structure differs
-            h1_element = driver.find_element(By.CSS_SELECTOR, "h1.title.movie-title") 
-            scraped_name = h1_element.text.strip()
-            if scraped_name:
-                actual_cinema_name = scraped_name
-        except Exception:
-            print(f"Could not scrape cinema name from H1. Using: {actual_cinema_name}", file=sys.stderr)
-        print(f"Using cinema name: {actual_cinema_name}", file=sys.stderr)
-
-
         date_item_elements = driver.find_elements(By.CSS_SELECTOR, DATE_ITEM_SELECTOR_CSS)
-        if not date_item_elements:
-            print(f"CRITICAL: No date items found using Selenium selector '{DATE_ITEM_SELECTOR_CSS}'.", file=sys.stderr)
-            # driver.save_screenshot(f"debug_selenium_no_date_items_{web_key}.png") # For debugging
-            return []
-
-        print(f"Found {len(date_item_elements)} clickable date items. Processing up to {DAYS_TO_SCRAPE} days.", file=sys.stderr)
         year_for_schedule = _get_current_year()
 
         for date_idx in range(min(len(date_item_elements), DAYS_TO_SCRAPE)):
-            # Re-fetch date elements in each iteration as the page might reload/change
+            # Re-fetch elements to avoid staleness
             current_page_date_items = driver.find_elements(By.CSS_SELECTOR, DATE_ITEM_SELECTOR_CSS)
-            if date_idx >= len(current_page_date_items):
-                print(f"  Warning: Date index {date_idx} out of bounds after page update. Stopping date iteration.", file=sys.stderr)
-                break
-            
+            if date_idx >= len(current_page_date_items): break
+
             date_element_to_click = current_page_date_items[date_idx]
-            date_str_mm_dd = "N/A" # Default in case of error
             try:
-                date_value_tag = date_element_to_click.find_element(By.CSS_SELECTOR, DATE_VALUE_IN_ITEM_SELECTOR_CSS)
-                date_str_mm_dd = date_value_tag.text.strip()
-                print(f"\nProcessing Date {date_idx + 1}: {date_str_mm_dd}", file=sys.stderr)
-
-                # Scroll to the element and click
-                driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", date_element_to_click)
-                time.sleep(0.5) # Brief pause after scroll
-                WebDriverWait(driver, DEFAULT_SELENIUM_TIMEOUT).until(EC.element_to_be_clickable(date_element_to_click))
+                date_str_mm_dd = date_element_to_click.find_element(By.CSS_SELECTOR, DATE_VALUE_IN_ITEM_SELECTOR_CSS).text.strip()
                 date_element_to_click.click()
-                print(f"  Clicked date: {date_str_mm_dd}", file=sys.stderr)
-                # Wait for content to load after click. This might need adjustment.
-                time.sleep(4) # Increased wait time for AJAX content to load
-
+                WebDriverWait(driver, DEFAULT_SELENIUM_TIMEOUT).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, MOVIE_ITEM_BLOCK_SELECTOR_CSS))
+                )
                 parsed_date_obj = _parse_date_from_eigaland(date_str_mm_dd, year_for_schedule)
-                if not parsed_date_obj: 
-                    print(f"  Skipping date {date_str_mm_dd} due to parsing error.", file=sys.stderr)
-                    continue
-                current_date_iso = parsed_date_obj.isoformat()
+                if not parsed_date_obj: continue
 
-                # After clicking a date, find all movie items for that date
                 movie_item_blocks = driver.find_elements(By.CSS_SELECTOR, MOVIE_ITEM_BLOCK_SELECTOR_CSS)
-                print(f"  Found {len(movie_item_blocks)} movie item blocks for {current_date_iso} using '{MOVIE_ITEM_BLOCK_SELECTOR_CSS}'.", file=sys.stderr)
-                if not movie_item_blocks and date_idx == 0: # Save screenshot if no movies on first selected date
-                     pass # driver.save_screenshot(f"debug_selenium_no_movie_items_{web_key}_{date_str_mm_dd.replace('/', '-')}.png")
-
-
-                for item_block_idx, movie_item_element in enumerate(movie_item_blocks):
-                    movie_title = "Unknown Title"
-                    print(f"    Processing Movie Item Block #{item_block_idx + 1} on {current_date_iso}", file=sys.stderr)
+                for item_block in movie_item_blocks:
                     try:
-                        # Title is within the movie item block
-                        title_tag = movie_item_element.find_element(By.CSS_SELECTOR, MOVIE_TITLE_IN_ITEM_BLOCK_SELECTOR_CSS)
+                        title_tag = item_block.find_element(By.CSS_SELECTOR, MOVIE_TITLE_IN_ITEM_BLOCK_SELECTOR_CSS)
                         movie_title = title_tag.text.strip()
-                        print(f"      Movie Title: '{movie_title}'", file=sys.stderr)
-                    except NoSuchElementException:
-                        print(f"      Warning: Title not found in movie item block {item_block_idx + 1} using '{MOVIE_TITLE_IN_ITEM_BLOCK_SELECTOR_CSS}'.", file=sys.stderr)
-                        # For debugging, print HTML of the block:
-                        # print(f"      HTML of movie_item_element: {movie_item_element.get_attribute('outerHTML')[:600]}", file=sys.stderr)
-
-
-                    # Showtimes are in a table within the movie item block
-                    try:
-                        table_rows = movie_item_element.find_elements(By.CSS_SELECTOR, SHOWTIME_TABLE_ROWS_SELECTOR_CSS)
-                        print(f"      Found {len(table_rows)} table rows for '{movie_title}'.", file=sys.stderr)
-
-                        if not table_rows and movie_title != "Unknown Title": 
-                             # print(f"      DEBUG: HTML of movie_item_element for '{movie_title}' (if no table rows found):\n{movie_item_element.get_attribute('outerHTML')[:1000]}", file=sys.stderr)
-                             pass
-
-
-                        for row_idx, tr_element in enumerate(table_rows):
-                            screen_name = "N/A" # Default screen name
-                            try:
-                                screen_tag = tr_element.find_element(By.CSS_SELECTOR, SCREEN_IN_TABLE_ROW_SELECTOR_CSS)
-                                screen_name = screen_tag.text.strip()
-                            except NoSuchElementException:
-                                # Screen name might not always be present or selector might fail
-                                pass 
-
+                        table_rows = item_block.find_elements(By.CSS_SELECTOR, SHOWTIME_TABLE_ROWS_SELECTOR_CSS)
+                        for tr_element in table_rows:
                             slot_cells = tr_element.find_elements(By.CSS_SELECTOR, SLOT_CELL_SELECTOR_CSS)
                             for slot_cell in slot_cells:
-                                showtime_tags = slot_cell.find_elements(By.CSS_SELECTOR, START_TIME_IN_SLOT_SELECTOR_CSS)
-                                for st_tag in showtime_tags:
-                                    try:
-                                        showtime_text = st_tag.text.strip()
-                                        # Basic validation for HH:MM format
-                                        if not re.match(r"^\d{1,2}:\d{2}$", showtime_text):
-                                            # print(f"            Skipping invalid showtime format: '{showtime_text}'", file=sys.stderr)
-                                            continue # Skip if not in HH:MM format
-                                        
-                                        print(f"          SUCCESS: Adding show: '{movie_title}' at {showtime_text} on {screen_name} for date {current_date_iso}", file=sys.stderr)
-                                        results.append({
-                                            "cinema": actual_cinema_name,
-                                            "date_text": current_date_iso,
-                                            "screen": screen_name,
-                                            "title": movie_title,
-                                            "showtime": showtime_text,
-                                        })
-                                    except Exception as e_st_inner:
-                                        print(f"              Error processing an h2 tag (showtime) in slot: {e_st_inner}", file=sys.stderr)
-                    except NoSuchElementException:
-                         print(f"      No showtime table/rows found for '{movie_title}' using '{SHOWTIME_TABLE_ROWS_SELECTOR_CSS}'.", file=sys.stderr)
-
-            except TimeoutException:
-                print(f"  Timeout clicking or processing date item {date_idx} ('{date_str_mm_dd}')", file=sys.stderr)
-            except Exception as e_date: 
-                print(f"  Error processing date item {date_idx} ('{date_str_mm_dd}'): {type(e_date).__name__} - {e_date}", file=sys.stderr)
-                traceback.print_exc(file=sys.stderr, limit=1) 
-                if "invalid selector" in str(e_date).lower(): # If selector is bad, likely to fail for all
-                    print("  Due to invalid selector, stopping further date processing.", file=sys.stderr)
-                    break
-
-
-    except TimeoutException as te:
-        print(f"Selenium Timeout during page setup for {actual_cinema_name} (webKey: {web_key}): {te}", file=sys.stderr)
-        # if driver: driver.save_screenshot(f"debug_selenium_main_timeout_{web_key}.png")
-        traceback.print_exc(file=sys.stderr)
-    except Exception as e:
-        print(f"An unexpected error occurred with Selenium for {actual_cinema_name} (webKey: {web_key}): {e}", file=sys.stderr)
-        # if driver: driver.save_screenshot(f"debug_selenium_unexpected_error_{web_key}.png")
-        traceback.print_exc(file=sys.stderr)
+                                try:
+                                    showtime_tag = slot_cell.find_element(By.CSS_SELECTOR, START_TIME_IN_SLOT_SELECTOR_CSS)
+                                    showtimes.append({
+                                        "movie_title_uncleaned": movie_title,
+                                        "date_text": parsed_date_obj.isoformat(),
+                                        "showtime": showtime_tag.text.strip(),
+                                    })
+                                except NoSuchElementException: continue
+                    except NoSuchElementException: continue
+            except Exception as e:
+                print(f"  ERROR [Cine Switch] processing date {date_idx}: {e}", file=sys.stderr)
     finally:
-        if driver:
-            print("Quitting Selenium WebDriver.", file=sys.stderr)
-            driver.quit()
+        if driver: driver.quit()
 
-    # Deduplicate results (in case of any unintentional double additions)
-    unique_results_list: List[Dict[str, str]] = []
-    seen_keys: Set[tuple] = set()
-    for item in results:
-        # Create a unique key for each showtime entry
-        key = (item["cinema"], item["date_text"], item["title"], item["screen"], item["showtime"])
-        if key not in seen_keys:
-            unique_results_list.append(item)
-            seen_keys.add(key)
+    return showtimes
+
+
+# --- Refactored Main Functions ---
+
+def scrape_cine_switch_ginza() -> List[Dict]:
+    """
+    This is the new main function to be called by other scripts.
+    It performs the full scrape and returns the data as a list of dictionaries.
+    """
+    # PART 1: Get movie details from cineswitch.com
+    details_cache = get_movie_details_from_cineswitch()
+
+    # PART 2: Get showtimes from Eigaland
+    showings = scrape_eigaland_schedule()
+
+    # PART 3: Merge the data
+    print("--- [Cine Switch] Merging Details and Showtimes ---", file=sys.stderr)
+    final_results = []
+    unmatched_titles = set()
+
+    for show in showings:
+        cleaned_show_title = _clean_title_for_matching(show["movie_title_uncleaned"])
+        details = details_cache.get(cleaned_show_title)
+
+        if details:
+            final_show = {
+                "cinema_name": CINEMA_NAME,
+                "movie_title": details.get("movie_title", show["movie_title_uncleaned"]),
+                "movie_title_en": details.get("movie_title_en"),
+                "date_text": show["date_text"],
+                "showtime": show["showtime"],
+                "director": details.get("director"),
+                "year": details.get("year"),
+                "country": details.get("country"),
+                "runtime_min": details.get("runtime_min"),
+                "synopsis": details.get("synopsis"),
+                "detail_page_url": details.get("detail_page_url")
+            }
+            final_results.append(final_show)
+        else:
+            unmatched_titles.add(show["movie_title_uncleaned"])
     
-    print(f"Scraping (Selenium) for {actual_cinema_name} (webKey: {web_key}) complete. Found {len(unique_results_list)} unique showings.", file=sys.stderr)
-    return unique_results_list
+    if unmatched_titles:
+        print(f"WARNING [Cine Switch]: Could not find details for: {', '.join(sorted(list(unmatched_titles)))}", file=sys.stderr)
+    
+    final_results.sort(key=lambda x: (x["date_text"], x["movie_title"], x["showtime"]))
+    return final_results
 
-if __name__ == "__main__":
-    # Ensure UTF-8 output for Windows console if needed
+def run_full_scrape_and_save():
+    """
+    This function is for running the module standalone. It scrapes and saves the file.
+    The main scraper will NOT use this function anymore.
+    """
     if sys.platform == "win32":
         try:
-            sys.stdout.reconfigure(encoding='utf-8', errors='replace') # type: ignore
-            sys.stderr.reconfigure(encoding='utf-8', errors='replace') # type: ignore
-        except Exception:
-            # Silently ignore if reconfigure fails (e.g., not in a real console)
-            pass
+            sys.stdout.reconfigure(encoding='utf-8')
+            sys.stderr.reconfigure(encoding='utf-8')
+        except Exception: pass
 
-    # --- Configuration for Cine Switch Ginza ---
-    TARGET_WEB_KEY = "5c896e66-aaf7-4003-b4ff-1d8c9bf9c0fc" # Provided by user
-    TARGET_CINEMA_NAME = "シネスイッチ銀座" # Cine Switch Ginza
+    results = scrape_cine_switch_ginza()
 
-    print(f"Attempting to scrape (Selenium): {TARGET_CINEMA_NAME} (webKey: {TARGET_WEB_KEY})")
-    
-    # Call the renamed generic scraping function
-    showings = scrape_eigaland_schedule(web_key=TARGET_WEB_KEY, cinema_name_override=TARGET_CINEMA_NAME)
+    output_filename = "cineswitch_showtimes.json"
+    print(f"\n--- [Cine Switch] Writing {len(results)} showtimes to {output_filename} ---", file=sys.stderr)
+    with open(output_filename, 'w', encoding='utf-8') as f:
+        json.dump(results, f, ensure_ascii=False, indent=4)
+    print(f"\n✅ [Cine Switch] Done. Output saved to {output_filename}")
 
-    if showings:
-        print(f"\n--- Showings for {TARGET_CINEMA_NAME} ({len(showings)} found) ---")
-        # Sort for consistent output, e.g., by date, then title, then showtime
-        showings.sort(key=lambda x: (x["date_text"], x["title"], x["showtime"]))
-        for i, show in enumerate(showings):
-            print(f"{i+1}. Date: {show['date_text']}, Movie: \"{show['title']}\", Time: {show['showtime']}, Screen: {show['screen']}")
-    else:
-        print(f"No showings found for {TARGET_CINEMA_NAME}. Check logs and any debug_*.png screenshots if enabled.")
 
+if __name__ == "__main__":
+    # This allows the module to be run by itself to generate its file, for testing.
+    run_full_scrape_and_save()

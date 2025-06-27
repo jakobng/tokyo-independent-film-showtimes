@@ -1,16 +1,16 @@
-"""
-cinema_rosa_module.py - Scraper for Ikebukuro Cinema Rosa (Eigaland platform)
-USING SELENIUM - Corrected title selector.
-"""
-
 from __future__ import annotations
 
 import datetime as dt
+import json
 import re
 import sys
 import time
-import traceback
-from typing import Dict, List, Optional, Set
+import unicodedata
+from typing import Dict, List, Optional
+from urllib.parse import urljoin
+
+import requests
+from bs4 import BeautifulSoup, Tag
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
@@ -19,231 +19,171 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 
 # --- Constants ---
-BASE_URL = "https://schedule.eigaland.com/schedule?webKey={web_key}"
-CINEMA_NAME_FALLBACK = "池袋シネマ・ロサ"
+CINEMA_NAME = "池袋シネマ・ロサ"
+DEFAULT_SELENIUM_TIMEOUT = 25
 
-DATE_CALENDAR_AREA_SELECTOR_CSS = "div.calendar-head.component"
-DATE_ITEM_SELECTOR_CSS = "div.calendar-head.component .calender-head-item"
-DATE_VALUE_IN_ITEM_SELECTOR_CSS = "p.date"
+# Eigaland (for schedule)
+EIGALAND_URL = "https://schedule.eigaland.com/schedule?webKey=c34cee0e-5a5e-4b99-8978-f04879a82299"
+DATE_ITEM_SELECTOR_CSS = "div.calender-head-item"
+MOVIE_SCHEDULE_SELECTOR_CSS = "div.movie-schedule"
+MOVIE_TITLE_EIGALAND_CSS = "h2.text-center"
+SHOWTIME_BLOCK_CSS = ".movie-schedule-info.flex-row"
+SHOWTIME_TIME_CSS = ".time h2"
+SHOWTIME_SCREEN_CSS = ".room .name"
 
-MOVIE_ITEM_BLOCK_SELECTOR_CSS = "div.movie-schedule-body > div.movie-schedule-item"
 
-# REVISED MOVIE TITLE SELECTOR (relative to MOVIE_ITEM_BLOCK_SELECTOR_CSS)
-MOVIE_TITLE_IN_ITEM_BLOCK_SELECTOR_CSS = "span[style*='font-weight: 700']" 
-# This targets the span with bold font weight, which is likely the title from the debug HTML.
+# Cinema Rosa site (for details)
+ROSA_BASE_URL = "https://www.cinemarosa.net/"
+ROSA_NOWSHOWING_URL = urljoin(ROSA_BASE_URL, "/nowshowing/")
+ROSA_INDIES_URL = urljoin(ROSA_BASE_URL, "/indies/")
 
-SHOWTIME_TABLE_ROWS_SELECTOR_CSS = "table.schedule-table tbody tr"
-SCREEN_IN_TABLE_ROW_SELECTOR_CSS = "td.place span.name"
-SLOT_CELL_SELECTOR_CSS = "td.slot"
-START_TIME_IN_SLOT_SELECTOR_CSS = "h2"
 
-DEFAULT_SELENIUM_TIMEOUT = 20
-DAYS_TO_SCRAPE = 7
-__all__ = ["scrape_cinema_rosa_schedule"]
+def _clean_title_for_matching(text: Optional[str]) -> str:
+    """A more aggressive cleaning function to create a reliable key for matching."""
+    if not text:
+        return ""
+    text = unicodedata.normalize('NFKC', text)
+    text = text.replace('映画 ', '').replace(' ', '')
+    text = re.sub(r'[【『「《\(（].*?[】』」》\)）]', '', text)
+    text = re.sub(r'[<【『「]', '', text)
+    return text.strip()
 
-def _get_current_year() -> int:
-    return dt.date.today().year
-
-def _parse_date_from_eigaland(date_str: str, current_year_for_schedule: int) -> Optional[dt.date]:
-    match = re.match(r"(\d{1,2})/(\d{1,2})", date_str)
-    if match:
-        month, day = map(int, match.groups())
-        try:
-            parsed_dt_obj = dt.date(current_year_for_schedule, month, day)
-            today = dt.date.today()
-            if parsed_dt_obj.month < today.month and (today.month - parsed_dt_obj.month) > 6:
-                 if current_year_for_schedule == today.year:
-                    parsed_dt_obj = dt.date(current_year_for_schedule + 1, month, day)
-            return parsed_dt_obj
-        except ValueError: return None
-    return None
+def _clean_text(text: Optional[str]) -> str:
+    """Normalizes whitespace for display text."""
+    if not text: return ""
+    return ' '.join(text.strip().split())
 
 def _init_selenium_driver() -> webdriver.Chrome:
+    """Initializes a headless Chrome WebDriver."""
     chrome_options = ChromeOptions()
-    RUN_HEADLESS_SELENIUM = True 
-    if RUN_HEADLESS_SELENIUM:
-        chrome_options.add_argument("--headless=new")
+    chrome_options.add_argument("--headless=new")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--window-size=1366,800")
-    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-    chrome_options.add_argument('--lang=ja-JP')
-    chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'ja,en-US,en'})
-    try:
-        service = ChromeService(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=chrome_options)
-    except Exception as e:
-        print(f"Error initializing WebDriver with webdriver-manager: {e}", file=sys.stderr)
-        raise
+    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+    service = ChromeService(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=chrome_options)
     driver.set_page_load_timeout(DEFAULT_SELENIUM_TIMEOUT * 2)
     return driver
 
-def scrape_cinema_rosa_schedule(web_key: str, cinema_name_override: Optional[str] = None) -> List[Dict[str, str]]:
-    results: List[Dict[str, str]] = []
-    url = BASE_URL.format(web_key=web_key)
-    driver: Optional[webdriver.Chrome] = None
-    actual_cinema_name = cinema_name_override or CINEMA_NAME_FALLBACK
-
+def _fetch_soup(url: str) -> Optional[BeautifulSoup]:
+    """Fetches a static URL and returns a BeautifulSoup object."""
     try:
-        driver = _init_selenium_driver()
-        print(f"Navigating to {url} with Selenium", file=sys.stderr)
-        driver.get(url)
-        
-        WebDriverWait(driver, DEFAULT_SELENIUM_TIMEOUT).until(
-            EC.visibility_of_element_located((By.CSS_SELECTOR, DATE_CALENDAR_AREA_SELECTOR_CSS))
-        )
-        print("Main date calendar area loaded and visible.", file=sys.stderr)
-        time.sleep(3) 
+        response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=20)
+        response.raise_for_status()
+        return BeautifulSoup(response.content, 'html.parser')
+    except requests.RequestException as e:
+        print(f"ERROR: [{CINEMA_NAME}] Could not fetch static page {url}: {e}", file=sys.stderr)
+        return None
 
+def _parse_date_from_eigaland(date_str: str, current_year: int) -> Optional[dt.date]:
+    """Parses date strings like '6/23' from the Eigaland calendar."""
+    if match := re.match(r"(\d{1,2})/(\d{1,2})", date_str):
+        month, day = map(int, match.groups())
         try:
-            h1_element = driver.find_element(By.CSS_SELECTOR, "h1.title.movie-title")
-            scraped_name = h1_element.text.strip()
-            if scraped_name: actual_cinema_name = scraped_name
-        except Exception: pass
-        print(f"Using cinema name: {actual_cinema_name}", file=sys.stderr)
+            year = current_year + 1 if month < dt.date.today().month else current_year
+            return dt.date(year, month, day)
+        except ValueError: return None
+    return None
 
-        date_item_elements = driver.find_elements(By.CSS_SELECTOR, DATE_ITEM_SELECTOR_CSS)
-        if not date_item_elements:
-            print(f"CRITICAL: No date items found using Selenium selector '{DATE_ITEM_SELECTOR_CSS}'.", file=sys.stderr)
-            driver.save_screenshot("debug_selenium_no_date_items.png")
-            return []
-
-        print(f"Found {len(date_item_elements)} clickable date items. Processing up to {DAYS_TO_SCRAPE} days.", file=sys.stderr)
-        year_for_schedule = _get_current_year()
-
-        for date_idx in range(min(len(date_item_elements), DAYS_TO_SCRAPE)):
-            current_page_date_items = driver.find_elements(By.CSS_SELECTOR, DATE_ITEM_SELECTOR_CSS)
-            if date_idx >= len(current_page_date_items):
-                print(f"  Warning: Date index {date_idx} out of bounds. Stopping.", file=sys.stderr)
+def _parse_rosa_detail_page(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
+    """Parses a movie detail page from cinemarosa.net."""
+    details = {"director": None, "year": None, "runtime_min": None, "country": None, "synopsis": None}
+    if info_p := soup.select_one("p.film_info"):
+        film_info_text = ' '.join(info_p.get_text(separator=' ').split())
+        if match := re.search(r"(\d{4})\s*/", film_info_text): details["year"] = match.group(1)
+        if match := re.search(r"(\d+時間)?\s*(\d+)分", film_info_text):
+            h = int(re.sub(r'\D', '', match.group(1))) if match.group(1) else 0
+            m = int(match.group(2))
+            details["runtime_min"] = str(h * 60 + m)
+        if parts := [p.strip() for p in film_info_text.split('/') if p]:
+            if len(parts) > 1 and details["year"]: details["country"] = parts[1].strip()
+    if film_txt_div := soup.select_one("div.film_txt"):
+        for p_tag in film_txt_div.find_all('p'):
+            if "監督" in p_tag.text:
+                details["director"] = _clean_text(p_tag.text).replace("監督", "").lstrip(":： ").split(' ')[0]
                 break
-            
-            date_element_to_click = current_page_date_items[date_idx]
-            date_str_mm_dd = "N/A"
+    if synopsis_div := soup.select_one("div.free_area"): details["synopsis"] = _clean_text(synopsis_div.text)
+    return details
+
+# --- Main Scraping Logic ---
+
+def scrape_cinema_rosa() -> List[Dict[str, str]]:
+    details_cache = {}
+    for start_url in [ROSA_NOWSHOWING_URL, ROSA_INDIES_URL]:
+        print(f"INFO: [{CINEMA_NAME}] Fetching movie list from {start_url}", file=sys.stderr)
+        soup = _fetch_soup(start_url)
+        if not soup: continue
+        for link in soup.select(".show_box a"):
+            raw_title = _clean_text(link.select_one(".show_title").text)
+            title_key = _clean_title_for_matching(raw_title)
+            if title_key in details_cache: continue
+            detail_url = urljoin(ROSA_BASE_URL, link['href'])
+            detail_soup = _fetch_soup(detail_url)
+            if detail_soup:
+                print(f"  Scraping details for '{raw_title}'...", file=sys.stderr)
+                details = _parse_rosa_detail_page(detail_soup)
+                details["detail_page_url"] = detail_url
+                details_cache[title_key] = details
+    print(f"INFO: [{CINEMA_NAME}] Built cache for {len(details_cache)} movies.", file=sys.stderr)
+
+    showings = []
+    driver = _init_selenium_driver()
+    try:
+        print(f"INFO: [{CINEMA_NAME}] Navigating to Eigaland schedule...", file=sys.stderr)
+        driver.get(EIGALAND_URL)
+        WebDriverWait(driver, DEFAULT_SELENIUM_TIMEOUT).until(EC.visibility_of_element_located((By.CSS_SELECTOR, DATE_ITEM_SELECTOR_CSS)))
+        time.sleep(2)
+        
+        date_elements = driver.find_elements(By.CSS_SELECTOR, DATE_ITEM_SELECTOR_CSS)
+        for i in range(len(date_elements)):
             try:
-                date_value_tag = date_element_to_click.find_element(By.CSS_SELECTOR, DATE_VALUE_IN_ITEM_SELECTOR_CSS)
-                date_str_mm_dd = date_value_tag.text.strip()
-                print(f"\nProcessing Date {date_idx + 1}: {date_str_mm_dd}", file=sys.stderr)
+                date_element = driver.find_elements(By.CSS_SELECTOR, DATE_ITEM_SELECTOR_CSS)[i]
+                date_str = _clean_text(date_element.find_element(By.CSS_SELECTOR, "p.date").text)
+                parsed_date = _parse_date_from_eigaland(date_str, dt.date.today().year)
+                if not parsed_date: continue
+                
+                print(f"INFO: [{CINEMA_NAME}] Clicking date {parsed_date.isoformat()}", file=sys.stderr)
+                date_element.click()
+                time.sleep(2) # Wait for content to refresh, as requested
 
-                driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", date_element_to_click)
-                time.sleep(0.5)
-                WebDriverWait(driver, DEFAULT_SELENIUM_TIMEOUT).until(EC.element_to_be_clickable(date_element_to_click))
-                date_element_to_click.click()
-                print(f"  Clicked date: {date_str_mm_dd}", file=sys.stderr)
-                time.sleep(4) 
-
-                parsed_date_obj = _parse_date_from_eigaland(date_str_mm_dd, year_for_schedule)
-                if not parsed_date_obj: 
-                    print(f"  Skipping date {date_str_mm_dd} due to parsing error.", file=sys.stderr)
-                    continue
-                current_date_iso = parsed_date_obj.isoformat()
-
-                movie_item_blocks = driver.find_elements(By.CSS_SELECTOR, MOVIE_ITEM_BLOCK_SELECTOR_CSS)
-                print(f"  Found {len(movie_item_blocks)} movie item blocks for {current_date_iso} using '{MOVIE_ITEM_BLOCK_SELECTOR_CSS}'.", file=sys.stderr)
-                if not movie_item_blocks and date_idx == 0:
-                    driver.save_screenshot(f"debug_selenium_no_movie_items_{date_str_mm_dd.replace('/', '-')}.png")
-
-                for item_block_idx, movie_item_element in enumerate(movie_item_blocks):
-                    movie_title = "Unknown Title"
-                    print(f"    Processing Movie Item Block #{item_block_idx + 1} on {current_date_iso}", file=sys.stderr)
-                    try:
-                        title_tag = movie_item_element.find_element(By.CSS_SELECTOR, MOVIE_TITLE_IN_ITEM_BLOCK_SELECTOR_CSS)
-                        movie_title = title_tag.text.strip()
-                        print(f"      Movie Title: '{movie_title}'", file=sys.stderr)
-                    except NoSuchElementException:
-                        print(f"      Warning: Title not found in movie item block {item_block_idx + 1} using '{MOVIE_TITLE_IN_ITEM_BLOCK_SELECTOR_CSS}'.", file=sys.stderr)
-                        # print(f"      HTML of movie_item_element: {movie_item_element.get_attribute('outerHTML')[:600]}", file=sys.stderr)
-
-
-                    try:
-                        table_rows = movie_item_element.find_elements(By.CSS_SELECTOR, SHOWTIME_TABLE_ROWS_SELECTOR_CSS)
-                        print(f"      Found {len(table_rows)} table rows for '{movie_title}'.", file=sys.stderr)
-
-                        if not table_rows and movie_title != "Unknown Title": # Only print debug HTML if title was found but no rows
-                             print(f"      DEBUG: HTML of movie_item_element for '{movie_title}' (if no table rows found):\n{movie_item_element.get_attribute('outerHTML')[:1000]}", file=sys.stderr)
-
-                        for row_idx, tr_element in enumerate(table_rows):
-                            screen_name = "N/A"
-                            try:
-                                screen_tag = tr_element.find_element(By.CSS_SELECTOR, SCREEN_IN_TABLE_ROW_SELECTOR_CSS)
-                                screen_name = screen_tag.text.strip()
-                            except NoSuchElementException:
-                                pass 
-
-                            slot_cells = tr_element.find_elements(By.CSS_SELECTOR, SLOT_CELL_SELECTOR_CSS)
-                            for slot_cell in slot_cells:
-                                showtime_tags = slot_cell.find_elements(By.CSS_SELECTOR, START_TIME_IN_SLOT_SELECTOR_CSS)
-                                for st_tag in showtime_tags:
-                                    try:
-                                        showtime_text = st_tag.text.strip()
-                                        if not re.match(r"^\d{1,2}:\d{2}$", showtime_text):
-                                            continue
-                                        
-                                        print(f"          SUCCESS: Adding show: '{movie_title}' at {showtime_text} on {screen_name}", file=sys.stderr)
-                                        results.append({
-                                            "cinema": actual_cinema_name, "date_text": current_date_iso,
-                                            "screen": screen_name, "title": movie_title, "showtime": showtime_text,
-                                        })
-                                    except Exception as e_st_inner:
-                                        print(f"              Error processing an h2 tag in slot: {e_st_inner}", file=sys.stderr)
-                    except NoSuchElementException:
-                         print(f"      No showtime table/rows found for '{movie_title}'.", file=sys.stderr)
-
-            except TimeoutException:
-                print(f"  Timeout clicking or processing date item {date_idx} ('{date_str_mm_dd}')", file=sys.stderr)
-            except Exception as e_date: # Catching the InvalidSelectorException here
-                print(f"  Error processing date item {date_idx} ('{date_str_mm_dd}'): {type(e_date).__name__} - {e_date}", file=sys.stderr)
-                traceback.print_exc(file=sys.stderr, limit=1) # Limit traceback to avoid spam for repeated errors
-                # If it's an invalid selector, it will likely repeat for all dates, so break
-                if "invalid selector" in str(e_date).lower():
-                    print("  Due to invalid selector, stopping further date processing.", file=sys.stderr)
-                    break
-
-
-    except TimeoutException as te:
-        print(f"Selenium Timeout during page setup for {CINEMA_NAME_FALLBACK}: {te}", file=sys.stderr)
-        if driver: driver.save_screenshot("debug_selenium_main_timeout.png")
-        traceback.print_exc(file=sys.stderr)
-    except Exception as e:
-        print(f"An unexpected error occurred with Selenium for {CINEMA_NAME_FALLBACK}: {e}", file=sys.stderr)
-        if driver: driver.save_screenshot("debug_selenium_unexpected_error.png")
-        traceback.print_exc(file=sys.stderr)
+                for item_block in driver.find_elements(By.CSS_SELECTOR, MOVIE_SCHEDULE_SELECTOR_CSS):
+                    raw_title = _clean_text(item_block.find_element(By.CSS_SELECTOR, MOVIE_TITLE_EIGALAND_CSS).text)
+                    title_key = _clean_title_for_matching(raw_title)
+                    details = details_cache.get(title_key, {})
+                    for schedule_info in item_block.find_elements(By.CSS_SELECTOR, SHOWTIME_BLOCK_CSS):
+                        showtime = _clean_text(schedule_info.find_element(By.CSS_SELECTOR, SHOWTIME_TIME_CSS).text)
+                        screen = _clean_text(schedule_info.find_element(By.CSS_SELECTOR, SHOWTIME_SCREEN_CSS).text)
+                        purchase_url_tag = schedule_info.find_elements(By.CSS_SELECTOR, 'a[href*="app.eigaland.com"]')
+                        showings.append({
+                            "cinema_name": CINEMA_NAME, "movie_title": raw_title,
+                            "date_text": parsed_date.isoformat(), "showtime": showtime,
+                            "screen_name": screen, **details,
+                            "purchase_url": purchase_url_tag[0].get_attribute('href') if purchase_url_tag else None
+                        })
+            except (TimeoutException, StaleElementReferenceException) as e:
+                print(f"WARN: [{CINEMA_NAME}] Problem processing date index {i}. Reason: {e}", file=sys.stderr)
     finally:
-        if driver:
-            print("Quitting Selenium WebDriver.", file=sys.stderr)
-            driver.quit()
+        if driver: driver.quit()
 
-    unique_results_list: List[Dict[str, str]] = []
-    seen_keys: Set[tuple] = set()
-    for item in results:
-        key = (item["cinema"], item["date_text"], item["title"], item["screen"], item["showtime"])
-        if key not in seen_keys:
-            unique_results_list.append(item)
-            seen_keys.add(key)
-    
-    print(f"Scraping (Selenium) for {actual_cinema_name} (webKey: {web_key}) complete. Found {len(unique_results_list)} unique showings.", file=sys.stderr)
-    return unique_results_list
+    unique = { (s["date_text"], s["movie_title"], s["showtime"]): s for s in showings }
+    final_list = sorted(list(unique.values()), key=lambda r: (r.get("date_text", ""), r.get("showtime", "")))
+    print(f"INFO: [{CINEMA_NAME}] Collected {len(final_list)} unique showings.")
+    return final_list
 
-if __name__ == "__main__":
-    if sys.platform == "win32":
-        try:
-            sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-            sys.stderr.reconfigure(encoding='utf-8', errors='replace')
-        except Exception: pass
-
-    TARGET_WEB_KEY = "c34cee0e-5a5e-4b99-8978-f04879a82299"
-    TARGET_CINEMA_NAME = "池袋シネマ・ロサ"
-
-    print(f"Attempting to scrape (Selenium): {TARGET_CINEMA_NAME} (webKey: {TARGET_WEB_KEY})")
-    
-    showings = scrape_cinema_rosa_schedule(web_key=TARGET_WEB_KEY, cinema_name_override=TARGET_CINEMA_NAME)
-
+if __name__ == '__main__':
+    if sys.platform == "win32": sys.stdout.reconfigure(encoding='utf-8')
+    showings = scrape_cinema_rosa()
     if showings:
-        print(f"\n--- Showings for {TARGET_CINEMA_NAME} ({len(showings)} found) ---")
-        showings.sort(key=lambda x: (x["date_text"], x["title"], x["showtime"]))
-        for i, show in enumerate(showings):
-            print(f"{i+1}. {show['date_text']} - {show['title']} - {show['showtime']} ({show['screen']})")
+        output_filename = "cinema_rosa_showtimes.json"
+        print(f"\nINFO: Writing {len(showings)} records to {output_filename}...")
+        with open(output_filename, "w", encoding="utf-8") as f:
+            json.dump(showings, f, ensure_ascii=False, indent=2)
+        print(f"INFO: Successfully created {output_filename}.")
+        print("\n--- Sample of First Showing ---")
+        from pprint import pprint
+        pprint(showings[0])
     else:
-        print(f"No showings found for {TARGET_CINEMA_NAME}. Check logs and any debug_*.png screenshots.")
+        print(f"\nNo showings found for {CINEMA_NAME}.")

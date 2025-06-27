@@ -1,135 +1,172 @@
-import requests
+import json, re, sys, pathlib, datetime, requests
 from bs4 import BeautifulSoup
-import re
-import sys
-import io
 
-# --- Start: Configure stdout and stderr for UTF-8 on Windows (Optional for module, but good if testing directly) ---
-if __name__ == "__main__" and sys.platform == "win32": # Only run if script is executed directly
-    try:
-        if sys.stdout.encoding != 'utf-8':
-            sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-        if sys.stderr.encoding != 'utf-8':
-            sys.stderr.reconfigure(encoding='utf-8', errors='replace')
-        print("Note: stdout/stderr reconfigured to UTF-8 for Windows for direct testing.", file=sys.__stderr__)
-    except Exception:
-        pass # Ignore errors if reconfiguration fails in module context
-# --- End: Configure stdout and stderr ---
+BASE_URL = "https://www.imageforum.co.jp/theatre"
+SCHEDULE_URL = f"{BASE_URL}/schedule/"
+CINEMA_NAME = "シアター・イメージフォーラム"
+HEADERS = {"User-Agent": "Mozilla/5.0"}
+THIS_YEAR = datetime.date.today().year
 
-CINEMA_NAME_IF = "シアター・イメージフォーラム" # Theatre Image Forum (Specific to this module)
-URL_IF = "https://www.imageforum.co.jp/theatre/schedule/"
+# ------------------------------------------------------------
+# Helpers
+# ------------------------------------------------------------
 
-def clean_text(text_element):
-    if text_element:
-        return ' '.join(text_element.get_text(strip=True).split())
-    return ""
+def full_url(href: str) -> str:
+    """Return absolute URL for a relative link."""
+    if href.startswith("http"):
+        return href
+    return BASE_URL + href if href.startswith("/") else f"{BASE_URL}/{href}"
 
-def extract_specific_title_from_span(span_text):
-    if not span_text:
-        return None
-    match = re.search(r'"([^"]+)"', span_text)
-    if match:
-        return match.group(1).strip()
-    return None
 
-def scrape_image_forum(): # Renamed function for clarity
+def iso_date(month_day: str) -> str:
+    """Convert '6/23' → 'YYYY-06-23' using the current year."""
+    m, d = map(int, month_day.split("/"))
+    year = THIS_YEAR + (1 if datetime.date.today().month == 12 and m == 1 else 0)
+    return datetime.date(year, m, d).isoformat()
+
+
+def split_title(raw: str):
+    """Return (jp, en) by detecting ASCII in the string."""
+    parts = re.split(r"[ \u3000]+", raw.strip())
+    jp_parts, en_parts = [], []
+    for p in parts:
+        (en_parts if re.search(r"[A-Za-z]", p) else jp_parts).append(p)
+    jp = " ".join(jp_parts) if jp_parts else raw.strip()
+    en = " ".join(en_parts) or None
+    return jp, en
+
+
+def fetch(url: str) -> BeautifulSoup:
+    """GET a page and parse with the built‑in html.parser."""
+    resp = requests.get(url, headers=HEADERS, timeout=30)
+    resp.raise_for_status()
+    resp.encoding = 'utf-8'
+    return BeautifulSoup(resp.text, "html.parser")
+
+# ------------------------------------------------------------
+# Detail‑page scraping utilities (with in‑memory cache)
+# ------------------------------------------------------------
+
+detail_cache: dict[str, dict] = {}
+
+DIRECTOR_RE = re.compile(r"監督[^:：｜|]*[:：｜|]\s*([^\n／｜|]+)")
+YEAR_RE = re.compile(r'\b(19\d{2}|20\d{2})\b')
+RUNTIME_RE = re.compile(r'(\d{2,3})分')
+
+def parse_detail(detail_url: str):
     """
-    Scrapes the movie schedule from the Theatre Image Forum website
-    and returns a list of Pshowings.
+    Final, robust version. Intelligently parses the detail page by looking
+    for year, runtime, and country patterns across ALL lines of text.
     """
-    all_showings = []
-    try:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
-        response = requests.get(URL_IF, headers=headers, timeout=15)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.content, 'html.parser')
+    if detail_url in detail_cache:
+        return detail_cache[detail_url]
 
-        content_area = soup.find('section', class_='content-area')
-        if not content_area:
-            print(f"Error ({CINEMA_NAME_IF}): Could not find main content area.", file=sys.stderr)
-            return all_showings # Return empty list
+    soup = fetch(detail_url)
+    text_block = soup.select_one("div.movie-right p.text")
 
-        daily_schedule_boxes = content_area.find_all('div', class_='schedule-day-box')
-        if not daily_schedule_boxes:
-            print(f"Error ({CINEMA_NAME_IF}): Could not find daily schedule boxes.", file=sys.stderr)
-            return all_showings
+    defaults = {"director": None, "year": None, "country": None, "runtime_min": None, "synopsis": None}
+    if not text_block:
+        detail_cache[detail_url] = defaults
+        return defaults
 
-        for day_box in daily_schedule_boxes:
-            date_tag = day_box.find('h2', class_='schedule-day-title')
-            date_str = clean_text(date_tag) if date_tag else "Unknown Date"
-            date_str = date_str.replace(" schedule", "").strip()
+    raw_text = text_block.get_text("\n", strip=True)
+    lines = raw_text.split('\n')
 
-            schedule_boxes_for_day = day_box.find_all('div', class_='schedule-box')
-            for schedule_box in schedule_boxes_for_day:
-                theatre_name_img = schedule_box.find('caption img')
-                theatre_info_alt = clean_text(theatre_name_img.get('alt', '')) if theatre_name_img else ""
-                # You might want to parse specific theatre name (e.g., "Theater 1") if available
+    meta = {"synopsis": raw_text, **defaults}
 
-                movie_entries = schedule_box.find_all('td', class_='schebox')
-                for entry in movie_entries:
-                    showtime_tag = entry.find('a').find('div') if entry.find('a') else None
-                    showtime = clean_text(showtime_tag) if showtime_tag else "N/A"
+    # Find director
+    if (m_dir := DIRECTOR_RE.search(raw_text)):
+        # Clean up director name by taking only the first person listed
+        meta["director"] = m_dir.group(1).strip().split("、")[0]
 
-                    primary_title_tag = entry.find('a').find('p') if entry.find('a') else None
-                    primary_title = clean_text(primary_title_tag) if primary_title_tag else "Unknown Film"
-                    
-                    span_tags = entry.find('a').find_all('span') if entry.find('a') else []
-                    actual_film_title = primary_title
-                    specific_title_found_in_span = False
+    # Find the best possible metadata line that contains delimiters AND runtime
+    best_meta_line = ""
+    for line in lines:
+        if ('／' in line or '｜' in line or '/' in line) and "分" in line:
+            best_meta_line = line
+            break
 
-                    for span in span_tags:
-                        span_text_cleaned = clean_text(span)
-                        extracted_specific_title = extract_specific_title_from_span(span_text_cleaned)
-                        if extracted_specific_title:
-                            specific_title_found_in_span = True
-                            if "Feature screening" in primary_title or "特集" in primary_title or "Director" in primary_title:
-                                actual_film_title = f"{primary_title}: {extracted_specific_title}"
-                            else:
-                                actual_film_title = extracted_specific_title
-                            break 
-                    
-                    # If no specific title was found in spans with quotes, but primary title looks like a series
-                    # and there's other text in spans (like "「...」を上映" - needs original Japanese check if so)
-                    # This part might need refinement based on more examples of special programs
-                    
-                    # Clean up possible "<font>" tag remnants
-                    actual_film_title = actual_film_title.replace("<font style=\"vertical-align: inherit;\">", "").replace("</font>", "").strip()
-                    showtime = showtime.replace("<font style=\"vertical-align: inherit;\">", "").replace("</font>", "").strip()
-
-                    showing_info = {
-                        "cinema": CINEMA_NAME_IF,
-                        "date_text": date_str, # Raw date string from site
-                        # "theatre_screen": theatre_info_alt, # Optional screen info
-                        "title": actual_film_title,
-                        "showtime": showtime
-                    }
-                    all_showings.append(showing_info)
+    # If a good line is found, parse it first
+    if best_meta_line:
+        normalized_line = best_meta_line.replace('｜', '／').replace('/', '／')
+        parts = [p.strip() for p in normalized_line.split('／')]
         
-        return all_showings
+        countries = []
+        for part in parts:
+            year_match = YEAR_RE.search(part)
+            runtime_match = RUNTIME_RE.search(part)
 
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching URL {URL_IF} for {CINEMA_NAME_IF}: {e}", file=sys.stderr)
-        return all_showings # Return whatever was collected so far, or empty
-    except Exception as e:
-        print(f"An unexpected error occurred while scraping {CINEMA_NAME_IF}: {e}", file=sys.stderr)
-        import traceback
-        traceback.print_exc()
-        return all_showings
+            if year_match and not meta["year"]:
+                meta["year"] = year_match.group(1)
+            elif runtime_match and not meta["runtime_min"]:
+                meta["runtime_min"] = runtime_match.group(1)
+            else:
+                # Add to country list if it's not noise
+                if not any(noise in part for noise in ["分", "年", "監督", "配給", "カラー", "英語", "DCP", "ドキュメンタリー", "ビスタ", "5.1ch"]):
+                    # Also check it has non-numeric characters to avoid things like "2.39:1"
+                     if re.search(r'\D', part):
+                        countries.append(part)
+        
+        if countries:
+            meta["country"] = ", ".join(countries)
+    
+    # As a final fallback, if year is still missing, scan the entire text block again
+    if not meta["year"]:
+        if (year_match := YEAR_RE.search(raw_text)):
+            meta["year"] = year_match.group(1)
+            
+    detail_cache[detail_url] = meta
+    return meta
 
-if __name__ == '__main__':
-    # This part is for testing the module directly
-    # The UTF-8 configuration for stdout/stderr is above this block for this direct execution.
-    print(f"Testing {CINEMA_NAME_IF} scraper module...")
-    showings = scrape_image_forum()
+# ------------------------------------------------------------
+# Main routine
+# ------------------------------------------------------------
+
+def scrape():
+    soup = fetch(SCHEDULE_URL)
+    results: list[dict] = []
+
+    for day_box in soup.select("div.schedule-day-box"):
+        h2 = day_box.select_one("h2.schedule-day-title2")
+        if not h2: continue
+        
+        md_match = re.search(r"(\d{1,2}/\d{1,2})", h2.get_text())
+        if not md_match: continue
+        date_iso = iso_date(md_match.group(1))
+
+        for table in day_box.select("table.schedule-table"):
+            caption = table.caption.img["alt"] if table.caption and table.caption.img else ""
+            screen_match = re.search(r"シアター.?.\d", caption)
+            screen_name = screen_match.group(0) if screen_match else None
+
+            for td in table.select("td.schebox"):
+                a_tag = td.select_one("a")
+                if not a_tag: continue
+                
+                href = full_url(a_tag["href"])
+                showtime = td.select_one("div").get_text(strip=True)
+                raw_title = td.select_one("p").get_text(strip=True)
+                movie_title_jp, movie_title_en = split_title(raw_title)
+
+                meta = parse_detail(href)
+
+                results.append({
+                    "cinema_name": CINEMA_NAME,
+                    "movie_title": movie_title_jp,
+                    "movie_title_en": movie_title_en,
+                    "date_text": date_iso,
+                    "showtime": showtime,
+                    "screen_name": screen_name,
+                    "detail_page_url": href,
+                    **meta,
+                })
+
+    results.sort(key=lambda r: (r["date_text"], r["showtime"]))
+    return results
+
+if __name__ == "__main__":
+    showings = scrape()
     if showings:
-        print(f"Found {len(showings)} showings for {CINEMA_NAME_IF}:")
-        for i, showing in enumerate(showings):
-            if i < 5: # Print first 5 for brevity
-                print(f"  {showing['cinema']} - {showing['date_text']} - {showing['title']} - {showing['showtime']}")
-            elif i == 5:
-                print(f"  ... and {len(showings) - 5} more.")
-                break
-    else:
-        print(f"No showings found by {CINEMA_NAME_IF} scraper during test.")
+        out_path = pathlib.Path(__file__).with_name("image_forum_schedule_TEST.json")
+        out_path.write_text(json.dumps(showings, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"Test run successful. Saved {len(showings)} showtimes → {out_path}")

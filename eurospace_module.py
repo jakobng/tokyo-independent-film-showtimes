@@ -1,132 +1,199 @@
-import requests
-from bs4 import BeautifulSoup
+#!/usr/bin/env python3
+# eurospace_module.py — Rev-11 (2025-06-25)
+#
+#  • FINAL: Complete rewrite of the _scrape_detail function for robust,
+#    intelligent parsing.
+#  • It no longer assumes a fixed order for metadata. Instead, it inspects
+#    each piece of data to identify if it is a year, runtime, or country.
+#  • This fixes swapped/incorrect data for all previously failing films.
+# ---------------------------------------------------------------------
+
+from __future__ import annotations
+
+import datetime as dt
+import json
 import re
 import sys
+import unicodedata
+from pathlib import Path
+from typing import Dict, List, Optional
+from urllib.parse import urljoin
 
-CINEMA_NAME = "ユーロスペース"
-URL = "http://www.eurospace.co.jp/schedule/"
+import bs4
+import requests
+
+BASE_URL = "http://www.eurospace.co.jp"
+SCHEDULE_URL = f"{BASE_URL}/schedule/"
+OUTPUT = Path(__file__).with_name("eurospace_showtimes.json")
+HEADERS = {"User-Agent": "Mozilla/5.0 (EurospaceScraper/2025)"}
+TIMEOUT = 30
+
+TODAY = dt.date.today()
+WINDOW_DAYS = 7
+
+# ---------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------
+
+DATE_RE = re.compile(r"(\d{4})年(\d{1,2})月(\d{1,2})日")
+_SUB_TITLE_RE = re.compile(r"『(.+?)』")
+_RUNTIME_RE = re.compile(r"(\d+)\s*分")
+# More flexible year regex that doesn't require '年'
+_YEAR_RE = re.compile(r'\b(19\d{2}|20\d{2})\b')
 
 
-def clean_text(element_or_string):
-    """
-    Normalize whitespace and strip HTML font tags from a BeautifulSoup element or string.
-    """
-    if not element_or_string:
-        return ""
-    if hasattr(element_or_string, 'get_text'):
-        text = ' '.join(element_or_string.get_text(strip=True).split())
-    else:
-        text = ' '.join(str(element_or_string).strip().split())
-    # Remove any leftover <font> tags
-    text = re.sub(r'<font[^>]*>', '', text)
-    text = text.replace('</font>', '')
-    return text.strip()
-
-
-def extract_specific_title(text):
-    """
-    If text contains Japanese quotes 『』, extract the inner content.
-    """
+def _clean(text: str) -> str:
+    """Collapse whitespace, trim, and normalize characters."""
     if not text:
+        return ""
+    normalized_text = unicodedata.normalize("NFKC", text).strip()
+    return re.sub(r"\s+", " ", normalized_text)
+
+
+def _parse_date(h3_tag: bs4.Tag) -> dt.date | None:
+    m = DATE_RE.search(h3_tag.get_text())
+    if not m:
         return None
-    match = re.search(r'『([^』]+)』', text)
-    return match.group(1).strip() if match else None
+    y, mth, d = map(int, m.groups())
+    return dt.date(y, mth, d)
 
 
-def scrape_eurospace():
+def _scrape_detail(url: str) -> Dict[str, str | int | None]:
     """
-    Scrape the 7-day schedule from ユーロスペース and return a list of showings.
-
-    Each showing is a dict with keys:
-      - cinema
-      - date_text
-      - screen
-      - title
-      - showtime
+    Pull director, runtime, country, and year by intelligently parsing the
+    structured <p class="work-caption"> tag on the detail page.
     """
-    showings = []
+    defaults = {"director": None, "runtime": None, "country": None, "year": None}
     try:
-        resp = requests.get(URL, headers={ 'User-Agent': 'Mozilla/5.0' }, timeout=15)
+        resp = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
         resp.raise_for_status()
-        soup = BeautifulSoup(resp.content, 'html.parser')
+        resp.encoding = 'utf-8' # Ensure correct encoding
+    except Exception:
+        return defaults
 
-        schedule_sec = soup.find('section', id='schedule')
-        if not schedule_sec:
-            print(f"Error ({CINEMA_NAME}): schedule section not found.", file=sys.stderr)
-            return showings
+    soup = bs4.BeautifulSoup(resp.text, "html.parser")
+    caption_p = soup.select_one("p.work-caption")
+    if not caption_p:
+        return defaults
 
-        articles = schedule_sec.find_all('article', recursive=False)
-        for article in articles:
-            # date header
-            hdr = article.find('h3')
-            date_text = clean_text(hdr)
-            if not re.search(r'\d{4}年\d{1,2}月\d{1,2}日', date_text):
-                continue
+    lines = [line.strip() for line in caption_p.get_text(separator="\n").split("\n") if line.strip()]
 
-            screen = None
-            # iterate children to locate screen labels and tables
-            for child in article.children:
-                if isinstance(child, str):
-                    t = clean_text(child)
-                    if 'スクリーン1' in t:
-                        screen = 'スクリーン1 (Screen 1)'
-                    elif 'スクリーン2' in t:
-                        screen = 'スクリーン2 (Screen 2)'
-                elif getattr(child, 'name', None) == 'div' and 'scrolltable' in child.get('class', []):
-                    tbl = child.find('table')
-                    if not tbl or not screen:
-                        continue
-                    # first row: times, second row: films
-                    rows = tbl.find_all('tr', recursive=False)
-                    if len(rows) < 2:
-                        continue
-                    times = rows[0].find_all('td')
-                    films = rows[1].find_all('td')
-                    for td_time, td_film in zip(times, films):
-                        time_txt = clean_text(td_time)
-                        if not time_txt:
-                            continue
-                        # extract title
-                        a = td_film.find('a')
-                        primary = clean_text(a) if a else ''
-                        # handle specific subtitles
-                        for br in td_film.find_all('br'):
-                            br.replace_with(' [BR] ')
-                        parts = clean_text(td_film).split(' [BR] ')
-                        specific = next((extract_specific_title(p) for p in parts if extract_specific_title(p)), None)
-                        title = specific or primary
-                        showings.append({
-                            'cinema': CINEMA_NAME,
-                            'date_text': date_text,
-                            'screen': screen,
-                            'title': title,
-                            'showtime': time_txt
-                        })
-        return showings
+    meta = defaults.copy()
+    
+    # Find and parse the slash-delimited line for most metadata
+    for line in lines:
+        if "／" in line:
+            parts = [p.strip() for p in line.split("／")]
+            
+            # Intelligently identify each part instead of assuming order
+            countries = []
+            for part in parts:
+                runtime_match = _RUNTIME_RE.search(part)
+                year_match = _YEAR_RE.search(part)
 
-    except requests.RequestException as e:
-        print(f"Error fetching {URL} for {CINEMA_NAME}: {e}", file=sys.stderr)
-        return showings
+                if runtime_match:
+                    meta["runtime"] = int(runtime_match.group(1))
+                elif year_match:
+                    meta["year"] = year_match.group(0)
+                else:
+                    # If it's not a year or runtime, assume it's a country.
+                    # Filter out common non-country noise.
+                    if not any(noise in part for noise in ["日本語", "カラー", "DCP", "分", "年"]):
+                        cleaned_part = _clean(part)
+                        if cleaned_part:
+                             countries.append(cleaned_part)
+            
+            if countries:
+                meta["country"] = ", ".join(countries)
+            break
+            
+    # Find the director on its own specific line
+    for line in lines:
+        if line.startswith("監督"):
+            director_text = line.split("：", 1)[-1]
+            meta["director"] = _clean(director_text.split("/")[0].split("、")[0])
+            break
+
+    return meta
+
+
+# ---------------------------------------------------------------------
+# Main scraper
+# ---------------------------------------------------------------------
+
+def scrape() -> List[Dict[str, str | int | None]]:
+    try:
+        resp = requests.get(SCHEDULE_URL, headers=HEADERS, timeout=TIMEOUT)
+        resp.raise_for_status()
+        resp.encoding = 'utf-8'
     except Exception as e:
-        print(f"Unexpected error in {CINEMA_NAME} scraper: {e}", file=sys.stderr)
-        return showings
+        sys.exit(f"Failed to GET schedule page: {e}")
+
+    soup = bs4.BeautifulSoup(resp.text, "html.parser")
+    schedule_sec = soup.find("section", id="schedule")
+    if not schedule_sec:
+        sys.exit("Schedule section not found in HTML")
+
+    shows: List[Dict[str, str | int | None]] = []
+    meta_cache: Dict[str, Dict[str, str | int | None]] = {}
+
+    for art in schedule_sec.find_all("article"):
+        h3 = art.find("h3")
+        if not h3: continue
+        d = _parse_date(h3)
+        if not d or not (TODAY <= d < TODAY + dt.timedelta(days=WINDOW_DAYS)):
+            continue
+
+        for table in art.find_all("table"):
+            rows = table.find_all("tr")
+            if len(rows) < 2: continue
+            
+            times_row, titles_row = rows[0], rows[1]
+            times = [_clean(td.get_text()) for td in times_row.find_all("td")]
+            cells = titles_row.find_all("td")
+            
+            for idx, cell in enumerate(cells):
+                a_tag = cell.find("a")
+                if not a_tag: continue
+
+                cell_text = cell.get_text(separator=" ")
+                sub_title_match = _SUB_TITLE_RE.search(cell_text)
+
+                title = _clean(sub_title_match.group(1)) if sub_title_match else _clean(a_tag.get_text())
+                
+                url = urljoin(BASE_URL, a_tag.get("href", ""))
+                time_str = times[idx] if idx < len(times) else ""
+                if not title or not url or not time_str: continue
+
+                if url not in meta_cache:
+                    meta_cache[url] = _scrape_detail(url)
+
+                shows.append({
+                    "cinema": "ユーロスペース",
+                    "title": title,
+                    "date": d.isoformat(),
+                    "time": time_str,
+                    "url": url,
+                    **meta_cache[url],
+                })
+
+    seen = set()
+    uniq_shows = []
+    for s in shows:
+        key = (s["title"], s["date"], s["time"])
+        if key not in seen:
+            seen.add(key)
+            uniq_shows.append(s)
+
+    return sorted(uniq_shows, key=lambda x: (x.get("date", ""), x.get("time", ""), x.get("title", "")))
 
 
-if __name__ == '__main__':
-    # Ensure UTF-8 on Windows console
-    if sys.platform.startswith('win'):
-        try:
-            if sys.stdout.encoding.lower() != 'utf-8': sys.stdout.reconfigure(encoding='utf-8')
-            if sys.stderr.encoding.lower() != 'utf-8': sys.stderr.reconfigure(encoding='utf-8')
-        except:
-            pass
-    print(f"Testing {CINEMA_NAME} scraper...")
-    data = scrape_eurospace()
-    if data:
-        print(f"Found {len(data)} showings:")
-        for s in data[:10]:
-            print(f"  {s['date_text']} {s['screen']} {s['title']} @ {s['showtime']}")
-        if len(data) > 10:
-            print(f"... and {len(data) - 10} more.")
-    else:
-        print("No showings found.")
+# ---------------------------------------------------------------------
+# CLI entry‑point
+# ---------------------------------------------------------------------
+
+if __name__ == "__main__":
+    data = scrape()
+    text = json.dumps(data, ensure_ascii=False, indent=2)
+    OUTPUT.write_text(text, encoding="utf-8")
+    print(f"Wrote {len(data)} showtime records → {OUTPUT}")

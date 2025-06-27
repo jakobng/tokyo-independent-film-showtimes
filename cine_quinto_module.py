@@ -1,190 +1,228 @@
 """
-cine_quinto_module.py
-~~~~~~~~~~~~~~~~~~~~~
-Scraper for Shibuya Cine Quinto (シネクイント渋谷).
+cine_quinto_module.py — 2025-06-23
+Upgrades:
+• Parses the JS-rendered schedule HTML (slider + panels) without a browser.
+• Cross-links titles to the NOW SHOWING catalogue to fetch detail pages.
+• Extracts director, year, country, runtime, synopsis, + optional English title.
+• Outputs a list-of-dicts that matches our project’s standard schema.
+
+Tested against:  
+  – https://www.cinequinto-ticket.jp/theater/shibuya/schedule  
+  – https://www.cinequinto.com/shibuya/movie/ + detail pages
 """
 
 from __future__ import annotations
 
-import logging
-import time
-from datetime import datetime
-from typing import Dict, List
+import datetime as _dt
+import json
+import re
+import unicodedata
+from pathlib import Path
+from typing import Dict, List, Tuple
 
+import requests
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service as ChromeService # Renamed
-from webdriver_manager.chrome import ChromeDriverManager # Added
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 
-# --------------------------------------------------------------------------- #
-# Configuration
-# --------------------------------------------------------------------------- #
-BASE_URL: str = (
-    "https://www.cinequinto-ticket.jp/theater/shibuya/schedule"
-)
+# ───────────────────────── constants
+CINEMA_NAME   = "シネクイント"
+SCHEDULE_URL  = "https://www.cinequinto-ticket.jp/theater/shibuya/schedule"
+LISTING_URL   = "https://www.cinequinto.com/shibuya/movie/"
+HEADERS       = {"User-Agent": "CineQuintoScraper/1.0 (+https://github.com/your-org/project)"}
 
-# CHROME_BINARY: str | None = r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe" # REMOVED
-# CHROMEDRIVER: str | None = "./chromedriver.exe" # REMOVED
+_RE_DATE_ID   = re.compile(r"^dateJouei(\d{8})$")
+_RE_FW_NUM    = str.maketrans({chr(fw): str(d) for d, fw in enumerate(range(0xFF10, 0xFF1A))})
+_RE_RUNTIME   = re.compile(r"(\d+)\s*分")
+_RE_YEAR      = re.compile(r"(\d{4})年")
+_RE_HTML_TAGS = re.compile(r"<[^>]+>")
 
-MAX_DAYS: int = 7
-PAGE_LOAD_TIMEOUT = 25
-TAB_SWITCH_TIMEOUT = 7
-HEADLESS = True # Keep True for GitHub Actions
+# ───────────────────────── helpers
+def _norm(s: str) -> str:
+    """Aggressive normalisation so schedule titles match NOW SHOWING titles."""
+    s = unicodedata.normalize("NFKC", s).translate(_RE_FW_NUM)
+    return re.sub(r"\s+", "", s).lower()
 
-CINEMA_NAME_JP = "シネクイント渋谷"
+def _get(session: requests.Session, url: str) -> str:
+    return session.get(url, headers=HEADERS, timeout=30).text
 
-# --------------------------------------------------------------------------- #
-# Logging
-# --------------------------------------------------------------------------- #
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(levelname)-8s: %(module)-20s: %(message)s", # Added module name
-)
-log = logging.getLogger(__name__) # Use __name__ for logger
+# ───────────────────────── 1) schedule ─────────────────────────
+def _parse_schedule(html: str,
+                    today: _dt.date,
+                    max_days: int = 7) -> Tuple[List[Dict], List[str]]:
+    soup = BeautifulSoup(html, "html.parser")
+    out: List[Dict] = []
+    titles: List[str] = []
 
-
-# --------------------------------------------------------------------------- #
-# Selenium helpers
-# --------------------------------------------------------------------------- #
-def _init_driver() -> webdriver.Chrome:
-    """Return a headless Chrome driver, using webdriver-manager."""
-    opts = Options()
-    if HEADLESS:
-        opts.add_argument("--headless=new")
-        opts.add_argument("--disable-gpu")
-    opts.add_argument("--no-sandbox")
-    opts.add_argument("--window-size=1400,1024")
-    opts.add_argument("--disable-dev-shm-usage") # Often recommended for CI environments
-    # if CHROME_BINARY: # REMOVED
-    #     opts.binary_location = CHROME_BINARY # REMOVED
-
-    # webdriver-manager will download and manage the correct ChromeDriver
-    service = ChromeService(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=opts)
-    driver.set_page_load_timeout(PAGE_LOAD_TIMEOUT)
-    return driver
-
-
-# --------------------------------------------------------------------------- #
-# Parsing helpers
-# --------------------------------------------------------------------------- #
-def _yyyymmdd_to_iso(date_str: str) -> str:
-    """Convert '20250527' → '2025-05-27' as str."""
-    return datetime.strptime(date_str, "%Y%m%d").strftime("%Y-%m-%d")
-
-
-def _extract_showings_for_date(soup: BeautifulSoup, ymd: str) -> List[Dict]:
-    rows: List[Dict] = []
-    container = soup.find("div", id=f"dateJouei{ymd}")
-    if not container:
-        return rows
-
-    for panel in container.select("div.movie-panel"):
-        title_tag = panel.select_one("div.title-jp")
-        if title_tag is None:
+    for div in soup.select('div[id^="dateJouei"]'):
+        m = _RE_DATE_ID.match(div.get("id", ""))
+        if not m:
             continue
-        title = title_tag.get_text(strip=True)
+        date_obj = _dt.datetime.strptime(m.group(1), "%Y%m%d").date()
+        if date_obj < today or (date_obj - today).days > max_days:
+            continue
+        iso_date = date_obj.isoformat()
 
-        for ms in panel.select("div.movie-schedule"):
-            begin_span = ms.select_one("span.movie-schedule-begin")
-            if not begin_span:
+        for panel in div.select("div.panel.movie-panel"):
+            jp_title = panel.select_one(".title-jp")
+            if not jp_title:
                 continue
+            jp_title = jp_title.get_text(strip=True)
+            titles.append(jp_title)
 
-            start_time = begin_span.get_text(strip=True)
-            screen_raw = ms.get("data-screen", "").strip()
-            screen = f"スクリーン{1 if screen_raw == '10' else 2}" if screen_raw else ""
+            en_title_el = panel.select_one(".title-eng")
+            en_title = (en_title_el.get_text(strip=True) or None) if en_title_el else None
 
-            rows.append(
-                {
-                    "cinema": CINEMA_NAME_JP,
-                    "date_text": _yyyymmdd_to_iso(ymd),
-                    "screen": screen,
-                    "title": title,
-                    "showtime": start_time,
-                }
-            )
-    return rows
+            runtime_el = panel.select_one(".total-time")
+            runtime_min = None
+            if runtime_el:
+                rt_match = _RE_RUNTIME.search(runtime_el.get_text())
+                if rt_match:
+                    runtime_min = rt_match.group(1)
 
-
-# --------------------------------------------------------------------------- #
-# Main scraping routine
-# --------------------------------------------------------------------------- #
-def scrape_cinequinto_shibuya() -> List[Dict]:
-    log.info(f"Running scraper for {CINEMA_NAME_JP} …")
-    driver = None # Initialize for finally block
-    collected: List[Dict] = []
-
-    try:
-        driver = _init_driver() # Initialize driver here
-        driver.get(BASE_URL)
-        wait = WebDriverWait(driver, PAGE_LOAD_TIMEOUT)
-        wait.until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.date-box"))
-        )
-
-        date_tabs = driver.find_elements(By.CSS_SELECTOR, "div.date-box")
-        if not date_tabs:
-            log.error("No date tabs found – page layout may have changed.")
-            return [] # Return empty if no tabs
-
-        for idx, tab in enumerate(date_tabs[:MAX_DAYS]):
-            ymd = tab.get_attribute("data-jouei")
-            if not ymd:
-                log.warning("Date tab found without 'data-jouei' attribute.")
-                continue
-
-            log.info(f"Processing date: {ymd}")
-            if idx != 0:
-                try:
-                    driver.execute_script("arguments[0].click();", tab)
-                    WebDriverWait(driver, TAB_SWITCH_TIMEOUT).until(
-                        EC.visibility_of_element_located((By.ID, f"dateJouei{ymd}"))
-                    )
-                except TimeoutException:
-                    log.warning(
-                        f"Timeout waiting for schedule block of {ymd} – skipping"
-                    )
-                    continue
-                except Exception as e:
-                    log.error(f"Error clicking tab or waiting for content for {ymd}: {e}")
+            # every individual show-time becomes its own record
+            for ms in panel.select(".movie-schedule"):
+                start_raw = ms.get("data-start") or ""
+                if start_raw.isdigit():
+                    start_raw = start_raw.zfill(4)
+                    showtime = f"{start_raw[:2]}:{start_raw[2:]}"
+                else:
+                    b = ms.select_one(".movie-schedule-begin")
+                    showtime = b.get_text(strip=True) if b else None
+                if not showtime:
                     continue
 
+                screen_el = ms.select_one(".screen-name")
+                screen = screen_el.get_text(strip=True) if screen_el else None
 
-            soup = BeautifulSoup(driver.page_source, "html.parser")
-            day_rows = _extract_showings_for_date(soup, ymd)
-            collected.extend(day_rows)
-            time.sleep(0.5) # Polite pause
+                out.append(
+                    dict(
+                        cinema_name=CINEMA_NAME,
+                        movie_title=jp_title,
+                        date_text=iso_date,
+                        showtime=showtime,
+                        director=None,
+                        year=None,
+                        country=None,
+                        runtime_min=runtime_min,
+                        synopsis=None,
+                        detail_page_url=None,
+                        movie_title_en=en_title,
+                        screen_name=screen,
+                        purchase_url=None,
+                    )
+                )
 
-    except Exception as e:
-        log.error(f"An error occurred during scraping {CINEMA_NAME_JP}: {e}")
-        # Optionally re-raise or handle more specifically
-    finally:
-        if driver: # Check if driver was initialized
-            driver.quit()
+    return out, titles
 
-    # Deduplicate, though less likely with this structure if parsing is correct
-    # dedup = {
-    #     (r["cinema"], r["date_text"], r["screen"], r["title"], r["showtime"]): r
-    #     for r in collected
-    # }
-    # final_rows = list(dedup.values())
-    final_rows = collected # Using collected directly if duplicates are not expected.
-    log.info(f"Collected {len(final_rows)} showings from {CINEMA_NAME_JP}.")
-    return final_rows
+# ───────────────────────── 2) title → detail-URL map ───────────
+def _map_titles(html: str) -> Dict[str, str]:
+    soup = BeautifulSoup(html, "html.parser")
+    mapping: Dict[str, str] = {}
+    for li in soup.select("ul.cmn-list01 li.item"):
+        a = li.find("a")
+        if not a:
+            continue
+        title_el = a.select_one(".txt01")
+        if not title_el:
+            continue
+        title = title_el.get_text(strip=True)
+        if "上映スケジュール" in title:  # skip the weekly schedule banner
+            continue
+        url = a["href"]
+        if url.startswith("/"):
+            url = "https://www.cinequinto.com" + url
+        mapping[_norm(title)] = url
+    return mapping
 
+# ───────────────────────── 3) detail page scraper ──────────────
+def _scrape_detail(session: requests.Session, url: str) -> Dict[str, str]:
+    soup = BeautifulSoup(_get(session, url), "html.parser")
 
-# --------------------------------------------------------------------------- #
-# Stand-alone execution
-# --------------------------------------------------------------------------- #
+    # synopsis: the article text (strip tags, keep line-breaks)
+    article = soup.select_one("article.article")
+    synopsis = None
+    if article:
+        raw = article.decode()
+        # replace <br> with newlines then strip the rest of the tags
+        raw = re.sub(r"<br\s*/?>", "\n", raw)
+        synopsis = _RE_HTML_TAGS.sub("", raw).strip()
+
+    # credit table
+    director = year = country = runtime_min = None
+    for tr in soup.select(".cmn-tbl01 table tr"):
+        th = tr.find("th")
+        td = tr.find("td")
+        if not th or not td:
+            continue
+        key = th.get_text(strip=True)
+        val = td.get_text(" ", strip=True)
+        if "監督" in key:
+            director = val
+        elif "作品データ" in key:
+            y = _RE_YEAR.search(val)
+            if y:
+                year = y.group(1)
+            rt = _RE_RUNTIME.search(val)
+            if rt:
+                runtime_min = rt.group(1)
+            # attempt rudimentary country extraction (second chunk after '／')
+            parts = [p.strip() for p in val.split("／") if p.strip()]
+            for p in parts:
+                if p != year and "分" not in p and not p.startswith("PG"):
+                    country = p
+                    break
+        elif "上映時間" in key:
+            rt = _RE_RUNTIME.search(val)
+            if rt:
+                runtime_min = rt.group(1)
+
+    return dict(
+        director=director or None,
+        year=year or None,
+        country=country or None,
+        runtime_min=runtime_min or None,
+        synopsis=synopsis or None,
+    )
+
+# ───────────────────────── main orchestrator ───────────────────
+def scrape_cine_quinto(max_days: int = 7) -> List[Dict]:
+    today = _dt.date.today()
+    with requests.Session() as s:
+        sched_html = _get(s, SCHEDULE_URL)
+        schedule, titles = _parse_schedule(sched_html, today, max_days)
+
+        mapping = _map_titles(_get(s, LISTING_URL))
+
+        # fetch detail pages once per unique title
+        cache: Dict[str, Dict] = {}
+        for jp in titles:
+            norm = _norm(jp)
+            if norm in mapping and norm not in cache:
+                cache[norm] = _scrape_detail(s, mapping[norm])
+
+        # enrich rows
+        for row in schedule:
+            norm = _norm(row["movie_title"])
+            if norm in cache:
+                row.update(cache[norm])
+                row["detail_page_url"] = mapping[norm]
+
+    return schedule
+
+# ───────────────────────── save helper (CLI convenience) ───────
+def _save(data: List[Dict]):
+    fp = Path(__file__).with_name("cine_quinto_showings.json")
+    fp.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"\n✓ Saved {len(data)} rows → {fp.name}\n")
+
+# ───────────────────────── Run standalone ──────────────────────
 if __name__ == "__main__":
-    rows = scrape_cinequinto_shibuya()
-    if rows:
-        from pprint import pprint
-        pprint(rows[:10])
-    else:
-        log.error(f"No rows collected for {CINEMA_NAME_JP}.")
+    print("Running Cine Quinto scraper …")
+    try:
+        rows = scrape_cine_quinto()
+    except Exception as e:
+        print("ERROR:", e)
+        raise
+    print(f"Collected {len(rows)} rows; first 5 records:\n")
+    for r in rows[:5]:
+        print(r)
+    _save(rows)
