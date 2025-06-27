@@ -3118,14 +3118,6 @@
     "gemini_english_title": "Happy☆End",
     "processed_without_id": true
   },
-  "呪儀 BODY PARTS": {
-    "id": null,
-    "tmdb_title": null,
-    "tmdb_original_title": null,
-    "letterboxd_english_title": null,
-    "gemini_english_title": "Body Parts",
-    "processed_without_id": true
-  },
   "かたつむりのメモワール": {
     "id": 1064486,
     "tmdb_title": "Memoir of a Snail",
@@ -3137,6 +3129,14 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "呪儀 BODY PARTS": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "Body Parts",
     "processed_without_id": true
   },
   "プリキュアナイト": {
@@ -3159,6 +3159,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
+    "gemini_english_title": "Rather Be Ashes Than Dust",
     "processed_without_id": true
   },
   "特集上映〉EU フィルムデーズ2025 EU FILM DAYS 2025": {
@@ -3194,7 +3195,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "93-Year-Olds Kind Revenge",
+    "gemini_english_title": "A Gentle Revenge at 93",
     "processed_without_id": true
   },
   "ＹＯＵＮＧ＆ＦＩＮＥ★舞台挨拶付き上映": {
@@ -3250,7 +3251,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Detective <Sleuth>",
+    "gemini_english_title": "Detective ＜Sleuth＞",
     "processed_without_id": true
   },
   "怪獣ゴルゴ": {
@@ -3292,25 +3293,10 @@
     "letterboxd_english_title": null,
     "processed_without_id": true
   },
-  "明日になれば他人": {
-    "id": null,
-    "tmdb_title": null,
-    "tmdb_original_title": null,
-    "letterboxd_english_title": null,
-    "gemini_english_title": "Tomorrow Becomes Strangers",
-    "processed_without_id": true
-  },
-  "走り来る人々": {
-    "id": null,
-    "tmdb_title": null,
-    "tmdb_original_title": null,
-    "letterboxd_english_title": null,
-    "processed_without_id": true
-  },
-  "肉体の遺産": {
-    "id": 89484,
-    "tmdb_title": "Home from the Hill",
-    "tmdb_original_title": "Home from the Hill",
+  "ボヴァリー夫人": {
+    "id": 2528,
+    "tmdb_title": "Madame Bovary",
+    "tmdb_original_title": "Madame Bovary",
     "letterboxd_english_title": null
   },
   "あの娘は知らない": {
@@ -3319,16 +3305,31 @@
     "tmdb_original_title": "あの娘は知らない",
     "letterboxd_english_title": null
   },
+  "肉体の遺産": {
+    "id": 89484,
+    "tmdb_title": "Home from the Hill",
+    "tmdb_original_title": "Home from the Hill",
+    "letterboxd_english_title": null
+  },
+  "走り来る人々": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "Running People",
+    "processed_without_id": true
+  },
+  "明日になれば他人": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
   "蜘蛛の巣": {
     "id": 446807,
     "tmdb_title": "The Girl in the Spider's Web",
     "tmdb_original_title": "The Girl in the Spider's Web",
-    "letterboxd_english_title": null
-  },
-  "ボヴァリー夫人": {
-    "id": 2528,
-    "tmdb_title": "Madame Bovary",
-    "tmdb_original_title": "Madame Bovary",
     "letterboxd_english_title": null
   },
   "フォーチュンクッキー": {
@@ -3342,7 +3343,6 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Fortune Cookie★Post-Screening Talk Event",
     "processed_without_id": true
   },
   "ハイテンション ★上映後": {
@@ -3350,7 +3350,6 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "High Tension (4K) ★ After Screening Talk Event",
     "processed_without_id": true
   },
   "リライト★上映後": {
@@ -3358,6 +3357,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
+    "gemini_english_title": "Rewriting ★ Screening and Talk Event",
     "processed_without_id": true
   },
   "odessa Midnight Movies 伊藤蒼AN": {
@@ -3378,7 +3378,6 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Sixty-Year-Old High School Student",
     "processed_without_id": true
   },
   "アスファルト・シティ": {
@@ -3394,7 +3393,6 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Basara: The Movie",
     "processed_without_id": true
   },
   "それいけ！アンパンマン チャポンの ヒー": {
@@ -3402,7 +3400,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Lets Go! Anpanman: Chappon and the Hero",
+    "gemini_english_title": "Anpanman and Chappon: The Boo",
     "processed_without_id": true
   },
   "還暦高校生［0629舞台挨拶": {
@@ -3425,11 +3423,12 @@
     "tmdb_original_title": "でっちあげ ～殺人教師と呼ばれた男",
     "letterboxd_english_title": null
   },
-  "ラフレトークライブ2025": {
+  "石川瑠華 特集『猿楽町で会いましょう": {
     "id": null,
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
+    "gemini_english_title": "Meet Me in Asagaya",
     "processed_without_id": true
   },
   "石川瑠華 特集『冬の夢": {
@@ -3437,24 +3436,21 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Winter Dream",
     "processed_without_id": true
   },
-  "石川瑠華 特集『猿楽町で会いましょう": {
+  "カーテンコールの灯": {
     "id": null,
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Lets Meet in Sarugakucho",
+    "gemini_english_title": "Light of the Curtain Call",
     "processed_without_id": true
   },
-  "ブリジット・ジョーンズの日記 レストア": {
-    "id": null,
-    "tmdb_title": null,
-    "tmdb_original_title": null,
-    "letterboxd_english_title": null,
-    "gemini_english_title": "Bridget Joness Diary 4K Restoration",
-    "processed_without_id": true
+  "さらば、わが愛／覇王別姫": {
+    "id": 10997,
+    "tmdb_title": "Farewell My Concubine",
+    "tmdb_original_title": "霸王别姬",
+    "letterboxd_english_title": null
   },
   "スワロウテイル": {
     "id": 8426,
@@ -3507,6 +3503,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
+    "gemini_english_title": "Kineta",
     "processed_without_id": true
   },
   "青い珊瑚礁": {
@@ -3533,19 +3530,67 @@
     "tmdb_original_title": "More",
     "letterboxd_english_title": null
   },
+  "名もなき者 ／A COMPLETE UNKNOWN": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "A Complete Unknown",
+    "processed_without_id": true
+  },
+  "ピロスマニ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "蝶の渡り": {
+    "id": 1212799,
+    "tmdb_title": "Forced Migration of Butterflies",
+    "tmdb_original_title": "პეპლების იძულებითი მიგრაცია",
+    "letterboxd_english_title": null
+  },
+  "アジアのユニークな国": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
   "ひめゆり": {
     "id": 266226,
     "tmdb_title": "Himeyuri",
     "tmdb_original_title": "ひめゆり",
     "letterboxd_english_title": null
   },
-  "黄金狂時代 サイレント・修復版": {
+  "私は何度も私になる": {
     "id": null,
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Golden Crazy Age: Silent 4K Restoration",
+    "gemini_english_title": "I Am Me, Myself, and I",
     "processed_without_id": true
+  },
+  "WHO IS THAT MAN!? あの男は誰だ": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "Who Is That Man!?",
+    "processed_without_id": true
+  },
+  "一万年、後": {
+    "id": 668085,
+    "tmdb_title": "In 10,000 years",
+    "tmdb_original_title": "一万年、後....。",
+    "letterboxd_english_title": null
+  },
+  "怒る西行": {
+    "id": 424176,
+    "tmdb_title": "Okoru Saigyou",
+    "tmdb_original_title": "怒る西行",
+    "letterboxd_english_title": null
   },
   "Solaris": {
     "id": 2103,
@@ -3590,7 +3635,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "The Popes Bed",
+    "gemini_english_title": "Until the Day I Become Pope",
     "processed_without_id": true
   },
   "ドマーニ！愛のことづて": {
@@ -3617,7 +3662,6 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Pharrell Williams: Peace by Piece",
     "processed_without_id": true
   },
   "アメリカ黒人映画傑作選 作品日替り": {
@@ -3625,21 +3669,6 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "processed_without_id": true
-  },
-  "å½±æ³å¸«æç©å": {
-    "id": null,
-    "tmdb_title": null,
-    "tmdb_original_title": null,
-    "letterboxd_english_title": null,
-    "processed_without_id": true
-  },
-  "ã²ã°ããä¸ã®å¯¾æ±º": {
-    "id": null,
-    "tmdb_title": null,
-    "tmdb_original_title": null,
-    "letterboxd_english_title": null,
-    "gemini_english_title": "The Sunflowers Pledge",
     "processed_without_id": true
   },
   "ç¾é¢¨é¬¼å§«è¡éï¼»é¬¼å§«ããã æ¹é¡ç­ç¸®çï¼½": {
@@ -3654,7 +3683,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Female Prisoner Scorpion: Jailhouse 41",
+    "gemini_english_title": "Female Prisoner 701: Scorpion",
     "processed_without_id": true
   },
   "å°ç": {
@@ -3670,7 +3699,7 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
-    "gemini_english_title": "Rhapsody in August",
+    "gemini_english_title": "Stray Cat Rock: Delinquent Girl Boss",
     "processed_without_id": true
   },
   "ææ¬å§å©é·¹": {
@@ -3692,6 +3721,21 @@
     "tmdb_title": null,
     "tmdb_original_title": null,
     "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "èãåãå¨ï¼»ææ¥ã®æ³ æ¹é¡ï¼½": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "processed_without_id": true
+  },
+  "å¦è¶æ¯å©¦ä¼ äººæ¬ããå": {
+    "id": null,
+    "tmdb_title": null,
+    "tmdb_original_title": null,
+    "letterboxd_english_title": null,
+    "gemini_english_title": "Demon Spiderslayer",
     "processed_without_id": true
   },
   "高校生心中 純愛": {
