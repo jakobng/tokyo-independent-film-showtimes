@@ -1,173 +1,240 @@
-"""
-waseda_shochiku_module.py — Waseda-Shochiku (English and Japanese pages) scraper
-Site   : http://www.wasedashochiku.co.jp/english/ (English)
-         http://www.wasedashochiku.co.jp/ (Japanese)
-Author : you :-)
-Last   : 2025-06-11
-"""
+#!/usr/bin/env python3
+"""waseda_shochiku_scraper.py
+=================================
+Scraper for **早稲田松竹** (Waseda Shochiku) that mirrors the JSON‑file
+behaviour of the other cinema modules in this repo.
 
+It fetches the theatre's home page (http://www.wasedashochiku.co.jp/),
+crawls the linked schedule detail pages, resolves show‑times for the
+next *N* days (default = 21), and dumps everything to a JSON file on
+disk so it’s easy to diff / debug.
+
+Run it:
+```
+$python waseda_shochiku_scraper.py              # → waseda_shochiku_showings.json$ python waseda_shochiku_scraper.py -o ws.json   # custom output name
+```
+
+The output file is a **list of objects**; each record looks like this:
+```json
+{
+  "cinema_name": "早稲田松竹",
+  "movie_title": "君の名は。",            # Japanese title as shown in schedule
+  "movie_title_en": "Your Name.",        # English title (may be blank)
+  "date_text": "2025-07-04",            # ISO‑8601 calendar date
+  "showtime": "18:40",                 # HH:MM (24‑hour clock)
+  "director": "新海 誠",
+  "year": "2016",
+  "country": "日本",                    # if available
+  "runtime_min": "106",
+  "synopsis": "…",
+  "detail_page_url": "http://…"
+}
+```
+
+Dependencies: `requests`, `beautifulsoup4` and Python ≥3.8.
+"""
 from __future__ import annotations
 
+import argparse
 import datetime as _dt
+import json
 import re
 import sys
+from pathlib import Path
 from typing import Dict, List
+from urllib.parse import urljoin
 
 import requests
-from bs4 import BeautifulSoup, Tag
+from bs4 import BeautifulSoup
 
-# ──────────────────────────── constants ──────────────────────────────────────
+# ───────────────────── constants ───────────────────────────────
 CINEMA_NAME = "早稲田松竹"
-URL_EN      = "http://www.wasedashochiku.co.jp/english/"
-URL_JA      = "http://www.wasedashochiku.co.jp/"
-HEADERS     = {
+BASE_URL = "http://www.wasedashochiku.co.jp/"
+HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "
         "Chrome/125.0 Safari/537.36"
     )
 }
+TIMEOUT = 20
+_YEAR_RE = re.compile(r"(\d{4})年")
 _TIME_RE = re.compile(r"\b\d{1,2}:\d{2}\b")
-_DOT_WEEK_RE = re.compile(r"\.\w{3}", re.I)
+_RUNTIME_RE = re.compile(r"(\d+)分")
 
-# ─────────────────────── helpers: date handling ─────────────────────────────
-def _date_iter(start: _dt.date, end: _dt.date):
-    d = start
-    one = _dt.timedelta(days=1)
-    while d <= end:
-        yield d
-        d += one
+# ─────────────────── film‑detail extraction ────────────────────
 
-def _parse_header_dates(text: str, year_hint: int) -> List[_dt.date]:
-    txt = _DOT_WEEK_RE.sub("", text).replace(" ", "")
-    if "～" in txt or "-" in txt:
-        sep = "～" if "～" in txt else "-"
-        a, b = [p for p in txt.split(sep) if p]
-        m1, d1 = map(int, a.split("/"))
-        m2, d2 = map(int, b.split("/"))
-        y1 = year_hint
-        y2 = year_hint if (m2 > m1 or (m2 == m1 and d2 >= d1)) else year_hint + 1
-        start = _dt.date(y1, m1, d1)
-        end   = _dt.date(y2, m2, d2)
-        return list(_date_iter(start, end))
+def _parse_film_details(detail_soup: BeautifulSoup, schedule_page_url: str) -> Dict[str, Dict]:
+    """Return a mapping *Japanese title* → info‑dict from one schedule page."""
+    film_details: Dict[str, Dict] = {}
+    # Iterate through each film's info block on the single schedule page.
+    for block in detail_soup.select("div.sakuhinjoho-box[id^='film']"):
+        title_tag = block.select_one("h3.sakuhin-title")
+        if not title_tag:
+            continue
 
-    dates = []
-    current_month = -1
-    parts = txt.split("･")
-    for part in parts:
-        if "/" in part:
-            m_str, d_str = part.split("/")
-            current_month = int(m_str)
-            day = int(d_str)
-        else:
-            if not part: continue
-            day = int(part)
+        # The URL for all films on this page is the schedule page's URL.
+        actual_detail_url = schedule_page_url
 
-        if current_month != -1:
-            dates.append(_dt.date(year_hint, current_month, day))
-    return dates
+        # Cleanly extract the Japanese title by removing any nested tags.
+        title_tmp = BeautifulSoup(str(title_tag), "html.parser").h3
+        if title_tmp.span:
+            title_tmp.span.decompose()
+        title_ja = title_tmp.get_text(" ", strip=True)
 
-def _clean_times(cell: Tag) -> List[str]:
-    txt = cell.get_text(" ", strip=True)
-    if "～" in txt:
-        txt = txt.split("～")[0]
-    return _TIME_RE.findall(txt)
+        # Extract the English title if it exists.
+        title_en_tag = title_tag.select_one("span")
+        title_en = title_en_tag.get_text(strip=True) if title_en_tag else ""
 
-# ───────────────────────── main scraper ─────────────────────────────────────
-def scrape_waseda_shochiku(max_days: int = 14) -> List[Dict[str, str]]:
-    """
-    Scrapes the English and Japanese pages and returns listings for the coming *max_days*.
-    """
-    soup_en, soup_ja = None, None
+        details = {
+            "director": "", "year": "", "country": "", "runtime_min": "", "synopsis": "",
+        }
 
+        # Parse the metadata from the description box.
+        desc_box = block.select_one(".sakuhin-desc-box")
+        if desc_box:
+            text_content = desc_box.get_text("\n", strip=True)
+            meta_line = text_content.split("\n")[0] if text_content else ""
+            if "監督" in meta_line:
+                details["director"] = meta_line.split("監督")[0].replace("■", "").strip()
+            if year_match := _YEAR_RE.search(meta_line):
+                details["year"] = year_match.group(1)
+            if runtime_match := _RUNTIME_RE.search(meta_line):
+                details["runtime_min"] = runtime_match.group(1)
+            segs = meta_line.split("／")
+            if len(segs) >= 3 and "年" in segs[1] and "分" not in segs[2]:
+                 details["country"] = segs[2].strip()
+
+        # Extract synopsis.
+        synopsis_box = block.select_one(".sakuhin-text-box p.page-text2")
+        if synopsis_box:
+            details["synopsis"] = synopsis_box.get_text(" ", strip=True)
+
+        # Store all collected details, keyed by the Japanese title.
+        film_details[title_ja] = {
+            "title_ja": title_ja,
+            "title_en": title_en,
+            "detail_page_url": actual_detail_url,
+            **details,
+        }
+    return film_details
+
+# ─────────────────────── schedule scraping ─────────────────────
+
+def scrape_waseda_shochiku(max_days: int = 21) -> List[Dict[str, str]]:
+    """Return a list of showing-records covering *max_days* ahead."""
     try:
-        resp_en = requests.get(URL_EN, headers=HEADERS, timeout=25)
-        resp_en.raise_for_status()
-        soup_en = BeautifulSoup(resp_en.content, "html.parser")
-    except Exception as exc:
-        print(f"[{CINEMA_NAME}] English page fetch error: {exc}", file=sys.stderr)
+        resp = requests.get(BASE_URL, headers=HEADERS, timeout=TIMEOUT)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.content, "html.parser")
+    except requests.RequestException as e:
+        print(f"ERROR: Could not fetch the main page at {BASE_URL}: {e}", file=sys.stderr)
         return []
 
-    try:
-        resp_ja = requests.get(URL_JA, headers=HEADERS, timeout=25)
-        resp_ja.raise_for_status()
-        soup_ja = BeautifulSoup(resp_ja.content, "html.parser")
-    except Exception as exc:
-        print(f"[{CINEMA_NAME}] Japanese page fetch error: {exc}", file=sys.stderr)
-        pass
+    # Crawl schedule detail pages to build a cache of film metadata.
+    details_cache: Dict[str, Dict] = {}
+    detail_urls = {
+        urljoin(BASE_URL, a["href"].split("#")[0])
+        for a in soup.select(".top-sakuhin-area a[href*='archives/schedule/']")
+    }
 
-    today  = _dt.date.today()
-    window = today + _dt.timedelta(days=max_days)
-    rows: List[Dict[str, str]] = []
+    for url in detail_urls:
+        try:
+            dresp = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
+            dresp.raise_for_status()
+            # The URL of the schedule page itself is passed to the parser.
+            details_cache.update(_parse_film_details(BeautifulSoup(dresp.content, "html.parser"), url))
+        except requests.RequestException as e:
+            print(f"WARNING: Failed to scrape details from {url}: {e}", file=sys.stderr)
 
-    tables_en = soup_en.select("table.top-schedule-area")
-    tables_ja = soup_ja.select("table.top-schedule-area") if soup_ja else [None] * len(tables_en)
+    today = _dt.date.today()
+    window_end = today + _dt.timedelta(days=max_days)
+    showings: List[Dict] = []
 
-    if soup_ja and len(tables_en) != len(tables_ja):
-        print(f"[{CINEMA_NAME}] Warning: Mismatch in number of schedule tables between English ({len(tables_en)}) and Japanese ({len(tables_ja)}) pages.", file=sys.stderr)
-        if len(tables_en) > len(tables_ja):
-            tables_ja.extend([None] * (len(tables_en) - len(tables_ja)))
+    # Iterate through the schedule tables on the main page.
+    for tbl in soup.select("table.top-schedule-area"):
+        header_txt = tbl.find("thead").get_text(" ", strip=True)
+        # Extract date range from the table header.
+        dates: List[_dt.date] = []
+        md_pairs = re.findall(r"(\d{1,2})/(\d{1,2})", header_txt)
+        if len(md_pairs) == 2:
+            m1, d1 = map(int, md_pairs[0])
+            m2, d2 = map(int, md_pairs[1])
+            year_start = today.year
+            start_date = _dt.date(year_start, m1, d1)
+            end_date = _dt.date(year_start if m2 >= m1 else year_start + 1, m2, d2)
+            current_date = start_date
+            while current_date <= end_date:
+                dates.append(current_date)
+                current_date += _dt.timedelta(days=1)
 
-    for tbl_idx, tbl_en in enumerate(tables_en):
-        tbl_ja = tables_ja[tbl_idx] if tbl_idx < len(tables_ja) else None
-        head_en = tbl_en.find("thead")
-        if not head_en: continue
-        header_text_en = head_en.get_text(" ", strip=True)
-        dates = _parse_header_dates(header_text_en, today.year)
-        if not dates: continue
-
-        trs_en = tbl_en.select("tr.schedule-item")
-        trs_ja = tbl_ja.select("tr.schedule-item") if tbl_ja else [None] * len(trs_en)
-
-        if tbl_ja and len(trs_en) != len(trs_ja):
-            print(f"[{CINEMA_NAME}] Warning: Mismatch in film rows for table {tbl_idx+1} ('{header_text_en}'). EN: {len(trs_en)}, JA: {len(trs_ja)}.", file=sys.stderr)
-            if len(trs_en) > len(trs_ja):
-                trs_ja.extend([None] * (len(trs_en) - len(trs_ja)))
-
-        for tr_idx, tr_en in enumerate(trs_en):
-            title_en_tag = tr_en.th
-            title_en = title_en_tag.get_text(" ", strip=True) if title_en_tag else ""
-            if not title_en: continue
-
-            title_ja = ""
-            if tr_idx < len(trs_ja):
-                tr_ja_current = trs_ja[tr_idx]
-                if tr_ja_current and tr_ja_current.th:
-                    title_ja = tr_ja_current.th.get_text(" ", strip=True)
-
-            tds_en = tr_en.find_all("td")
-            if not tds_en: continue
-
-            for td_en in tds_en:
-                for t in _clean_times(td_en):
+        # Process each film row within this table's date range.
+        for row in tbl.select("tr.schedule-item"):
+            title_header = row.find("th")
+            if not title_header:
+                continue
+            title_tab = title_header.get_text(strip=True).replace("【ﾚｲﾄｼｮｰ】", "").strip()
+            # Look up the film's details from the cache using its title.
+            details = details_cache.get(title_tab)
+            if not details: 
+                print(f"WARNING: Title '{title_tab}' found in schedule table but not in detail blocks. Skipping.", file=sys.stderr)
+                continue
+            
+            for td in row.select("td"):
+                # --- [FINAL TWEAK] PROBLEM: End times (e.g., "～22:05") were parsed as start times.
+                # --- SOLUTION: Split the cell text on '～' and only parse the first part.
+                cell_text = td.get_text()
+                start_time_text = cell_text.split("～")[0]
+                
+                for showtime in _TIME_RE.findall(start_time_text):
                     for date_obj in dates:
-                        if today <= date_obj <= window:
-                            primary_title = title_en if title_en else title_ja
-                            rows.append({
-                                "cinema": CINEMA_NAME,
-                                "title": primary_title,
+                        if today <= date_obj <= window_end:
+                            showings.append({
+                                "cinema_name": CINEMA_NAME,
+                                "movie_title": details.get("title_ja", title_tab),
+                                "movie_title_en": details.get("title_en", ""),
                                 "date_text": date_obj.isoformat(),
-                                "screen": "",
-                                "title_en": title_en,
-                                "title_ja": title_ja,
-                                "showtime": t,
+                                "showtime": showtime,
+                                "director": details.get("director", ""),
+                                "year": details.get("year", ""),
+                                "country": details.get("country", ""),
+                                "runtime_min": details.get("runtime_min", ""),
+                                "synopsis": details.get("synopsis", ""),
+                                "detail_page_url": details.get("detail_page_url", ""),
                             })
 
-    unique = {(r["date_text"], r["title"], r["showtime"]): r for r in rows}
-    return list(unique.values())
+    # Deduplicate records.
+    unique_showings = { (r["date_text"], r["movie_title"], r["showtime"]): r for r in showings }
+    return list(unique_showings.values())
 
-# ──────────────────────────── self-test ─────────────────────────────────────
+# ─────────────────────────── CLI glue ──────────────────────────
+
+def _cli(argv: List[str] | None = None) -> None:
+    """Command-line interface for the scraper."""
+    parser = argparse.ArgumentParser(description="Scrape Waseda Shochiku and write a JSON file.")
+    parser.add_argument("--days", type=int, default=21, help="How many days ahead to include (default 21)")
+    parser.add_argument("-o", "--outfile", default="waseda_shochiku_showings.json", help="Output JSON filename")
+    parser.add_argument("--quiet", action="store_true", help="Suppress INFO logs (errors still show)")
+    args = parser.parse_args(argv)
+
+    if not args.quiet:
+        print(f"INFO: Fetching {BASE_URL}…")
+    data = scrape_waseda_shochiku(max_days=args.days)
+    if not data:
+        print("ERROR: No data was scraped. Exiting.", file=sys.stderr)
+        sys.exit(1)
+
+    out_path = Path(args.outfile)
+    if not args.quiet:
+        print(f"INFO: Writing {len(data)} showing record(s) to {out_path}…")
+    try:
+        with out_path.open("w", encoding="utf-8") as fh:
+            json.dump(data, fh, ensure_ascii=False, indent=4)
+        if not args.quiet:
+            print("INFO: Finished successfully.")
+    except IOError as e:
+        print(f"ERROR: Could not write to output file {out_path}: {e}", file=sys.stderr)
+        sys.exit(1)
+
 if __name__ == "__main__":
-    if sys.platform == "win32":
-        for s in (sys.stdout, sys.stderr):
-            try: s.reconfigure(encoding="utf-8", errors="replace")
-            except Exception: pass
-
-    print(f"Testing {CINEMA_NAME} scraper …")
-    data = scrape_waseda_shochiku(max_days=21)
-    data.sort(key=lambda r: (r["date_text"], r["showtime"], r["title_en"]))
-    print(f"Found {len(data)} showings.\n")
-    print(f"{'Date':<12} {'Time':<7} {'Primary Title':<40} {'English Title':<40} {'Japanese Title'}")
-    print(f"{'-'*12} {'-'*7} {'-'*40} {'-'*40} {'-'*40}")
-    for r in data[:25]:
-        print(f'{r["date_text"]}  {r["showtime"]}  {r.get("title", "N/A"):<40} {r.get("title_en", "N/A"):<40} {r.get("title_ja", "N/A")}')
+    _cli()

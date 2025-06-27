@@ -1,20 +1,16 @@
 """
 shimotakaido_module.py — scraper for Shimotakaido Cinema (下高井戸シネマ)
-Last updated: 2025-06-11
-
-Returns a list of dicts with keys:
-    cinema, date_text (YYYY-MM-DD), screen, title, showtime
-
-Designed to mirror the structure used by the other cinema modules so it can be
-plugged straight into main_scraper3.py.
+- Adds date filtering to prevent showing dates too far in the future/past.
 """
 
 from __future__ import annotations
 
+import json
 import re
 import sys
-from datetime import datetime, timedelta
-from typing import Dict, List
+from datetime import datetime, timedelta, date
+from typing import Dict, List, Optional
+from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
@@ -24,7 +20,8 @@ from bs4 import BeautifulSoup
 # ---------------------------------------------------------------------------
 
 CINEMA_NAME = "下高井戸シネマ"
-URL = "https://shimotakaidocinema.com/schedule/schedule.html"
+BASE_URL = "https://shimotakaidocinema.com/"
+SCHEDULE_PAGE_URL = urljoin(BASE_URL, "schedule/schedule.html")
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -32,140 +29,194 @@ HEADERS = {
         "Chrome/125.0 Safari/537.36"
     )
 }
-TIMEOUT = 20  # seconds for requests.get
-
-__all__ = ["scrape_shimotakaido"]
+TIMEOUT = 20
 
 # ---------------------------------------------------------------------------
-# Core scraper
+# Helper Functions
 # ---------------------------------------------------------------------------
 
-def scrape_shimotakaido() -> List[Dict[str, str]]:
-    """
-    Scrape the weekly schedule for Shimotakaido Cinema.
-
-    Returns:
-        List of dict rows with keys: cinema, date_text (YYYY-MM-DD), screen,
-        title, showtime (HH:MM). Only includes showings within the next 10 days.
-    """
+def _fetch_soup(url: str) -> Optional[BeautifulSoup]:
+    """Fetches a URL and returns a BeautifulSoup object."""
     try:
-        resp = requests.get(URL, headers=HEADERS, timeout=TIMEOUT)
+        resp = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
         resp.raise_for_status()
+        return BeautifulSoup(resp.content, "html.parser")
     except requests.RequestException as e:
-        print(f"Error ({CINEMA_NAME}): failed to fetch schedule page: {e}", file=sys.stderr)
+        print(f"ERROR [{CINEMA_NAME}]: Could not fetch {url}: {e}", file=sys.stderr)
+        return None
+
+def _clean_text(text: str) -> str:
+    """A helper to normalize whitespace."""
+    return " ".join(text.strip().split())
+
+def _parse_runtime(text: str) -> Optional[str]:
+    """Parses '1h39' into '99' minutes."""
+    if not text: return None
+    hours, minutes = 0, 0
+    if h_match := re.search(r"(\d+)h", text):
+        hours = int(h_match.group(1))
+    if m_match := re.search(r"(\d+)", text.split('h')[-1]):
+        minutes = int(m_match.group(1))
+    total_minutes = hours * 60 + minutes
+    return str(total_minutes) if total_minutes > 0 else None
+
+# ---------------------------------------------------------------------------
+# Detail & Schedule Parsing
+# ---------------------------------------------------------------------------
+
+def _parse_all_details(soup: BeautifulSoup) -> Dict[str, Dict]:
+    """Parses all movie detail blocks on the schedule page."""
+    details_cache = {}
+
+    for box in soup.select("div.box"):
+        title_tag = box.select_one("span.eiga-title")
+        if not title_tag:
+            continue
+
+        title = _clean_text(title_tag.get_text())
+        if not title: continue
+
+        details = {
+            "director": None, "year": None, "runtime_min": None, "country": None,
+            "synopsis": None, "detail_page_url": None,
+        }
+
+        stuff_p = box.select_one("p.stuff")
+        if stuff_p:
+            stuff_text = _clean_text(stuff_p.get_text(separator=' '))
+            year_match = re.search(r"(\d{4})年?", stuff_text)
+            runtime_match = re.search(r"(\d+h\d*)", stuff_text)
+            director_match = re.search(r"監督(?:・脚本)?[：／]([^/]+)", stuff_text)
+
+            if year_match: details["year"] = year_match.group(1)
+            if runtime_match: details["runtime_min"] = _parse_runtime(runtime_match.group(1))
+            if director_match: details["director"] = director_match.group(1).strip()
+
+            country_parts = stuff_text.split('/')
+            if len(country_parts) > 1 and not (year_match and year_match.group(1) in country_parts[1]):
+                details["country"] = country_parts[1].strip()
+
+        note_p = box.select_one("p.note")
+        if note_p:
+            details["synopsis"] = _clean_text(note_p.get_text())
+
+        hp_link = box.select_one("a[href][target='_blank']")
+        if hp_link:
+            details["detail_page_url"] = hp_link['href']
+
+        details_cache[title] = details
+        if ' ' in title:
+            details_cache[title.split(' ')[-1]] = details
+
+    return details_cache
+
+# ---------------------------------------------------------------------------
+# Core Scraper
+# ---------------------------------------------------------------------------
+
+def scrape_shimotakaido(max_days: int = 14) -> List[Dict[str, str]]:
+    """Scrapes the Shimotakaido Cinema schedule page."""
+    print(f"INFO [{CINEMA_NAME}]: Fetching schedule page: {SCHEDULE_PAGE_URL}")
+    soup = _fetch_soup(SCHEDULE_PAGE_URL)
+    if not soup:
         return []
 
-    soup = BeautifulSoup(resp.content, "html.parser")
+    details_cache = _parse_all_details(soup)
+    print(f"INFO [{CINEMA_NAME}]: Found details for {len(details_cache)} films.")
+
     table = soup.find("table", class_="sche-table")
     if not table:
-        print(f"Error ({CINEMA_NAME}): schedule table not found", file=sys.stderr)
+        print(f"ERROR [{CINEMA_NAME}]: Schedule table not found", file=sys.stderr)
         return []
 
-    tbody = table.find("tbody")
-    rows = tbody.find_all("tr")
-    if not rows or len(rows) < 2:
-        print(f"Error ({CINEMA_NAME}): unexpected table structure", file=sys.stderr)
-        return []
+    rows = table.find("tbody").find_all("tr")
+    if not rows or len(rows) < 2: return []
 
-    # Determine year from page title
-    year = None
-    title_span = soup.find("span", class_="sche-title")
-    if title_span:
-        m_year = re.search(r"(\d{4})年", title_span.get_text())
-        if m_year:
-            year = int(m_year.group(1))
-    if year is None:
-        year = datetime.today().year
-
-    # Parse header row for date ranges
+    today = date.today()
+    year = today.year
     header_cells = rows[0].find_all("td", class_="sche-td-2")
-    date_ranges: List[tuple[datetime.date, datetime.date]] = []
+    date_ranges = []
     for cell in header_cells:
         text = cell.get_text(strip=True)
-        m = re.search(r"(\d{1,2})/(\d{1,2})[（(].*?[-–]\s*(\d{1,2})/(\d{1,2})", text)
-        if not m:
-            continue
-        m1, d1, m2, d2 = m.groups()
-        start = datetime(year, int(m1), int(d1)).date()
-        end_year = year if int(m2) >= int(m1) else year + 1
-        end = datetime(end_year, int(m2), int(d2)).date()
+        m = re.search(r"(\d{1,2})/(\d{1,2}).*?[-–]\s*(\d{1,2})/(\d{1,2})", text)
+        if not m: continue
+
+        m1, d1, m2, d2 = map(int, m.groups())
+        start = date(year, m1, d1) if m1 >= today.month else date(year + 1, m1, d1)
+        end_year = start.year if m2 >= m1 else start.year + 1
+        end = date(end_year, m2, d2)
         date_ranges.append((start, end))
 
-    results: List[Dict[str, str]] = []
-    # Iterate each showtime row
+    all_showings: List[Dict] = []
     for tr in rows[1:]:
         cells = tr.find_all("td", class_="sche-td")
-        if not cells:
-            continue
-        # For each date-range, cell pair
-        for (start, end), cell in zip(date_ranges, cells):
-            a = cell.find("a")
-            if not a:
-                continue
-            text = a.get_text(separator=" ", strip=True)
-            
-            # --- START: BUG FIX ---
-            # Capture hour and minute separately to format the time correctly.
-            tm = re.search(r"(\d{1,2}):(\d{2})", text)
-            if not tm:
-                continue
-            
-            hour, minute = tm.groups()
-            showtime = f"{int(hour):02d}:{minute}" # Pad hour with zero for correct sorting
-            # --- END: BUG FIX ---
-            
-            title = text[:tm.start()].strip()
-            if not title or title == "/":
-                continue
+        for (start_date, end_date), cell in zip(date_ranges, cells):
+            link = cell.find("a")
+            if not link: continue
 
-            # Expand over each date in range
-            current = start
-            while current <= end:
-                results.append({
-                    "cinema": CINEMA_NAME,
-                    "date_text": current.isoformat(),
-                    "screen": "",
-                    "title": title,
-                    "showtime": showtime,
+            text_parts = [s.strip() for s in link.stripped_strings]
+            if len(text_parts) < 2: continue
+
+            title, showtime = text_parts[0], text_parts[-1]
+            if not title or not re.match(r"\d{1,2}:\d{2}", showtime): continue
+
+            details = {}
+            for cache_title, detail_data in details_cache.items():
+                if title in cache_title:
+                    details = detail_data
+                    break
+
+            current_date = start_date
+            while current_date <= end_date:
+                all_showings.append({
+                    "cinema_name":     CINEMA_NAME,
+                    "movie_title":     title,
+                    "movie_title_en":  "",
+                    "date_text":       current_date.isoformat(),
+                    "showtime":        showtime,
+                    "director":        details.get("director", "") or "",
+                    "year":            details.get("year", "") or "",
+                    "country":         details.get("country", "") or "",
+                    "runtime_min":     details.get("runtime_min", "") or "",
+                    "synopsis":        details.get("synopsis", "") or "",
+                    "detail_page_url": details.get("detail_page_url", "") or "",
                 })
-                current += timedelta(days=1)
+                current_date += timedelta(days=1)
 
-    # Deduplicate
-    unique: List[Dict[str, str]] = []
-    seen: set[tuple] = set()
-    for row in results:
-        key = (row["date_text"], row["title"], row["showtime"])
-        if key not in seen:
-            unique.append(row)
-            seen.add(key)
-
-    # Filter to next 10 days (including today)
-    today = datetime.today().date()
-    cutoff = today + timedelta(days=9)
-    filtered: List[Dict[str, str]] = [
-        row for row in unique
-        if today <= datetime.fromisoformat(row["date_text"]).date() <= cutoff
+    # --- FIX: Filter for the specified date window ---
+    cutoff_date = today + timedelta(days=max_days)
+    future_showings = [
+        s for s in all_showings
+        if today <= date.fromisoformat(s['date_text']) < cutoff_date
     ]
 
-    return filtered
-
+    unique = list({(s["date_text"], s["movie_title"], s["showtime"]): s for s in future_showings}.values())
+    print(f"INFO [{CINEMA_NAME}]: Collected {len(unique)} unique showings within the {max_days}-day window.")
+    return unique
 
 # ---------------------------------------------------------------------------
-# CLI test harness
+# CLI Test Harness
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
     if sys.platform == "win32":
         try:
-            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-            sys.stderr.reconfigure(encoding="utf-8", errors="replace")
-        except Exception:
-            pass
+            sys.stdout.reconfigure(encoding="utf-8")
+        except Exception: pass
+
     print(f"Testing {CINEMA_NAME} scraper…")
-    shows = scrape_shimotakaido()
+    shows = scrape_shimotakaido(max_days=14) # Set a default window for testing
     if not shows:
         print("No showings found — check warnings above.")
-        sys.exit(0)
-    shows.sort(key=lambda x: (x["date_text"], x["showtime"], x["title"]))
-    print(f"Found {len(shows)} showings. First 10:\n")
-    for s in shows[:10]:
-        print(f"  {s['date_text']}  {s['showtime']}  {s['title']} | {s['screen']}")
+        sys.exit(1)
+
+    shows.sort(key=lambda x: (x["date_text"], x["showtime"]))
+
+    output_filename = "shimotakaido_showtimes.json"
+    print(f"\nINFO: Writing {len(shows)} records to {output_filename}...")
+    with open(output_filename, "w", encoding="utf-8") as f:
+        json.dump(shows, f, ensure_ascii=False, indent=2)
+    print(f"INFO: Successfully created {output_filename}.")
+
+    print("\n--- Sample of First Showing ---")
+    from pprint import pprint
+    pprint(shows[0])

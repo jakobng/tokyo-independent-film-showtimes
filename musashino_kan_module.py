@@ -1,160 +1,179 @@
 """
 musashino_kan_module.py — scraper for Shinjuku Musashino‑kan
-Last updated: 2025‑05‑27
 
-Returns a list of dicts with keys:
-    cinema, date_text (YYYY‑MM‑DD), screen, title, showtime (HH:MM‑HH:MM)
-
-Designed to mirror the structure used by the other cinema modules so it can be
-plugged straight into `main_scraper2.py`.
+Revision #6 (Final)
+───────────────────────────────────────────────────────────
+* Correctly scrapes details for all movies listed on the schedule page.
+* Finds and parses the director, year, country, and runtime from <dl> tags.
+* Extracts a clean synopsis, removing extra text like ticket prices.
+* Normalises movie titles to remove prefixes/suffixes in the final output.
+* Formats showtimes to include only the start time.
 """
 
 from __future__ import annotations
 
+import json
 import re
 import sys
+import unicodedata
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict, List, Optional
+from urllib.parse import urljoin
 
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
-# ---------------------------------------------------------------------------
-#  Config / constants
-# ---------------------------------------------------------------------------
-
+# --- Constants ---
 CINEMA_NAME = "新宿武蔵野館"
+MAIN_SITE_URL = "https://shinjuku.musashino-k.jp/"
+SCHEDULE_PAGE_URL = "https://musashino.cineticket.jp/mk/theater/shinjuku/schedule"
+HEADERS = {"User-Agent": "Mozilla/5.0"}
 
-# Some installs block one variant of the URL (returning 404), so we try both.
-URL_CANDIDATES: list[str] = [
-    # Primary ticket engine domain (works without cookies)
-    "https://musashino.cineticket.jp/mk/theater/shinjuku/schedule",
-    "https://musashino.cineticket.jp/mk/theater/shinjuku/schedule/",  # trailing slash
-    # Legacy PR sub‑domain. Some regions may still resolve this one.
-    "https://shinjuku.musashino-k.jp/mk/theater/shinjuku/schedule",
-    "https://shinjuku.musashino-k.jp/mk/theater/shinjuku/schedule/",
-]
+# --- Helper Functions ---
 
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/125.0 Safari/537.36"
-    )
-}
+def _fetch_soup(url: str) -> Optional[BeautifulSoup]:
+    """Fetches a URL and returns a BeautifulSoup object."""
+    try:
+        r = requests.get(url, headers=HEADERS, timeout=20)
+        r.raise_for_status()
+        return BeautifulSoup(r.content, "html.parser")
+    except requests.RequestException as e:
+        print(f"WARN: [{CINEMA_NAME}] Could not fetch {url}: {e}", file=sys.stderr)
+        return None
 
-# ---------------------------------------------------------------------------
-#  Helper utilities
-# ---------------------------------------------------------------------------
+def _clean(element: Optional[Tag | str]) -> str:
+    """Extracts and normalizes whitespace from a BeautifulSoup element or string."""
+    if element is None: return ""
+    text = element.get_text(separator=' ', strip=True) if hasattr(element, 'get_text') else str(element)
+    return ' '.join(unicodedata.normalize("NFKC", text).strip().split())
 
-def _clean(element) -> str:
-    """Collapse whitespace inside an element to a single space."""
-    if element is None:
-        return ""
-    text = element.get_text(" ", strip=True) if hasattr(element, "get_text") else str(element)
-    return re.sub(r"\s+", " ", text).strip()
+def _normalise_title(text: str) -> str:
+    """Cleans movie titles by removing common prefixes and suffixes."""
+    text = re.sub(r"^(?:【[^】]+】)+", "", text)
+    text = re.sub(r"★.*$", "", text)
+    return text.strip()
 
+def _parse_detail_page(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
+    """Parses the movie detail page for metadata."""
+    details = {"director": None, "year": None, "country": None, "runtime_min": None, "synopsis": None}
 
-def _fetch_first_ok(urls: List[str]) -> requests.Response | None:
-    """Return the first successfully fetched response or None."""
-    for url in urls:
-        try:
-            resp = requests.get(url, headers=HEADERS, timeout=20)
-            if resp.status_code == 200:
-                return resp
-        except requests.exceptions.RequestException:
-            continue
-    return None
+    text_container = soup.select_one(".module.module-text > .wrapper > .text")
+    if not text_container:
+        return details
 
-# ---------------------------------------------------------------------------
-#  Core scraper
-# ---------------------------------------------------------------------------
+    for dl in text_container.find_all("dl", recursive=False):
+        dt_text = _clean(dl.find("dt"))
+        dd_text = _clean(dl.find("dd"))
+        
+        if "監督" in dt_text:
+            details["director"] = dd_text
+        elif "製作年／製作国" in dt_text:
+            parts = dd_text.split('／')
+            if len(parts) > 0: details["year"] = re.sub(r'\D', '', parts[0])
+            if len(parts) > 1: details["country"] = parts[1].strip()
+        elif "上映時間" in dt_text:
+            if match := re.search(r'(\d+)時間(\d+)分', dd_text):
+                h, m = map(int, match.groups())
+                details["runtime_min"] = str(h * 60 + m)
+            elif match := re.search(r'(\d+)分', dd_text):
+                details["runtime_min"] = match.group(1)
 
-def scrape_musashino_kan() -> List[Dict[str, str]]:
-    """Download and parse the schedule page."""
+    synopsis_parts = []
+    if synopsis_container := soup.select_one("div.module-text > .wrapper > .text-container > .text"):
+        for element in synopsis_container.find_all(recursive=False):
+            if element.name == 'dl':
+                break
+            if element.name == 'p':
+                synopsis_parts.append(_clean(element))
+    
+    if synopsis_parts:
+        details["synopsis"] = "\n".join(synopsis_parts)
+        
+    return details
 
-    response = _fetch_first_ok(URL_CANDIDATES)
-    if response is None:
-        print(f"Error ({CINEMA_NAME}): all candidate URLs failed.", file=sys.stderr)
+# --- Main Scraping Logic ---
+
+def scrape_musashino_kan() -> List[Dict]:
+    """Scrapes movie showtimes and details from the Musashino-kan website."""
+    schedule_soup = _fetch_soup(SCHEDULE_PAGE_URL)
+    if not schedule_soup:
         return []
 
-    soup = BeautifulSoup(response.content, "html.parser")
+    print(f"INFO: [{CINEMA_NAME}] Fetched schedule page: {SCHEDULE_PAGE_URL}")
+    all_showings = []
+    
+    date_blocks = schedule_soup.find_all("div", id=re.compile(r"^dateJouei(\d{8})$"))
+    print(f"INFO: [{CINEMA_NAME}] Found {len(date_blocks)} date blocks to process.")
+    
+    processed_urls = {}
 
-    results: List[Dict[str, str]] = []
+    for block in date_blocks:
+        date_iso = datetime.strptime(block["id"][-8:], "%Y%m%d").date().isoformat()
+        
+        for panel in block.select("div.movie-panel"):
+            title_tag = panel.select_one(".title-jp")
+            if not title_tag: continue
+            
+            raw_title = _clean(title_tag)
+            clean_title = _normalise_title(raw_title)
+            
+            metadata = {"movie_title_en": None}
+            detail_url = None
 
-    # Each date section has id="dateJoueiYYYYMMDD".
-    for block in soup.find_all("div", id=re.compile(r"^dateJouei(\d{8})$")):
-        m = re.match(r"dateJouei(\d{8})", block["id"])
-        if not m:
-            continue
-        try:
-            date_iso = datetime.strptime(m.group(1), "%Y%m%d").date().isoformat()
-        except ValueError:
-            date_iso = m.group(1)
+            if detail_link_tag := title_tag.find('a', href=True):
+                detail_url = urljoin(MAIN_SITE_URL, detail_link_tag['href'])
+                
+                if detail_url not in processed_urls:
+                    print(f"INFO: [{CINEMA_NAME}] Scraping details for '{clean_title}' from {detail_url}")
+                    detail_soup = _fetch_soup(detail_url)
+                    if detail_soup:
+                        processed_urls[detail_url] = _parse_detail_page(detail_soup)
+                
+                if detail_url in processed_urls:
+                    metadata.update(processed_urls[detail_url])
+            
+            metadata['detail_page_url'] = detail_url
 
-        # A movie panel lists one film, potentially with several showtime rows.
-        for panel in block.find_all("div", class_="movie-panel"):
-            title_jp = _clean(panel.find("div", class_="title-jp"))
-            if not title_jp:
-                continue  # skip banners or malformed blocks
+            for schedule_div in panel.select("div.movie-schedule"):
+                showtime = _clean(schedule_div.select_one(".movie-schedule-begin"))
+                if not showtime: continue
 
-            schedule_rows = panel.find_all("div", class_="movie-schedule")
-            for sched in schedule_rows:
-                # Screen name
-                screen = _clean(sched.find("span", class_="screen-name")) or "スクリーン?"
+                all_showings.append({
+                    "cinema_name": CINEMA_NAME,
+                    "movie_title": clean_title,
+                    "date_text": date_iso,
+                    "showtime": showtime,
+                    **metadata,
+                })
 
-                # Times
-                beg = _clean(sched.find("span", class_="movie-schedule-begin"))
-                end = _clean(sched.find("span", class_="movie-schedule-end"))
+    unique_showings = list({(s["date_text"], s["movie_title"], s["showtime"]): s for s in all_showings}.values())
+    unique_showings.sort(key=lambda x: (x.get('date_text', ''), x.get('showtime', '')))
+    
+    print(f"\nINFO: [{CINEMA_NAME}] Collected {len(unique_showings)} unique showings.")
+    return unique_showings
 
-                if not beg:
-                    # Fallback to data-start attribute like "1215".
-                    raw = sched.get("data-start", "")
-                    if re.match(r"^\d{3,4}$", raw):
-                        beg = f"{int(raw)//100:02d}:{int(raw)%100:02d}"
-
-                showtime = f"{beg}-{end}" if beg and end else beg or "?"
-
-                results.append(
-                    {
-                        "cinema": CINEMA_NAME,
-                        "date_text": date_iso,
-                        "screen": screen,
-                        "title": title_jp,
-                        "showtime": showtime,
-                    }
-                )
-
-    # De‑duplicate using (date,title,showtime) key.
-    unique: List[Dict[str, str]] = []
-    seen: set[tuple] = set()
-    for row in results:
-        key = (row["date_text"], row["title"], row["showtime"])
-        if key not in seen:
-            unique.append(row)
-            seen.add(key)
-
-    return unique
-
-# ---------------------------------------------------------------------------
-#  CLI test harness
-# ---------------------------------------------------------------------------
-
-if __name__ == "__main__":
+# --- CLI test harness ---
+if __name__ == '__main__':
     if sys.platform == "win32":
-        try:
-            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-            sys.stderr.reconfigure(encoding="utf-8", errors="replace")
-        except Exception:
-            pass
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 
-    print(f"Testing {CINEMA_NAME} scraper…")
-    shows = scrape_musashino_kan()
-    if not shows:
-        print("No showings found — check warnings above.")
-        sys.exit(0)
+    showings = scrape_musashino_kan()
+    if showings:
+        output_filename = "musashino_kan_showtimes_final.json"
+        print(f"\nINFO: Writing {len(showings)} records to {output_filename}...")
+        with open(output_filename, "w", encoding="utf-8") as f:
+            json.dump(showings, f, ensure_ascii=False, indent=2)
+        print(f"INFO: Successfully created {output_filename}.")
 
-    shows.sort(key=lambda x: (x["date_text"], x["title"], x["showtime"]))
-    print(f"Found {len(shows)} showings. First 10:\n")
-    for s in shows[:10]:
-        print(f"  {s['date_text']}  {s['showtime']}  {s['title']} | {s['screen']}")
+        print("\n--- Sample of a successfully parsed movie ---")
+        from pprint import pprint
+        # Find a movie that we expect to have metadata and print it
+        for movie in showings:
+            if movie.get('director'):
+                pprint(movie)
+                break
+        else:
+            print("Could not find a movie with parsed metadata in the sample.")
+
+    else:
+        print(f"\nNo showings found by {CINEMA_NAME} scraper.")

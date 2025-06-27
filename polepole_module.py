@@ -1,230 +1,190 @@
 """polepole_module.py — scraper for ポレポレ東中野 (Pole‑Pole Higashi‑Nakano)
 
-Scrapes the daily timetable without Selenium and returns **only the showings
-from today through the next 6 days** (a 7‑day rolling window). Strategy:
-  1. Parse the fully server‑rendered Jorudan schedule.
-  2. If that yields zero rows, fall back to the eiga.com page.
-
-Each returned dict has the canonical keys used by your other scrapers:
-    cinema     – ポレポレ東中野
-    date_text  – ISO date (YYYY‑MM‑DD)
-    screen     – "Screen 1" (single‑screen)
-    title      – Japanese title
-    showtime   – HH:MM 24‑hour string
-
-Dependencies: `requests`, `beautifulsoup4`.
+Scrapes the Jorudan schedule page and associated detail pages to produce
+a standardized data output.
 """
 
 from __future__ import annotations
 
 import datetime as dt
-import itertools
+import json
 import re
 import sys
-from typing import List, Dict, Optional, Set, Tuple
+from typing import Dict, List, Optional
+from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup, Tag
 
-__all__ = ["scrape_polepole"]
-
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
+# --- Constants ---
 CINEMA_NAME = "ポレポレ東中野"
-SCREEN_NAME = "Screen 1"
-JORUDAN_URL = "https://movie.jorudan.co.jp/theater/1000506/schedule/"
-EIGA_URL = "https://eiga.com/theater/13/130612/3292/"
+SCHEDULE_URL = "https://movie.jorudan.co.jp/theater/1000506/schedule/"
+BASE_URL = "https://movie.jorudan.co.jp"
 
 HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/125.0 Safari/537.36"
-    ),
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
     "Accept-Language": "ja,en-US;q=0.8,en;q=0.6",
 }
+TIMEOUT = 15
 
-TODAY: dt.date = dt.date.today()
-WINDOW_END: dt.date = TODAY + dt.timedelta(days=6)
+# --- Helper Functions ---
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-_DATE_PAT = re.compile(r"(?<![\d])(?P<m>\d{1,2})/(?:|0)(?P<d>\d{1,2})|(?P<m2>\d{1,2})月(?P<d2>\d{1,2})日")
-# --- START: BUG FIX ---
-# Modified regex to capture hour and minute separately for zero-padding.
-_TIME_PAT = re.compile(r"\b(\d{1,2}):(\d{2})\b")
-# --- END: BUG FIX ---
-
-
-def _iso_date(month: int, day: int, *, ref: dt.date | None = None) -> str:
-    """Convert M/D near *ref* (today) to an ISO YYYY‑MM‑DD string."""
-    base = ref or TODAY
-    year = base.year
-    # Handle year rollover (Dec shown in Jan, Jan shown in Dec)
-    if month == 12 and base.month == 1:
-        year -= 1
-    elif month == 1 and base.month == 12:
-        year += 1
-    return dt.date(year, month, day).isoformat()
-
-
-def _clean(txt: str | Tag | None) -> str:
-    if txt is None:
-        return ""
-    if isinstance(txt, Tag):
-        txt = txt.get_text(" ")
-    return re.sub(r"\s+", " ", txt).strip()
-
-
-def _fetch(url: str) -> Optional[BeautifulSoup]:
+def _fetch_soup(url: str) -> Optional[BeautifulSoup]:
+    """Fetches a URL and returns a BeautifulSoup object."""
     try:
-        r = requests.get(url, headers=HEADERS, timeout=15)
+        r = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
         r.raise_for_status()
         return BeautifulSoup(r.content, "html.parser")
-    except requests.RequestException as exc:
-        print(f"[polepole] fetch error {url}: {exc}", file=sys.stderr)
+    except requests.RequestException as e:
+        print(f"ERROR [{CINEMA_NAME}]: Could not fetch {url}. Reason: {e}", file=sys.stderr)
         return None
 
-# ---------------------------------------------------------------------------
-# Jorudan parser (primary)
-# ---------------------------------------------------------------------------
+def _clean_text(element: Optional[Tag]) -> str:
+    """Extracts and normalizes whitespace from a BeautifulSoup Tag."""
+    if not element:
+        return ""
+    return " ".join(element.get_text(strip=True).split())
 
-def _parse_jorudan(soup: BeautifulSoup) -> List[Dict]:
-    rows: List[Dict] = []
+# --- Detail Page Parsing ---
 
-    for h2 in soup.find_all("h2"):
-        title = _clean(h2)
-        if not title or "ページをシェア" in title or "ランキング" in title:
+def _parse_detail_page(soup: BeautifulSoup) -> Dict:
+    """Parses a film's detail page on Jorudan for rich information."""
+    details = {
+        "director": None, "year": None, "runtime_min": None,
+        "country": None, "synopsis": None
+    }
+    
+    commentary = soup.select_one("section#commentary p.text")
+    if commentary:
+        details["synopsis"] = _clean_text(commentary)
+
+    info_table = soup.select_one("section#information table")
+    if info_table:
+        for row in info_table.find_all("tr"):
+            th = _clean_text(row.find("th"))
+            td = _clean_text(row.find("td"))
+            
+            if "監督" in th or ("キャスト" in th and "監督" in td):
+                director_text = re.sub(r".*監督：", "", td).strip()
+                details["director"] = director_text.split(" ")[0]
+            
+            elif "制作国" in th:
+                details["country"] = td.split('（')[0]
+                year_match = re.search(r"（(\d{4})）", td)
+                if year_match:
+                    details["year"] = year_match.group(1)
+            
+            elif "上映時間" in th:
+                runtime_match = re.search(r"(\d+)分", td)
+                if runtime_match:
+                    details["runtime_min"] = runtime_match.group(1)
+    
+    return details
+
+# --- Main Scraper ---
+
+def scrape_polepole(max_days: int = 7) -> List[Dict]:
+    """
+    Scrapes the Jorudan schedule page, follows links to detail pages,
+    and returns combined, standardized information.
+    """
+    print(f"INFO [{CINEMA_NAME}]: Fetching schedule page: {SCHEDULE_URL}")
+    main_soup = _fetch_soup(SCHEDULE_URL)
+    if not main_soup:
+        return []
+
+    details_cache = {}
+    film_sections = main_soup.select("main > section[id^='cnm']")
+    
+    print(f"INFO [{CINEMA_NAME}]: Found {len(film_sections)} films on schedule page.")
+    for section in film_sections:
+        link_tag = section.select_one(".btn a[href*='/film/']")
+        if not link_tag:
             continue
+            
+        detail_url = urljoin(BASE_URL, link_tag['href'])
+        if detail_url not in details_cache:
+            print(f"INFO [{CINEMA_NAME}]: Scraping detail page: {detail_url}")
+            detail_soup = _fetch_soup(detail_url)
+            if detail_soup:
+                details_cache[detail_url] = _parse_detail_page(detail_soup)
 
-        # Collect text until next <h2>
-        parts: List[str] = []
-        for sib in itertools.takewhile(lambda n: not (isinstance(n, Tag) and n.name == "h2"), h2.find_all_next(string=False, limit=60)):
-            parts.append(_clean(sib))
-        blob = " ".join(parts)
-        if not blob:
-            continue
+    all_showings = []
+    today = dt.date.today()
+    end_date = today + dt.timedelta(days=max_days - 1)  # FIXED: Added 'dt.' prefix
+    
+    for section in film_sections:
+        title = _clean_text(section.find("h2"))
+        if not title: continue
 
-        date_matches = list(_DATE_PAT.finditer(blob))
-        if not date_matches:
-            continue
+        link_tag = section.select_one(".btn a[href*='/film/']")
+        detail_url = urljoin(BASE_URL, link_tag['href']) if link_tag else None
+        details = details_cache.get(detail_url, {})
+
+        table = section.find("table")
+        if not table: continue
+            
+        headers = [th.get_text(strip=True) for th in table.select("tr:first-of-type th")]
+        date_map = {}
+        for i, header_text in enumerate(headers):
+            match = re.search(r"(\d{1,2})/(\d{1,2})", header_text)
+            if match:
+                month, day = map(int, match.groups())
+                year = today.year if month >= today.month else today.year + 1
+                try:
+                    show_date = dt.date(year, month, day)
+                    if today <= show_date <= end_date:
+                        date_map[i] = show_date.isoformat()
+                except ValueError:
+                    continue
         
-        # --- START: BUG FIX ---
-        # Find all time matches and format them correctly to HH:MM.
-        time_matches = _TIME_PAT.finditer(blob)
-        times = [f"{int(m.group(1)):02d}:{m.group(2)}" for m in time_matches]
-        if not times:
-            continue
-        # --- END: BUG FIX ---
+        time_row = table.select("tr:nth-of-type(2)")
+        if not time_row: continue
 
-        dates_iso = [_iso_date(int(m.group("m") or m.group("m2") or 0),
-                               int(m.group("d") or m.group("d2") or 0))
-                     for m in date_matches]
-
-        per_day = max(1, len(times) // len(dates_iso))
-        matrix = [times[i:i+per_day] for i in range(0, len(times), per_day)]
-        for iso, tlist in zip(dates_iso, matrix):
-            for t in tlist:
-                rows.append({
-                    "cinema": CINEMA_NAME,
-                    "date_text": iso,
-                    "screen": SCREEN_NAME,
-                    "title": title,
-                    "showtime": t,
-                })
-    return rows
-
-# ---------------------------------------------------------------------------
-# eiga.com fallback
-# ---------------------------------------------------------------------------
-
-def _parse_eiga(soup: BeautifulSoup) -> List[Dict]:
-    rows: List[Dict] = []
-    for h2 in soup.find_all("h2"):
-        link = h2.find("a")
-        if not link or "/movie" not in (link.get("href") or ""):
-            continue
-        title = _clean(link)
-        node: Optional[Tag] = h2
-        while node and (node := node.find_next_sibling()):
-            if isinstance(node, Tag) and node.name == "h2":
-                break
-            blob = _clean(node)
-            if not blob:
-                continue
-            for dm in _DATE_PAT.finditer(blob):
-                month = int(dm.group("m") or dm.group("m2"))
-                day = int(dm.group("d") or dm.group("d2"))
-                iso = _iso_date(month, day)
-                # --- START: BUG FIX ---
-                # Iterate through matches and format them correctly.
-                for t_match in _TIME_PAT.finditer(blob):
-                    hour, minute = t_match.groups()
-                    showtime = f"{int(hour):02d}:{minute}"
-                    rows.append({
-                        "cinema": CINEMA_NAME,
-                        "date_text": iso,
-                        "screen": SCREEN_NAME,
-                        "title": title,
-                        "showtime": showtime,
+        for i, cell in enumerate(time_row[0].find_all("td")):
+            if i in date_map:
+                date_text = date_map[i]
+                showtimes = re.findall(r"\d{1,2}:\d{2}", cell.get_text())
+                for st in showtimes:
+                    all_showings.append({
+    "cinema_name": CINEMA_NAME,
+    "movie_title":       title,
+    "movie_title_en":    "",
+    "date_text":         date_text,
+    "showtime":          st,
+    "director":          details.get("director", ""),
+    "year":              details.get("year", ""),
+    "country":           details.get("country", ""),
+    "runtime_min":       details.get("runtime_min", ""),
+    "synopsis":          details.get("synopsis", ""),
+    "detail_page_url":   detail_url,
                     })
-                # --- END: BUG FIX ---
-    return rows
 
-# ---------------------------------------------------------------------------
-# Filtering helpers
-# ---------------------------------------------------------------------------
-
-def _within_window(iso: str) -> bool:
-    d = dt.date.fromisoformat(iso)
-    return TODAY <= d <= WINDOW_END
+    unique_showings = list({(s["date_text"], s["movie_title"], s["showtime"]): s for s in all_showings}.values())
+    unique_showings.sort(key=lambda r: (r["date_text"], r["showtime"]))
+    print(f"INFO [{CINEMA_NAME}]: Collected {len(unique_showings)} showings within the {max_days}-day window.")
+    return unique_showings
 
 
-def _deduplicate(items: List[Dict]) -> List[Dict]:
-    seen: Set[Tuple[str, str, str, str]] = set()
-    out: List[Dict] = []
-    for row in items:
-        key = (row["date_text"], row["showtime"], row["title"], row["screen"])
-        if key not in seen:
-            seen.add(key)
-            out.append(row)
-    return out
-
-# ---------------------------------------------------------------------------
-# Public entry point
-# ---------------------------------------------------------------------------
-
-def scrape_polepole() -> List[Dict]:
-    """Return showings for the next 7 days (inclusive)."""
-    soup = _fetch(JORUDAN_URL)
-    rows = _parse_jorudan(soup) if soup else []
-
-    if not rows:
-        print(f"[{CINEMA_NAME}] Jorudan scrape failed or yielded no results, trying eiga.com fallback.", file=sys.stderr)
-        soup = _fetch(EIGA_URL)
-        rows = _parse_eiga(soup) if soup else []
-
-    # Keep only rows in the 7‑day window and deduplicate
-    rows = [r for r in rows if _within_window(r["date_text"])]
-    rows = _deduplicate(rows)
-
-    rows.sort(key=lambda r: (r["date_text"], r["showtime"], r["title"]))
-    print(f"[{CINEMA_NAME}] Collected {len(rows)} showings (next 7 days).")
-    return rows
-
-# ---------------------------------------------------------------------------
-# CLI helper
-# ---------------------------------------------------------------------------
+# --- CLI test harness ---
 if __name__ == "__main__":
-    import json, argparse
-    parser = argparse.ArgumentParser(description="Scrape Pole‑Pole Higashi‑Nakano showtimes (7‑day window)")
-    parser.add_argument("--json", action="store_true", help="print rows as JSON")
-    args = parser.parse_args()
-    data = scrape_polepole()
-    if args.json:
-        json.dump(data, sys.stdout, ensure_ascii=False, indent=2)
-    else:
+    if sys.platform == "win32":
+        try:
+            sys.stdout.reconfigure(encoding="utf-8")
+        except Exception: pass
+
+    print(f"Testing {CINEMA_NAME} scraper...")
+    data = scrape_polepole(max_days=7)
+    
+    if data:
+        output_filename = "polepole_showtimes.json"
+        print(f"\nINFO: Writing {len(data)} records to {output_filename}...")
+        with open(output_filename, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        print(f"INFO: Successfully created {output_filename}.")
+        
+        print("\n--- Sample of First Showing ---")
         from pprint import pprint
-        pprint(data)
+        pprint(data[0])
+    else:
+        print("\nNo showings found.")

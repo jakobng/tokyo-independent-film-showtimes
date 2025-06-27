@@ -40,7 +40,7 @@
         .category-block {
             margin-bottom: 35px;
         }
-        .category-block h3 { /* Category headers - made smaller */
+        .category-block h3 {
             font-size: 1.4em;
             color: var(--dark-text);
             margin-top: 15px;
@@ -142,6 +142,7 @@
             border-left: 4px solid var(--primary-yellow);
             display: flex; align-items: center;
             transition: box-shadow 0.2s ease;
+            justify-content: space-between;
         }
         .showtimes-list li:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
         .showtime-time {
@@ -150,8 +151,6 @@
         }
         .showtime-title-container { flex-grow: 1; line-height: 1.4; }
         .showtime-title { font-weight: 600; color: var(--dark-text); }
-        a.showtime-title { text-decoration: none; color: var(--dark-text); transition: color 0.2s ease; }
-        a.showtime-title:hover { color: var(--primary-yellow); text-decoration: underline; }
         .tmdb-english-title, .gemini-english-title, .lb-english-title {
             font-style: normal; color: var(--medium-text); margin-left: 8px;
             opacity: 1; font-size: 0.9em; font-weight: 400;
@@ -165,6 +164,41 @@
             color: #721c24; background-color: #f8d7da; padding: 15px;
             border-radius: 6px; border: 1px solid #f5c6cb;
             font-weight: 500; text-align: center; font-size: 1.1em; margin: 20px 0;
+        }
+        .showtime-links {
+            display: flex;
+            flex-shrink: 0;
+            margin-left: 15px;
+            gap: 8px;
+        }
+        .showtime-link-btn {
+            display: inline-block;
+            padding: 5px 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+            text-align: center;
+            border: 1px solid transparent;
+        }
+        .showtime-link-btn.letterboxd {
+            background-color: #2c3440;
+            color: #fff;
+            border-color: #445566;
+        }
+        .showtime-link-btn.letterboxd:hover {
+            background-color: #445566;
+            transform: translateY(-1px);
+        }
+        .showtime-link-btn.details {
+            background-color: #e9ecef;
+            color: #333;
+            border-color: #ced4da;
+        }
+        .showtime-link-btn.details:hover {
+            background-color: #ced4da;
+            transform: translateY(-1px);
         }
 </style>
 </head>
@@ -189,7 +223,7 @@
             
             let fullShowtimesData = [];
             let dataLoaded = false;
-
+            
             const cinemaWebsiteUrls = {
                 "K's Cinema (ケイズシネマ)": "https://www.ks-cinema.com/",
                 "シネマート新宿": "https://www.cinemart.co.jp/theater/shinjuku/",
@@ -200,14 +234,12 @@
                 "シアターギルド代官山": "https://theaterguild.co/movie/space/daikanyama/",
                 "YEBISU GARDEN CINEMA": "https://www.unitedcinemas.jp/ygc/index.html",
                 "シアター・イメージフォーラム": "https://www.imageforum.co.jp/",
-                "シネクイント渋谷": "https://www.cinequinto.com/shibuya/",
                 "ユーロスペース": "http://www.eurospace.co.jp/",
                 "ヒューマントラストシネマ渋谷": "https://ttcg.jp/human_shibuya/",
                 "Stranger (ストレンジャー)": "https://stranger.jp/",
                 "新文芸坐": "https://www.shin-bungeiza.com/",
                 "目黒シネマ": "http://www.okura-movie.co.jp/meguro_cinema/now_showing.html",
                 "ポレポレ東中野": "https://pole2.co.jp/",
-                "Chupki": "https://chupki.jpn.org/",
                 "K2 Cinema": "https://k2-cinema.com/",
                 "Theater Bacchus": "https://bacchus-tokyo.com/",
                 "ヒューマントラストシネマ有楽町": "https://ttcg.jp/human_yurakucho/",
@@ -217,45 +249,69 @@
                 "池袋シネマ・ロサ": "https://www.cinemarosa.net/",
                 "シネスイッチ銀座": "https://cineswitch.com/",
                 "シネマブルースタジオ": "https://www.art-center.jp/tokyo/bluestudio/schedule.html",
-                "Bunkamura": "https://www.bunkamura.co.jp/cinema/",
+                "Bunkamura ル・シネマ 渋谷宮下": "https://www.bunkamura.co.jp/cinema/",
+                "CINEMA Chupki TABATA": "https://chupki.jpn.org/",
+                "シネクイント": "https://www.cinequinto.com/shibuya/",
             };
             const preferredJapaneseDisplayNames = {
-                "Chupki": "チュプキ・タバタ", "K's Cinema (ケイズシネマ)": "ケイズシネマ",
-                "Stranger (ストレンジャー)": "ストレンジャー", "YEBISU GARDEN CINEMA": "恵比寿ガーデンシネマ",
-                "K2 Cinema": "K2シネマ", "Theater Bacchus": "シアターバッカス高円寺",
-                "シネスイッチ銀座": "シネスイッチ銀座",
-                "Bunkamura": "ル・シネマ 渋谷宮下",
+                "K's Cinema (ケイズシネマ)": "ケイズシネマ",
+                "Stranger (ストレンジャー)": "ストレンジャー",
+                "YEBISU GARDEN CINEMA": "恵比寿ガーデンシネマ",
+                "K2 Cinema": "K2シネマ",
+                "Theater Bacchus": "シアターバッカス高円寺",
+                "Bunkamura ル・シネマ 渋谷宮下": "Bunkamura ル・シネマ",
+                "CINEMA Chupki TABATA": "チュプキ・タバタ",
             };
             const cinemaEnglishNames = {
-                "Chupki": "Chupki Tabata", "K's Cinema (ケイズシネマ)": "K's Cinema",
-                "Stranger (ストレンジャー)": "Stranger", "シネマート新宿": "Cinemart Shinjuku",
-                "新宿シネマカリテ": "Shinjuku Cinema Qualite", "新宿武蔵野館": "Shinjuku Musashino-kan",
-                "テアトル新宿": "Theatre Shinjuku", "早稲田松竹": "Waseda Shochiku",
-                "シアターギルド代官山": "Theatre Guild Daikanyama", "YEBISU GARDEN CINEMA": "Yebisu Garden Cinema",
-                "シアター・イメージフォーラム": "Theatre Image Forum", "シネクイント渋谷": "Cine Quinto Shibuya",
-                "ユーロスペース": "Eurospace", "ヒューマントラストシネマ渋谷": "Human Trust Cinema Shibuya",
-                "新文芸坐": "Shin-Bungeiza", "目黒シネマ": "Meguro Cinema",
-                "ポレポレ東中野": "Pole Pole Higashi-Nakano", "K2 Cinema": "K2 Cinema",
-                "Theater Bacchus": "Theater Bacchus", "ヒューマントラストシネマ有楽町": "Human Trust Cinema Yurakucho",
-                "ラピュタ阿佐ヶ谷": "Laputa Asagaya", "下高井戸シネマ": "Shimotakaido Cinema",
-                "国立映画アーカイブ": "National Film Archive of Japan", "池袋シネマ・ロサ": "Ikebukuro Cinema Rosa",
+                "K's Cinema (ケイズシネマ)": "K's Cinema",
+                "Stranger (ストレンジャー)": "Stranger",
+                "シネマート新宿": "Cinemart Shinjuku",
+                "新宿シネマカリテ": "Shinjuku Cinema Qualite",
+                "新宿武蔵野館": "Shinjuku Musashino-kan",
+                "テアトル新宿": "Theatre Shinjuku",
+                "早稲田松竹": "Waseda Shochiku",
+                "シアターギルド代官山": "Theatre Guild Daikanyama",
+                "YEBISU GARDEN CINEMA": "Yebisu Garden Cinema",
+                "シアター・イメージフォーラム": "Theatre Image Forum",
+                "ユーロスペース": "Eurospace",
+                "ヒューマントラストシネマ渋谷": "Human Trust Cinema Shibuya",
+                "新文芸坐": "Shin-Bungeiza",
+                "目黒シネマ": "Meguro Cinema",
+                "ポレポレ東中野": "Pole Pole Higashi-Nakano",
+                "K2 Cinema": "K2 Cinema",
+                "Theater Bacchus": "Theater Bacchus",
+                "ヒューマントラストシネマ有楽町": "Human Trust Cinema Yurakucho",
+                "ラピュタ阿佐ヶ谷": "Laputa Asagaya",
+                "下高井戸シネマ": "Shimotakaido Cinema",
+                "国立映画アーカイブ": "National Film Archive of Japan",
+                "池袋シネマ・ロサ": "Ikebukuro Cinema Rosa",
                 "シネスイッチ銀座": "Cine Switch Ginza",
                 "シネマブルースタジオ" : "Cinema Blue Studio",
-                "Bunkamura": "Bunkamura Le Cinéma",
+                "Bunkamura ル・シネマ 渋谷宮下": "Bunkamura Le Cinéma Shibuya Miyashita",
+                "CINEMA Chupki TABATA": "Cinema Chupki Tabata",
+                "シネクイント": "Cine Quinto Shibuya",
             };
             const cinemaLocations = {
-                "Stranger (ストレンジャー)": "Sumida-ku 墨田区", "新文芸坐": "Toshima-ku 豊島区",
-                "目黒シネマ": "Shinagawa-ku 品川区 (Meguro Area)", "ポレポレ東中野": "Nakano-ku 中野区",
-                "Chupki": "Kita-ku 北区", "K2 Cinema": "Setagaya-ku 世田谷区 (下北沢)",
-                "Theater Bacchus": "Suginami-ku 杉並区 (高円寺)", "ヒューマントラストシネマ有楽町": "Chiyoda-ku 千代田区",
-                "ラピュタ阿佐ヶ谷": "Suginami-ku 杉並区", "下高井戸シネマ": "Setagaya-ku 世田谷区",
-                "国立映画アーカイブ": "Chuo-ku 中央区 (京橋)", "池袋シネマ・ロサ": "Toshima-ku 豊島区",
+                "Stranger (ストレンジャー)": "Sumida-ku 墨田区",
+                "新文芸坐": "Toshima-ku 豊島区",
+                "目黒シネマ": "Shinagawa-ku 品川区 (Meguro Area)",
+                "ポレポレ東中野": "Nakano-ku 中野区",
+                "K2 Cinema": "Setagaya-ku 世田谷区 (下北沢)",
+                "Theater Bacchus": "Suginami-ku 杉並区 (高円寺)",
+                "ヒューマントラストシネマ有楽町": "Chiyoda-ku 千代田区",
+                "ラピュタ阿佐ヶ谷": "Suginami-ku 杉並区",
+                "下高井戸シネマ": "Setagaya-ku 世田谷区",
+                "国立映画アーカイブ": "Chuo-ku 中央区 (京橋)",
+                "池袋シネマ・ロサ": "Toshima-ku 豊島区",
                 "シネスイッチ銀座": "Chuo-ku 中央区",
-                "シネマブルースタジオ": "Adachi-ku 足立区"
+                "シネマブルースタジオ": "Adachi-ku 足立区",
+                "Bunkamura ル・シネマ 渋谷宮下": "Shibuya-ku 渋谷区",
+                "CINEMA Chupki TABATA": "Kita-ku 北区",
+                "シネクイント": "Shibuya-ku 渋谷区",
             };
-              const cinemaCategories = [
+            const cinemaCategories = [
                 { name: "SHINJUKU-KU 新宿区", cinemas: [ "K's Cinema (ケイズシネマ)", "シネマート新宿", "新宿シネマカリテ", "新宿武蔵野館", "テアトル新宿", "早稲田松竹" ] },
-                { name: "SHIBUYA-KU 渋谷区", cinemas: [ "シアターギルド代官山", "YEBISU GARDEN CINEMA", "シアター・イメージフォーラム", "シネクイント渋谷", "ユーロスペース", "ヒューマントラストシネマ渋谷", "Bunkamura" ] }
+                { name: "SHIBUYA-KU 渋谷区", cinemas: [ "シアターギルド代官山", "YEBISU GARDEN CINEMA", "シアター・イメージフォーラム", "ユーロスペース", "ヒューマントラストシネマ渋谷", "Bunkamura ル・シネマ 渋谷宮下", "シネクイント" ] }
             ];
 
             function isProbablyNotJapanese(text) {
@@ -290,10 +346,8 @@
             }
 
             function handleLocationChange() {
-                if (!dataLoaded && cinemaSelectionGridContainerEl) { 
-                    console.log("handleLocationChange called before data loaded or DOM not ready. Waiting.");
-                     if (initialLoadingMessageContainer && !initialLoadingMessageContainer.classList.contains('hidden')) {
-                        // Keep showing initial loading
+                if (!dataLoaded && cinemaSelectionGridContainerEl) {
+                    if (initialLoadingMessageContainer && !initialLoadingMessageContainer.classList.contains('hidden')) {
                     } else if (loadingMessageTextEl) {
                         loadingMessageTextEl.textContent = "Loading showtimes...";
                         if(initialLoadingMessageContainer) initialLoadingMessageContainer.classList.remove('hidden');
@@ -301,7 +355,6 @@
                     return;
                 }
                 if (!cinemaSelectionGridContainerEl || !selectedCinemaShowtimesContainer || !backButton) {
-                    console.warn("DOM elements not ready for handleLocationChange.");
                     return;
                 }
 
@@ -320,12 +373,12 @@
                         backButton.classList.remove('hidden');
                         if (mainHeaderEl) mainHeaderEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         renderShowtimesForCinema(showings, cinemaName);
-                    } else { // Invalid cinema in hash
-                        history.replaceState({ cinema: null }, "", window.location.pathname + window.location.search); // Clean URL
+                    } else {
+                        history.replaceState({ cinema: null }, "", window.location.pathname + window.location.search);
                         displayCinemaSelection(fullShowtimesData);
                         if (mainHeaderEl) mainHeaderEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
-                } else { // No specific cinema hash, show main selection
+                } else {
                     displayCinemaSelection(fullShowtimesData);
                     if (mainHeaderEl) mainHeaderEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
@@ -342,8 +395,6 @@
                 if (!data || data.length === 0) {
                     if (dataLoaded) { 
                          cinemaSelectionGridContainerEl.innerHTML = `<p class="error-message">No showtimes data found. Please try again later.</p>`;
-                    } else {
-                        cinemaSelectionGridContainerEl.innerHTML = `<p>Loading cinema list...</p>`;
                     }
                     return;
                 }
@@ -372,14 +423,7 @@
                     const mainNameHtml = `<span class="cinema-japanese-name">${primaryDisplayName}</span>`;
                     let subNameHtml = '';
                     if (secondaryDisplayName) {
-                        const mainLower = primaryDisplayName.toLowerCase();
-                        const subLower = secondaryDisplayName.toLowerCase();
-                        const primaryPartOfMain = primaryDisplayName.split(" (")[0].trim().toLowerCase();
-                        if (subLower !== mainLower && subLower !== primaryPartOfMain) {
-                            subNameHtml = `<span class="cinema-english-name-card">(${secondaryDisplayName})</span>`;
-                        } else if (subLower !== mainLower && !primaryDisplayName.includes('(')) {
-                             subNameHtml = `<span class="cinema-english-name-card">(${secondaryDisplayName})</span>`;
-                        }
+                         subNameHtml = `<span class="cinema-english-name-card">(${secondaryDisplayName})</span>`;
                     }
                     let locationHtml = '';
                     if (locationTextForCard) { locationHtml = `<span class="cinema-location-card">${locationTextForCard}</span>`; }
@@ -389,16 +433,19 @@
                 }
 
                 cinemaCategories.forEach(category => {
-                    const categoryBlock = document.createElement('div'); categoryBlock.className = 'category-block';
-                    const categoryHeader = document.createElement('h3'); categoryHeader.textContent = category.name;
-                    const cardContainer = document.createElement('div'); cardContainer.className = 'cinema-card-container';
+                    const categoryBlock = document.createElement('div');
+                    categoryBlock.className = 'category-block';
+                    const categoryHeader = document.createElement('h3');
+                    categoryHeader.textContent = category.name;
+                    const cardContainer = document.createElement('div');
+                    cardContainer.className = 'cinema-card-container';
                     const cinemasInThisCategory = allCinemaNamesFromData
                         .filter(nameInJson => category.cinemas.includes(nameInJson))
                         .map(nameInJson => {
-                            let pdName = nameInJson;
-                            if (preferredJapaneseDisplayNames.hasOwnProperty(nameInJson)) pdName = preferredJapaneseDisplayNames[nameInJson];
+                            let pdName = preferredJapaneseDisplayNames[nameInJson] || nameInJson;
                             return { originalName: nameInJson, displaySortName: pdName.toLowerCase() };
                         }).sort((a, b) => a.displaySortName.localeCompare(b.displaySortName));
+
                     if (cinemasInThisCategory.length > 0) {
                         categoryBlock.appendChild(categoryHeader);
                         cinemasInThisCategory.forEach(cinemaObj => {
@@ -411,21 +458,25 @@
                 });
 
                 const otherCinemas = allCinemaNamesFromData
-                    .filter(nameInJson => !categorizedCinemaNames.has(nameInJson))
-                     .map(nameInJson => {
-                        let pdName = nameInJson;
-                         if (preferredJapaneseDisplayNames.hasOwnProperty(nameInJson)) pdName = preferredJapaneseDisplayNames[nameInJson];
-                        let engNameForSort = cinemaEnglishNames[nameInJson] || pdName;
-                        if (nameInJson === "シネスイッチ銀座" && cinemaEnglishNames[nameInJson]) pdName = cinemaEnglishNames[nameInJson];
-                        return { originalName: nameInJson, displaySortName: pdName.toLowerCase() };
-                    }).sort((a,b) => a.displaySortName.localeCompare(b.displaySortName));
+                    .filter(nameInJson => !categorizedCinemaNames.has(nameInJson));
 
                 if (otherCinemas.length > 0) {
-                    const otherCategoryBlock = document.createElement('div'); otherCategoryBlock.className = 'category-block';
-                    const otherHeader = document.createElement('h3'); otherHeader.textContent = "OTHER LOCATIONS";
+                    const otherCategoryBlock = document.createElement('div');
+                    otherCategoryBlock.className = 'category-block';
+                    const otherHeader = document.createElement('h3');
+                    otherHeader.textContent = "OTHER LOCATIONS";
                     otherCategoryBlock.appendChild(otherHeader);
-                    const otherCardContainer = document.createElement('div'); otherCardContainer.className = 'cinema-card-container';
-                    otherCinemas.forEach(cinemaObj => { otherCardContainer.appendChild(createCinemaCard(cinemaObj.originalName, true)); });
+                    const otherCardContainer = document.createElement('div');
+                    otherCardContainer.className = 'cinema-card-container';
+                    otherCinemas
+                        .map(nameInJson => {
+                            let pdName = preferredJapaneseDisplayNames[nameInJson] || nameInJson;
+                            return { originalName: nameInJson, displaySortName: pdName.toLowerCase() };
+                        })
+                        .sort((a,b) => a.displaySortName.localeCompare(b.displaySortName))
+                        .forEach(cinemaObj => { 
+                            otherCardContainer.appendChild(createCinemaCard(cinemaObj.originalName, true)); 
+                        });
                     otherCategoryBlock.appendChild(otherCardContainer);
                     cinemaSelectionGridContainerEl.appendChild(otherCategoryBlock);
                 }
@@ -440,7 +491,7 @@
             }
 
             backButton.addEventListener('click', () => {
-                history.pushState({ cinema: null }, "", window.location.pathname + window.location.search); // Clean URL (remove hash)
+                history.pushState({ cinema: null }, "", window.location.pathname + window.location.search);
                 handleLocationChange(); 
             });
             
@@ -453,36 +504,19 @@
                 const cinemaTitleHeader = document.createElement('h2');
                 let primaryDisplayNameForHeader = cinemaNameInJson;
                 let secondaryDisplayNameForHeader = null;
-                let isOtherForHeader = !cinemaCategories.some(cat => cat.cinemas.includes(cinemaNameInJson));
-                let locationTextForHeader = isOtherForHeader && cinemaLocations.hasOwnProperty(cinemaNameInJson) ? cinemaLocations[cinemaNameInJson] : null;
-
                 if (preferredJapaneseDisplayNames.hasOwnProperty(cinemaNameInJson)) {
                     primaryDisplayNameForHeader = preferredJapaneseDisplayNames[cinemaNameInJson];
                     secondaryDisplayNameForHeader = cinemaEnglishNames.hasOwnProperty(cinemaNameInJson) ? cinemaEnglishNames[cinemaNameInJson] : cinemaNameInJson;
                 } else if (cinemaEnglishNames.hasOwnProperty(cinemaNameInJson)) {
-                    const mappedEnglish = cinemaEnglishNames[cinemaNameInJson];
-                     if (mappedEnglish && mappedEnglish.toLowerCase() !== primaryDisplayNameForHeader.toLowerCase()) {
-                        const primaryBase = primaryDisplayNameForHeader.split(" (")[0].trim().toLowerCase();
-                        if (mappedEnglish.toLowerCase() !== primaryBase || !primaryDisplayNameForHeader.includes("(")) {
-                             secondaryDisplayNameForHeader = mappedEnglish;
-                        }
-                    }
+                    secondaryDisplayNameForHeader = cinemaEnglishNames[cinemaNameInJson];
                 }
+
                 let mainNameForHeaderHtml = `<span class="cinema-japanese-name">${primaryDisplayNameForHeader}</span>`;
-                let subNameForHeaderHtml = '';
-                if (secondaryDisplayNameForHeader) {
-                    const mainLower = primaryDisplayNameForHeader.toLowerCase();
-                    const subLower = secondaryDisplayNameForHeader.toLowerCase();
-                    const primaryPartOfMain = primaryDisplayNameForHeader.split(" (")[0].trim().toLowerCase();
-                    if (subLower !== mainLower && subLower !== primaryPartOfMain) {
-                         subNameForHeaderHtml = `<span class="cinema-english-name-header">(${secondaryDisplayNameForHeader})</span>`;
-                    } else if (subLower !== mainLower && !primaryDisplayNameForHeader.includes('(')) {
-                         subNameForHeaderHtml = `<span class="cinema-english-name-header">(${secondaryDisplayNameForHeader})</span>`;
-                    }
+                if(secondaryDisplayNameForHeader && primaryDisplayNameForHeader.toLowerCase() !== secondaryDisplayNameForHeader.toLowerCase()) {
+                    mainNameForHeaderHtml += ` <span class="cinema-english-name-header">(${secondaryDisplayNameForHeader})</span>`;
                 }
-                let locationHeaderHtml = '';
-                if (locationTextForHeader) { locationHeaderHtml = `<span class="cinema-location-header">[${locationTextForHeader}]</span>`; }
-                cinemaTitleHeader.innerHTML = mainNameForHeaderHtml + subNameForHeaderHtml + locationHeaderHtml;
+                
+                cinemaTitleHeader.innerHTML = mainNameForHeaderHtml;
                 headerContainer.appendChild(cinemaTitleHeader);
 
                 const websiteUrl = cinemaWebsiteUrls[cinemaNameInJson] || cinemaWebsiteUrls[cinemaNameInJson.replace(/\s*\(.*\)$/, '').trim()];
@@ -527,44 +561,42 @@
                     byDate[dateStr].forEach(showing => {
                         const li = document.createElement('li');
 
-                        // *** MODIFICATION START ***
-                        // Correctly identify the primary title, looking for Japanese first.
                         const originalScrapedTitle = showing.title_ja || showing.movie_title || showing.title || showing.title_en || 'Unknown Title';
 
-                        // Determine the best available English title from all possible sources.
                         let bestEnglishTitle = null;
                         if (showing.letterboxd_english_title && isProbablyNotJapanese(showing.letterboxd_english_title)) {
                             bestEnglishTitle = showing.letterboxd_english_title;
                         } else if (showing.tmdb_display_title && isProbablyNotJapanese(showing.tmdb_display_title)) {
                             bestEnglishTitle = showing.tmdb_display_title;
                         } else if (showing.title_en && isProbablyNotJapanese(showing.title_en)) {
-                            bestEnglishTitle = showing.title_en.replace(/【.*?】/g, '').trim(); // Clean prefixes
+                            bestEnglishTitle = showing.title_en.replace(/【.*?】/g, '').trim();
                         } else if (showing.gemini_english_title && showing.gemini_english_title.toUpperCase() !== 'NO_TITLE_FOUND' && isProbablyNotJapanese(showing.gemini_english_title)) {
                             bestEnglishTitle = showing.gemini_english_title;
                         }
 
-                        // Avoid showing the same title twice if the primary title is already in English.
                         if (bestEnglishTitle && bestEnglishTitle.toLowerCase() === originalScrapedTitle.toLowerCase()) {
                             bestEnglishTitle = null;
                         }
 
-                        const letterboxdLink = showing.letterboxd_link;
-                        let titleDisplayHtml = '';
-                        let accompanyingEnglishTitleSpan = '';
-
+                        let titleDisplayHtml = `<span class="showtime-title">${originalScrapedTitle}</span>`;
                         if (bestEnglishTitle) {
-                            accompanyingEnglishTitleSpan = ` <span class="gemini-english-title">(${bestEnglishTitle})</span>`;
+                            titleDisplayHtml += ` <span class="gemini-english-title">(${bestEnglishTitle})</span>`;
                         }
 
-                        if (letterboxdLink) {
-                            const titleAttributeText = bestEnglishTitle || originalScrapedTitle;
-                            titleDisplayHtml = `<a href="${letterboxdLink}" target="_blank" rel="noopener noreferrer" class="showtime-title" title="View '${titleAttributeText}' on Letterboxd">${originalScrapedTitle}</a>${accompanyingEnglishTitleSpan}`;
-                        } else {
-                            titleDisplayHtml = `<span class="showtime-title">${originalScrapedTitle}</span>${accompanyingEnglishTitleSpan}`;
+                        // MODIFIED LOGIC FOR LINKS
+                        let linksHtml = '';
+                        if (showing.letterboxd_link && !showing.letterboxd_link.includes('FAILED')) {
+                            linksHtml += `<a href="${showing.letterboxd_link}" target="_blank" rel="noopener noreferrer" class="showtime-link-btn letterboxd" title="View on Letterboxd">Letterboxd</a>`;
                         }
-                        
-                        li.innerHTML = `<span class="showtime-time">${showing.showtime || 'N/A'}</span> <span class="showtime-title-container">${titleDisplayHtml}</span>`;
-                        // *** MODIFICATION END ***
+                        if (showing.detail_page_url) {
+                            linksHtml += `<a href="${showing.detail_page_url}" target="_blank" rel="noopener noreferrer" class="showtime-link-btn details" title="View details on cinema's website">Details</a>`;
+                        }
+
+                        li.innerHTML = `
+                            <span class="showtime-time">${showing.showtime || 'N/A'}</span>
+                            <div class="showtime-title-container">${titleDisplayHtml}</div>
+                            <div class="showtime-links">${linksHtml}</div>
+                        `;
                         
                         ul.appendChild(li);
                     });
@@ -601,9 +633,8 @@
                 return dateString; 
             }
 
-            // --- Event Listeners & Initial Call ---
             window.addEventListener('popstate', handleLocationChange);
-            fetchShowtimes(); // Initial call to fetch data and then determine view based on hash
+            fetchShowtimes();
         });
     </script>
 </body>
