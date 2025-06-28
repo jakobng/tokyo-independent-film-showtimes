@@ -13,9 +13,10 @@ import requests
 from bs4 import BeautifulSoup, Tag
 
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options as ChromeOptions
-from webdriver_manager.chrome import ChromeDriverManager
+# REMOVED: No longer using ChromeService or webdriver-manager
+# from selenium.webdriver.chrome.service import Service as ChromeService
+# from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -24,8 +25,6 @@ from selenium.common.exceptions import TimeoutException, StaleElementReferenceEx
 # --- Constants ---
 CINEMA_NAME = "池袋シネマ・ロサ"
 DEFAULT_SELENIUM_TIMEOUT = 25
-
-# Eigaland (for schedule)
 EIGALAND_URL = "https://schedule.eigaland.com/schedule?webKey=c34cee0e-5a5e-4b99-8978-f04879a82299"
 DATE_ITEM_SELECTOR_CSS = "div.calender-head-item"
 MOVIE_SCHEDULE_SELECTOR_CSS = "div.movie-schedule"
@@ -33,16 +32,12 @@ MOVIE_TITLE_EIGALAND_CSS = "h2.text-center"
 SHOWTIME_BLOCK_CSS = ".movie-schedule-info.flex-row"
 SHOWTIME_TIME_CSS = ".time h2"
 SHOWTIME_SCREEN_CSS = ".room .name"
-
-
-# Cinema Rosa site (for details)
 ROSA_BASE_URL = "https://www.cinemarosa.net/"
 ROSA_NOWSHOWING_URL = urljoin(ROSA_BASE_URL, "/nowshowing/")
 ROSA_INDIES_URL = urljoin(ROSA_BASE_URL, "/indies/")
 
 
 def _clean_title_for_matching(text: Optional[str]) -> str:
-    """A more aggressive cleaning function to create a reliable key for matching."""
     if not text:
         return ""
     text = unicodedata.normalize('NFKC', text)
@@ -52,24 +47,25 @@ def _clean_title_for_matching(text: Optional[str]) -> str:
     return text.strip()
 
 def _clean_text(text: Optional[str]) -> str:
-    """Normalizes whitespace for display text."""
     if not text: return ""
     return ' '.join(text.strip().split())
 
 def _init_selenium_driver() -> webdriver.Chrome:
-    """Initializes a headless Chrome WebDriver."""
+    """Initializes a headless Chrome WebDriver, relying on chromedriver being in the PATH."""
     chrome_options = ChromeOptions()
     chrome_options.add_argument("--headless=new")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
-    service = ChromeService(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    
+    # MODIFIED: Removed webdriver-manager. Selenium 4 automatically finds the driver
+    # in the system PATH, which is where the GitHub Action places it.
+    driver = webdriver.Chrome(options=chrome_options)
+    
     driver.set_page_load_timeout(DEFAULT_SELENIUM_TIMEOUT * 2)
     return driver
 
 def _fetch_soup(url: str) -> Optional[BeautifulSoup]:
-    """Fetches a static URL and returns a BeautifulSoup object."""
     try:
         response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=20)
         response.raise_for_status()
@@ -79,7 +75,6 @@ def _fetch_soup(url: str) -> Optional[BeautifulSoup]:
         return None
 
 def _parse_date_from_eigaland(date_str: str, current_year: int) -> Optional[dt.date]:
-    """Parses date strings like '6/23' from the Eigaland calendar."""
     if match := re.match(r"(\d{1,2})/(\d{1,2})", date_str):
         month, day = map(int, match.groups())
         try:
@@ -89,7 +84,6 @@ def _parse_date_from_eigaland(date_str: str, current_year: int) -> Optional[dt.d
     return None
 
 def _parse_rosa_detail_page(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
-    """Parses a movie detail page from cinemarosa.net."""
     details = {"director": None, "year": None, "runtime_min": None, "country": None, "synopsis": None}
     if info_p := soup.select_one("p.film_info"):
         film_info_text = ' '.join(info_p.get_text(separator=' ').split())
@@ -108,7 +102,6 @@ def _parse_rosa_detail_page(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
     if synopsis_div := soup.select_one("div.free_area"): details["synopsis"] = _clean_text(synopsis_div.text)
     return details
 
-# --- Main Scraping Logic ---
 
 def scrape_cinema_rosa() -> List[Dict[str, str]]:
     details_cache = {}
@@ -147,7 +140,7 @@ def scrape_cinema_rosa() -> List[Dict[str, str]]:
                 
                 print(f"INFO: [{CINEMA_NAME}] Clicking date {parsed_date.isoformat()}", file=sys.stderr)
                 date_element.click()
-                time.sleep(2) # Wait for content to refresh, as requested
+                time.sleep(2)
 
                 for item_block in driver.find_elements(By.CSS_SELECTOR, MOVIE_SCHEDULE_SELECTOR_CSS):
                     raw_title = _clean_text(item_block.find_element(By.CSS_SELECTOR, MOVIE_TITLE_EIGALAND_CSS).text)
@@ -182,8 +175,5 @@ if __name__ == '__main__':
         with open(output_filename, "w", encoding="utf-8") as f:
             json.dump(showings, f, ensure_ascii=False, indent=2)
         print(f"INFO: Successfully created {output_filename}.")
-        print("\n--- Sample of First Showing ---")
-        from pprint import pprint
-        pprint(showings[0])
     else:
         print(f"\nNo showings found for {CINEMA_NAME}.")
