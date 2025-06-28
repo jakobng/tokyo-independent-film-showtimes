@@ -17,63 +17,22 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10' # Or your preferred Python version
+          python-version: '3.10'
 
-      - name: Install Google Chrome and jq
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable jq # Install jq for JSON parsing
-          echo "Google Chrome version:"
-          google-chrome --version
-
-      - name: Install ChromeDriver
-        run: |
-          CHROME_VERSION_FULL_STRING=$(google-chrome --version)
-          echo "Full Chrome Version String: $CHROME_VERSION_FULL_STRING"
-          CHROME_VERSION_NUMBER=$(echo "$CHROME_VERSION_FULL_STRING" | awk '{print $3}')
-          echo "Detected Chrome Version Number: $CHROME_VERSION_NUMBER"
-          
-          # Use the Chrome for Testing JSON endpoints to get the correct ChromeDriver URL
-          CHROMEDRIVER_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json" | jq -r --arg version "$CHROME_VERSION_NUMBER" '.versions[] | select(.version==$version) | .downloads.chromedriver[] | select(.platform=="linux64") | .url' | head -n 1)
-
-          if [ -z "$CHROMEDRIVER_URL" ]; then
-            echo "Could not find exact match ChromeDriver for Chrome $CHROME_VERSION_NUMBER. Trying to find closest match by major version."
-            # Fallback to the last known good version for the major channel if exact match not found
-            CHROME_MAJOR_VERSION=$(echo "$CHROME_VERSION_NUMBER" | cut -d. -f1)
-            CHROMEDRIVER_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" | jq -r --arg major_version "$CHROME_MAJOR_VERSION" '.channels.Stable.downloads.chromedriver[] | select(.platform=="linux64") | .url' | head -n1 )
-          fi
-          
-          if [ -z "$CHROMEDRIVER_URL" ]; then
-            echo "ERROR: Failed to determine ChromeDriver download URL. Exiting."
-            exit 1
-          fi
-
-          echo "Using ChromeDriver URL: $CHROMEDRIVER_URL"
-          wget -O chromedriver_linux64.zip "$CHROMEDRIVER_URL"
-          unzip chromedriver_linux64.zip -d ./chromedriver_temp
-          
-          if [ -f ./chromedriver_temp/chromedriver-linux64/chromedriver ]; then
-            sudo mv ./chromedriver_temp/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
-          elif [ -f ./chromedriver_temp/chromedriver ]; then
-            sudo mv ./chromedriver_temp/chromedriver /usr/local/bin/chromedriver
-          else
-            echo "ERROR: chromedriver executable not found in expected path within zip."
-            ls -R ./chromedriver_temp 
-            exit 1
-          fi
-          sudo chmod +x /usr/local/bin/chromedriver
-          rm -rf chromedriver_linux64.zip ./chromedriver_temp
-          echo "ChromeDriver version installed:"
-          chromedriver --version
+      # This single action replaces the complex manual Chrome and ChromeDriver installation
+      - name: Set up Chrome for Selenium
+        uses: browser-actions/setup-chrome@v1
 
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          # Force upgrade of the Gemini library to fix latency issues
           pip install --upgrade google-generativeai
           pip install -r requirements.txt
 
-      # ADDED: Caching step to persist the tmdb_cache.json file between runs
+      # This step installs the browser and system dependencies for Playwright
+      - name: Install Playwright Browsers
+        run: playwright install --with-deps chromium
+
       - name: Cache TMDB data
         uses: actions/cache@v4
         with:
