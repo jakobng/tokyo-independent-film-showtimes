@@ -3192,12 +3192,7 @@
     "tmdb_original_title": "Sleuth",
     "letterboxd_english_title": "Sleuth (1972)"
   },
-  "2本目割怪獣ゴルゴ|": {
-    "id": 40804,
-    "tmdb_title": "Gorgo",
-    "tmdb_original_title": "Gorgo",
-    "letterboxd_english_title": "Gorgo (1961)"
-  },
+  "2本目割怪獣ゴルゴ|": {},
   "導火線 FLASH POINT|": {
     "id": 35854,
     "tmdb_title": "Flash Point",
@@ -3224,10 +3219,10 @@
     "letterboxd_english_title": "Bajrangi Bhaijaan (2015)"
   },
   "シネマテーク密告の砦 リストア版|": {
-    "id": 20778,
-    "tmdb_title": "Le Doulos",
-    "tmdb_original_title": "Le Doulos",
-    "letterboxd_english_title": "Le Doulos (1962)"
+    "id": 60859,
+    "tmdb_title": "The Confession",
+    "tmdb_original_title": "L'Aveu",
+    "letterboxd_english_title": "The Confession (1970)"
   },
   "オールナイトアキ・カウリスマキ 敗者三部作＋1|": {},
   "メトロポリス 完全復元版|1926": {
@@ -3291,18 +3286,8 @@
     "letterboxd_english_title": "Vampire Clay (2017)"
   },
   "3本セットトーク付グレンダイザー50周年まんがまつり|": {},
-  "2本セットトーク付押井守映画祭2025《うる星やつら 編》|": {
-    "id": 43967,
-    "tmdb_title": "Urusei Yatsura: Beautiful Dreamer",
-    "tmdb_original_title": "うる星やつら2 ビューティフル・ドリーマー",
-    "letterboxd_english_title": "Urusei Yatsura: Beautiful Dreamer (1984)"
-  },
-  "オールナイト20世紀末のトーキョーナイト|": {
-    "id": 150373,
-    "tmdb_title": "All Night Long 3: The Final Chapter",
-    "tmdb_original_title": "オールナイトロング３　最終章",
-    "letterboxd_english_title": "All Night Long 3: The Final Chapter (1996)"
-  },
+  "2本セットトーク付押井守映画祭2025《うる星やつら 編》|": {},
+  "オールナイト20世紀末のトーキョーナイト|": {},
   "2本セットThat'sカンニング！ 史上最大の作戦？ + 友子の場合|": {},
   "愛の新世界|": {
     "id": 108433,
@@ -3335,7 +3320,12 @@
     "tmdb_original_title": "アンジーのBARで逢いましょう",
     "letterboxd_english_title": "Meet Me at Angie’s Bar (2025)"
   },
-  "光る川|2024": {},
+  "光る川|2024": {
+    "id": 1285479,
+    "tmdb_title": "River Returns",
+    "tmdb_original_title": "光る川",
+    "letterboxd_english_title": "River Returns (2024)"
+  },
   "旅するローマ教皇|2022": {
     "id": 1004682,
     "tmdb_title": "In Viaggio: The Travels of Pope Francis",
@@ -3433,7 +3423,12 @@
     "tmdb_original_title": "The Spider's Web",
     "letterboxd_english_title": "The Spider's Web (1960)"
   },
-  "走り来る人々|1958": {},
+  "走り来る人々|1958": {
+    "id": 688809,
+    "tmdb_title": "The Runners",
+    "tmdb_original_title": "The Runners",
+    "letterboxd_english_title": "The Runners (2020)"
+  },
   "明日になれば他人|1962": {
     "id": 591532,
     "tmdb_title": "Stranger in the Night",
@@ -3464,7 +3459,12 @@
     "tmdb_original_title": "Voyager",
     "letterboxd_english_title": "Voyager (2023)"
   },
-  "きょうのできごと a day on the planet|2003": {},
+  "きょうのできごと a day on the planet|2003": {
+    "id": 200694,
+    "tmdb_title": "A Day on the Planet",
+    "tmdb_original_title": "きょうのできごと",
+    "letterboxd_english_title": "A Day on the Planet (2004)"
+  },
   "ロックンロールミシン|2002": {
     "id": 307291,
     "tmdb_title": "Rock'n'Roll Mishin",
@@ -3696,7 +3696,12 @@
     "tmdb_original_title": "JUNK WORLD",
     "letterboxd_english_title": "JUNK WORLD (2025)"
   },
-  "うたﾌﾟﾘ TABOONIGHT|": {},
+  "うたﾌﾟﾘ TABOONIGHT|": {
+    "id": 1448628,
+    "tmdb_title": "Uta no☆Prince-sama♪ Movie: Taboo Night Kisses",
+    "tmdb_original_title": "劇場版 うたの☆プリンスさまっ♪ TABOO NIGHT XXXX",
+    "letterboxd_english_title": "Uta no☆Prince-sama♪ Movie: Taboo Night Kisses (2025)"
+  },
   "アスファルト・シティ|2023": {
     "id": 628922,
     "tmdb_title": "Asphalt City",
@@ -3804,12 +3809,7 @@
     "tmdb_original_title": "Thelma",
     "letterboxd_english_title": "Thelma (2024)"
   },
-  "突然、君がいなくなって|": {
-    "id": 462743,
-    "tmdb_title": "Suddenly Twenty",
-    "tmdb_original_title": "20 ใหม่ ยูเทิร์นวัย หัวใจรีเทิร์น",
-    "letterboxd_english_title": "Suddenly Twenty (2016)"
-  },
+  "突然、君がいなくなって|": {},
   "無名の人生|": {
     "id": 1441453,
     "tmdb_title": "Jinsei",
@@ -3954,7 +3954,12 @@
     "tmdb_original_title": "대도시의 사랑법",
     "letterboxd_english_title": "Love in the Big City (2024)"
   },
-  "呪儀 BODY PARTS|": {},
+  "呪儀 BODY PARTS|": {
+    "id": 32146,
+    "tmdb_title": "Body Parts",
+    "tmdb_original_title": "Body Parts",
+    "letterboxd_english_title": "Body Parts (1991)"
+  },
   "かたつむりのメモワール|": {
     "id": 1064486,
     "tmdb_title": "Memoir of a Snail",
@@ -4137,7 +4142,12 @@
     "tmdb_original_title": "风流一代",
     "letterboxd_english_title": "Caught by the Tides (2024)"
   },
-  "『THE KILLER GOLDFISH』|": {},
+  "『THE KILLER GOLDFISH』|": {
+    "id": 1268092,
+    "tmdb_title": "Killer Goldfish",
+    "tmdb_original_title": "Killer Goldfish",
+    "letterboxd_english_title": "Killer Goldfish (2024)"
+  },
   "『東京予報』|": {
     "id": 1482087,
     "tmdb_title": "Tokyo Forecast",
@@ -4182,10 +4192,5 @@
     "tmdb_original_title": "O Sangue",
     "letterboxd_english_title": "Blood (1989)"
   },
-  "『ヴァンダの部屋』|": {
-    "id": 87063,
-    "tmdb_title": "In Vanda's Room",
-    "tmdb_original_title": "No Quarto da Vanda",
-    "letterboxd_english_title": "In Vanda's Room (2000)"
-  }
+  "『ヴァンダの部屋』|": {}
 }
