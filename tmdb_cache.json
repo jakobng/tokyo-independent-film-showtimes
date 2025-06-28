@@ -3192,7 +3192,12 @@
     "tmdb_original_title": "Sleuth",
     "letterboxd_english_title": "Sleuth (1972)"
   },
-  "2本目割怪獣ゴルゴ|": {},
+  "2本目割怪獣ゴルゴ|": {
+    "id": 40804,
+    "tmdb_title": "Gorgo",
+    "tmdb_original_title": "Gorgo",
+    "letterboxd_english_title": "Gorgo (1961)"
+  },
   "導火線 FLASH POINT|": {
     "id": 35854,
     "tmdb_title": "Flash Point",
@@ -3219,10 +3224,10 @@
     "letterboxd_english_title": "Bajrangi Bhaijaan (2015)"
   },
   "シネマテーク密告の砦 リストア版|": {
-    "id": 82847,
-    "tmdb_title": "The Iron Curtain",
-    "tmdb_original_title": "Железный занавес",
-    "letterboxd_english_title": "The Iron Curtain (1994)"
+    "id": 20778,
+    "tmdb_title": "Le Doulos",
+    "tmdb_original_title": "Le Doulos",
+    "letterboxd_english_title": "Le Doulos (1962)"
   },
   "オールナイトアキ・カウリスマキ 敗者三部作＋1|": {},
   "メトロポリス 完全復元版|1926": {
@@ -3270,12 +3275,7 @@
     "tmdb_original_title": "櫻の園",
     "letterboxd_english_title": "The Cherry Orchard (1990)"
   },
-  "トーク付12人の優しい日本人|": {
-    "id": 378180,
-    "tmdb_title": "The Gentle 12",
-    "tmdb_original_title": "12人の優しい日本人",
-    "letterboxd_english_title": "The Gentle 12 (1991)"
-  },
+  "トーク付12人の優しい日本人|": {},
   "赤い糸 輪廻のひみつ|2021": {
     "id": 783740,
     "tmdb_title": "Till We Meet Again",
@@ -3291,8 +3291,18 @@
     "letterboxd_english_title": "Vampire Clay (2017)"
   },
   "3本セットトーク付グレンダイザー50周年まんがまつり|": {},
-  "2本セットトーク付押井守映画祭2025《うる星やつら 編》|": {},
-  "オールナイト20世紀末のトーキョーナイト|": {},
+  "2本セットトーク付押井守映画祭2025《うる星やつら 編》|": {
+    "id": 43967,
+    "tmdb_title": "Urusei Yatsura: Beautiful Dreamer",
+    "tmdb_original_title": "うる星やつら2 ビューティフル・ドリーマー",
+    "letterboxd_english_title": "Urusei Yatsura: Beautiful Dreamer (1984)"
+  },
+  "オールナイト20世紀末のトーキョーナイト|": {
+    "id": 150373,
+    "tmdb_title": "All Night Long 3: The Final Chapter",
+    "tmdb_original_title": "オールナイトロング３　最終章",
+    "letterboxd_english_title": "All Night Long 3: The Final Chapter (1996)"
+  },
   "2本セットThat'sカンニング！ 史上最大の作戦？ + 友子の場合|": {},
   "愛の新世界|": {
     "id": 108433,
@@ -3312,12 +3322,7 @@
     "tmdb_original_title": "Heretics",
     "letterboxd_english_title": "Heretics (2024)"
   },
-  "2本目割FEMME フェム|": {
-    "id": 976581,
-    "tmdb_title": "Femme",
-    "tmdb_original_title": "Femme",
-    "letterboxd_english_title": "Femme (2023)"
-  },
+  "2本目割FEMME フェム|": {},
   "TOKYO EYES|1998": {
     "id": 49918,
     "tmdb_title": "Tokyo Eyes",
@@ -3349,7 +3354,12 @@
     "tmdb_original_title": "Chiamatemi Francesco - Il Papa della gente",
     "letterboxd_english_title": "Call Me Francis (2015)"
   },
-  "ドマーニ！愛のことづて|2023": {},
+  "ドマーニ！愛のことづて|2023": {
+    "id": 578814,
+    "tmdb_title": "Tomorrow's a New Day",
+    "tmdb_original_title": "Domani è un altro giorno",
+    "letterboxd_english_title": "Tomorrow's a New Day (2019)"
+  },
   "あの歌を憶えている|2023": {
     "id": 818397,
     "tmdb_title": "Memory",
@@ -3454,12 +3464,7 @@
     "tmdb_original_title": "Voyager",
     "letterboxd_english_title": "Voyager (2023)"
   },
-  "きょうのできごと a day on the planet|2003": {
-    "id": 200694,
-    "tmdb_title": "A Day on the Planet",
-    "tmdb_original_title": "きょうのできごと",
-    "letterboxd_english_title": "A Day on the Planet (2004)"
-  },
+  "きょうのできごと a day on the planet|2003": {},
   "ロックンロールミシン|2002": {
     "id": 307291,
     "tmdb_title": "Rock'n'Roll Mishin",
@@ -3799,7 +3804,12 @@
     "tmdb_original_title": "Thelma",
     "letterboxd_english_title": "Thelma (2024)"
   },
-  "突然、君がいなくなって|": {},
+  "突然、君がいなくなって|": {
+    "id": 462743,
+    "tmdb_title": "Suddenly Twenty",
+    "tmdb_original_title": "20 ใหม่ ยูเทิร์นวัย หัวใจรีเทิร์น",
+    "letterboxd_english_title": "Suddenly Twenty (2016)"
+  },
   "無名の人生|": {
     "id": 1441453,
     "tmdb_title": "Jinsei",
@@ -3919,12 +3929,7 @@
     "tmdb_original_title": "Gama",
     "letterboxd_english_title": "Gama (2023)"
   },
-  "溶岩の家|": {
-    "id": 38260,
-    "tmdb_title": "Voodoo Island",
-    "tmdb_original_title": "Voodoo Island",
-    "letterboxd_english_title": "Voodoo Island (1957)"
-  },
+  "溶岩の家|": {},
   "血|": {
     "id": 15516,
     "tmdb_title": "The Last House on the Left",
@@ -4119,5 +4124,68 @@
     "tmdb_title": "Naomi",
     "tmdb_original_title": "爱抚女同・性感带",
     "letterboxd_english_title": "Naomi (1993)"
+  },
+  "『ミステリアス・スキン』|": {
+    "id": 11171,
+    "tmdb_title": "Mysterious Skin",
+    "tmdb_original_title": "Mysterious Skin",
+    "letterboxd_english_title": "Mysterious Skin (2004)"
+  },
+  "『新世紀ロマンティクス』|": {
+    "id": 1136837,
+    "tmdb_title": "Caught by the Tides",
+    "tmdb_original_title": "风流一代",
+    "letterboxd_english_title": "Caught by the Tides (2024)"
+  },
+  "『THE KILLER GOLDFISH』|": {},
+  "『東京予報』|": {
+    "id": 1482087,
+    "tmdb_title": "Tokyo Forecast",
+    "tmdb_original_title": "東京予報 ― 映画監督外山文治短編作品集 ―",
+    "letterboxd_english_title": "Tokyo Forecast (2025)"
+  },
+  "『〇〇式』|": {},
+  "『うぉっしゅ』|": {
+    "id": 979715,
+    "tmdb_title": "Wash",
+    "tmdb_original_title": "Wash",
+    "letterboxd_english_title": "Wash (1999)"
+  },
+  "『シーナ＆ロケッツ 鮎川誠 ～ロックと家族の絆～』|": {},
+  "『コロッサル・ユース』|": {
+    "id": 82404,
+    "tmdb_title": "Colossal Youth",
+    "tmdb_original_title": "Juventude Em Marcha",
+    "letterboxd_english_title": "Colossal Youth (2006)"
+  },
+  "『紅い眼鏡』|": {
+    "id": 30198,
+    "tmdb_title": "The Red Spectacles",
+    "tmdb_original_title": "紅い眼鏡",
+    "letterboxd_english_title": "The Red Spectacles (1987)"
+  },
+  "『溶岩の家』|": {
+    "id": 126376,
+    "tmdb_title": "Casa de Lava",
+    "tmdb_original_title": "Casa de Lava",
+    "letterboxd_english_title": "Casa de Lava (1994)"
+  },
+  "『骨』|": {
+    "id": 55700,
+    "tmdb_title": "Ossos",
+    "tmdb_original_title": "Ossos",
+    "letterboxd_english_title": "Ossos (1997)"
+  },
+  "『血』|": {
+    "id": 46821,
+    "tmdb_title": "Blood",
+    "tmdb_original_title": "O Sangue",
+    "letterboxd_english_title": "Blood (1989)"
+  },
+  "『ヴァンダの部屋』|": {
+    "id": 87063,
+    "tmdb_title": "In Vanda's Room",
+    "tmdb_original_title": "No Quarto da Vanda",
+    "letterboxd_english_title": "In Vanda's Room (2000)"
   }
 }
