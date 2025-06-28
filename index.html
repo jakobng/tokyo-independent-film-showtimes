@@ -200,6 +200,32 @@
             background-color: #ced4da;
             transform: translateY(-1px);
         }
+
+        /* MOBILE RESPONSIVENESS STYLES */
+        @media (max-width: 600px) {
+            .showtimes-list li {
+                flex-wrap: wrap; /* Allow items to wrap to the next line */
+                padding-top: 15px;
+                padding-bottom: 15px;
+                /* Use a simple row gap to space the wrapped items */
+                row-gap: 12px;
+            }
+
+            .showtime-title-container {
+                /* Let the title container grow but also allow shrinking */
+                flex-grow: 1;
+                flex-shrink: 1;
+                /* Remove fixed width to allow wrapping */
+                width: auto;
+            }
+
+            .showtime-links {
+                /* Force the links block to take the full width on a new line */
+                flex-basis: 100%;
+                margin-left: 0;
+                justify-content: flex-end; /* Align buttons to the right */
+            }
+        }
 </style>
 </head>
 <body>
@@ -583,9 +609,8 @@
                             titleDisplayHtml += ` <span class="gemini-english-title">(${bestEnglishTitle})</span>`;
                         }
 
-                        // MODIFIED LOGIC FOR LINKS
                         let linksHtml = '';
-                        if (showing.letterboxd_link && !showing.letterboxd_link.includes('FAILED')) {
+                        if (showing.letterboxd_link && showing.letterboxd_link.toUpperCase().indexOf('FAILED') === -1) {
                             linksHtml += `<a href="${showing.letterboxd_link}" target="_blank" rel="noopener noreferrer" class="showtime-link-btn letterboxd" title="View on Letterboxd">Letterboxd</a>`;
                         }
                         if (showing.detail_page_url) {
