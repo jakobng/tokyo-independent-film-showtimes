@@ -3170,7 +3170,12 @@
     "tmdb_original_title": "ヘアピン・サーカス",
     "letterboxd_english_title": "Hairpin Circus (1972)"
   },
-  "2本セットトーク付平田敏夫の珠玉のアニメーション『ボビーに首ったけ』『グリム童話 金の鳥』|": {},
+  "2本セットトーク付平田敏夫の珠玉のアニメーション『ボビーに首ったけ』『グリム童話 金の鳥』|": {
+    "id": 34775,
+    "tmdb_title": "Bobby's Girl",
+    "tmdb_original_title": "ボビーに首ったけ",
+    "letterboxd_english_title": "Bobby's Girl (1985)"
+  },
   "オールナイト吉田大八の技巧 虚構と現実の狭間で|": {},
   "トーク付夢一族 ザ・らいばる|": {},
   "ライティング上映劇場版 少女☆歌劇 レヴュースタァライト|": {},
@@ -3213,7 +3218,12 @@
     "tmdb_original_title": "बजरंगी भाईजान",
     "letterboxd_english_title": "Bajrangi Bhaijaan (2015)"
   },
-  "シネマテーク密告の砦 リストア版|": {},
+  "シネマテーク密告の砦 リストア版|": {
+    "id": 82847,
+    "tmdb_title": "The Iron Curtain",
+    "tmdb_original_title": "Железный занавес",
+    "letterboxd_english_title": "The Iron Curtain (1994)"
+  },
   "オールナイトアキ・カウリスマキ 敗者三部作＋1|": {},
   "メトロポリス 完全復元版|1926": {
     "id": 19,
@@ -3260,7 +3270,12 @@
     "tmdb_original_title": "櫻の園",
     "letterboxd_english_title": "The Cherry Orchard (1990)"
   },
-  "トーク付12人の優しい日本人|": {},
+  "トーク付12人の優しい日本人|": {
+    "id": 378180,
+    "tmdb_title": "The Gentle 12",
+    "tmdb_original_title": "12人の優しい日本人",
+    "letterboxd_english_title": "The Gentle 12 (1991)"
+  },
   "赤い糸 輪廻のひみつ|2021": {
     "id": 783740,
     "tmdb_title": "Till We Meet Again",
@@ -3297,7 +3312,12 @@
     "tmdb_original_title": "Heretics",
     "letterboxd_english_title": "Heretics (2024)"
   },
-  "2本目割FEMME フェム|": {},
+  "2本目割FEMME フェム|": {
+    "id": 976581,
+    "tmdb_title": "Femme",
+    "tmdb_original_title": "Femme",
+    "letterboxd_english_title": "Femme (2023)"
+  },
   "TOKYO EYES|1998": {
     "id": 49918,
     "tmdb_title": "Tokyo Eyes",
@@ -3434,7 +3454,12 @@
     "tmdb_original_title": "Voyager",
     "letterboxd_english_title": "Voyager (2023)"
   },
-  "きょうのできごと a day on the planet|2003": {},
+  "きょうのできごと a day on the planet|2003": {
+    "id": 200694,
+    "tmdb_title": "A Day on the Planet",
+    "tmdb_original_title": "きょうのできごと",
+    "letterboxd_english_title": "A Day on the Planet (2004)"
+  },
   "ロックンロールミシン|2002": {
     "id": 307291,
     "tmdb_title": "Rock'n'Roll Mishin",
@@ -3513,7 +3538,12 @@
     "tmdb_original_title": "Attenberg",
     "letterboxd_english_title": "Attenberg (2010)"
   },
-  "キネッタ|2005": {},
+  "キネッタ|2005": {
+    "id": 91410,
+    "tmdb_title": "Kinetta",
+    "tmdb_original_title": "Κινέττα",
+    "letterboxd_english_title": "Kinetta (2005)"
+  },
   "海辺のポーリーヌ|1983": {
     "id": 10293,
     "tmdb_title": "Pauline at the Beach",
@@ -3889,7 +3919,12 @@
     "tmdb_original_title": "Gama",
     "letterboxd_english_title": "Gama (2023)"
   },
-  "溶岩の家|": {},
+  "溶岩の家|": {
+    "id": 38260,
+    "tmdb_title": "Voodoo Island",
+    "tmdb_original_title": "Voodoo Island",
+    "letterboxd_english_title": "Voodoo Island (1957)"
+  },
   "血|": {
     "id": 15516,
     "tmdb_title": "The Last House on the Left",
@@ -4078,5 +4113,11 @@
     "tmdb_title": "Dog on Trial",
     "tmdb_original_title": "Le Procès du Chien",
     "letterboxd_english_title": "Dog on Trial (2024)"
+  },
+  "ペッティング・レズ性感帯|1993": {
+    "id": 359345,
+    "tmdb_title": "Naomi",
+    "tmdb_original_title": "爱抚女同・性感带",
+    "letterboxd_english_title": "Naomi (1993)"
   }
 }
